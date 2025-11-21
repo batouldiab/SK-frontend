@@ -7,8 +7,8 @@ import Benchmarking from "./pages/Benchmarking";
 const AppRoutes = () => (
   <Routes>
     <Route element={<DefaultLayout />}>
-      {/* <Route index element={<CountryCitiesMap />} /> */}
-      <Route path="/" element={<></>} />
+      {/* <Route path="/" element={<CountryCitiesMap />} /> */}
+      <Route path="/" />
       <Route path="greenOverview" element={<GreenOverview />} />
       <Route path="benchmarking" element={<Benchmarking />} />
     </Route>

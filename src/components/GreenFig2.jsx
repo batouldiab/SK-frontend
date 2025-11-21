@@ -222,13 +222,14 @@ const GreenFig2 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column">
         <div className="text-sm text-color-secondary mb-2">
           Loading chart data…
         </div>
         <div
+          className="mt-2"
           style={{
-            height: "320px",
+            height: "100%",
             borderRadius: "1rem",
             opacity: 0.3,
             border: "1px dashed var(--surface-border)",
@@ -240,7 +241,7 @@ const GreenFig2 = () => {
 
   if (error) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96">
         <h2 className="m-0 mb-2 text-xl">Green Jobs Distribution</h2>
         <p className="m-0 text-sm text-red-500">
           Error loading chart data: {error}
@@ -264,23 +265,31 @@ const GreenFig2 = () => {
   const max = distData.length > 0 ? Math.max(...distData) : 0;
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4">
-      <div className="flex justify-content-between align-items-start mb-3 gap-3">
+    <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column">
+      <div className="flex justify-content-between align-items-start mb-3 gap-3 w-[30%] p-4">
         <div>
-          <span className="text-xs text-color-secondary font-medium">
-            Green labour demand
-          </span>
           <h2 className="mt-1 mb-1 text-xl">
             Green Jobs Distribution by Country
           </h2>
           <p className="m-0 text-sm text-color-secondary">
             Share of green jobs among all scraped postings, per country.
           </p>
-        </div>
-
-        <div className="flex gap-2 flex-wrap justify-content-end">
+          {/* Modern, minimal sidenote */}
+      <div className="mt-3 text-xs text-color-secondary  max-w-[100%]">
+        <span className="inline-flex align-items-center gap-2">
+          <span
+            className="w-2 h-2 border-round"
+            style={{ backgroundColor: "var(--surface-border)" }}
+          />
+          <span>
+            ESCWA countries with fewer than 60,000 scraped job postings were
+            excluded from this figure.
+          </span>
+        </span>
+      </div>
+      <div className="flex gap-1 flex-wrap justify-content-center align-items-center mt-3">
           <div className="surface-100 border-round-lg px-3 py-2 text-right">
-            <span className="block text-xs text-color-secondary">
+            <span className="block text-xs text-color-secondary ">
               Countries
             </span>
             <span className="block text-sm font-semibold">
@@ -288,7 +297,7 @@ const GreenFig2 = () => {
             </span>
           </div>
           <div className="surface-100 border-round-lg px-3 py-2 text-right">
-            <span className="block text-xs text-color-secondary">
+            <span className="block text-xs text-color-secondary ">
               Avg. green share
             </span>
             <span className="block text-sm font-semibold">
@@ -304,30 +313,20 @@ const GreenFig2 = () => {
             </span>
           </div>
         </div>
+        </div>
+
+
+        
       </div>
 
       {/* Chart area */}
-      <div style={{ height: "480px" }}>
+      <div className="w-[70%]">
         <Chart
+        className="chart-green-2"
           type="bar"
           data={chartData}
           options={chartOptions}
-          style={{ width: "100%", height: "100%" }}
         />
-      </div>
-
-      {/* Modern, minimal sidenote */}
-      <div className="mt-3 text-xs text-color-secondary">
-        <span className="inline-flex align-items-center gap-2">
-          <span
-            className="w-2 h-2 border-round"
-            style={{ backgroundColor: "var(--surface-border)" }}
-          />
-          <span>
-            ESCWA countries with fewer than 60,000 scraped job postings were
-            excluded from this figure.
-          </span>
-        </span>
       </div>
     </div>
   );

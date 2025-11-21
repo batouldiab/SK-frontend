@@ -1,5 +1,6 @@
 #root {
-  max-width: 1280px;
+  /* max-width: 1280px; */
+  width: 100%;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -39,4 +40,27 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Center the menu items and stretch them across the full menubar width */
+.p-menubar {
+  justify-content: center !important;
+}
+
+.p-menubar-root-list {
+  flex: 1;
+  /* display: flex; */
+  justify-content: center;
+  gap: 1.5rem; /* adjust spacing between items as you like */
+}
+
+/* Styles for Charts */
+.chart-green-1 {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-green-2 {
+  width: 100% !important;
+  height: 100% !important;
 }

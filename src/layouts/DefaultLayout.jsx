@@ -35,12 +35,12 @@ const DefaultLayout = () => {
           {
             label: "Explore Green Occupations",
             icon: "pi pi-search",
-            command: () => navigate("/green"),
+            command: () => navigate("/greenOccupations"),
           },
           {
             label: "Green Jobs in Energy Sector",
             icon: "pi pi-bolt",
-            command: () => navigate("/green"),
+            command: () => navigate("/greenInEnergySector"),
           },
         ],
       },
@@ -83,7 +83,7 @@ const DefaultLayout = () => {
       </header>
 
       {/* Page content */}
-      <main className="flex-1 w-full mt-3">
+      <main className="flex w-full mt-3">
         <Outlet />
       </main>
     </div>

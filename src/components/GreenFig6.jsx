@@ -1,8 +1,8 @@
-// src/components/GreenFig1.jsx
+// src/components/GreenFig6.jsx
 import React, { useState, useEffect } from "react";
 import { Chart } from "primereact/chart";
 
-const GreenFig1 = () => {
+const GreenFig6 = () => {
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ const GreenFig1 = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("/data/green_fig1.csv");
+        const response = await fetch("/data/green_fig6.csv");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -27,6 +27,7 @@ const GreenFig1 = () => {
         }
 
         const headerLine = lines[0];
+        // Detect delimiter: tab, semicolon or comma
         const delimiter = headerLine.includes("\t")
           ? "\t"
           : headerLine.includes(";")
@@ -35,26 +36,37 @@ const GreenFig1 = () => {
 
         const rows = lines.slice(1);
 
-        const years = [];
-        const percentages = [];
+        const rawData = [];
 
         rows.forEach((line) => {
           if (!line.trim()) return;
+
           const cols = line.split(delimiter);
-          if (cols.length < 4) return;
+          // Expect: [year, energy_not_green, energy_and_green, total_energy, Green Jobs in the Energy Sector]
+          if (cols.length < 5) return;
 
-          const year = cols[0].trim();
-          const percentage = parseFloat(cols[3].toString().replace(",", "."));
+          const yearStr = cols[0].trim();
+          const year = parseInt(yearStr, 10);
+          if (isNaN(year)) return;
 
-          if (!year || isNaN(percentage)) return;
+          // We only care about 2021–2024
+          if (year < 2021 || year > 2024) return;
 
-          years.push(year);
-          percentages.push(percentage);
+          const percentageStr = cols[4].toString().trim().replace(",", ".");
+          const percentage = parseFloat(percentageStr);
+          if (isNaN(percentage)) return;
+
+          rawData.push({ year, percentage });
         });
 
-        if (years.length === 0) {
-          throw new Error("No valid rows parsed from CSV");
+        if (rawData.length === 0) {
+          throw new Error("No valid rows for years 2021–2024 parsed from CSV");
         }
+
+        // Ensure years are sorted: 2021, 2022, 2023, 2024
+        const sorted = rawData.sort((a, b) => a.year - b.year);
+        const years = sorted.map((d) => d.year.toString());
+        const percentages = sorted.map((d) => d.percentage);
 
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue("--text-color");
@@ -63,13 +75,15 @@ const GreenFig1 = () => {
         const surfaceBorder =
           documentStyle.getPropertyValue("--surface-border");
         const lineColor =
-          documentStyle.getPropertyValue("--blue-500") || "#3b82f6";
+          documentStyle.getPropertyValue("--green-500") ||
+          documentStyle.getPropertyValue("--blue-500") ||
+          "#22c55e";
 
         const data = {
           labels: years,
           datasets: [
             {
-              label: "Percentage of Green Jobs",
+              label: "Green Jobs in the Energy Sector (%)",
               data: percentages,
               fill: false,
               borderColor: lineColor,
@@ -116,7 +130,7 @@ const GreenFig1 = () => {
               },
               title: {
                 display: true,
-                text: "Percentage of Green Jobs",
+                text: "Share of Green Jobs in the Energy Sector (%)",
                 color: textColorSecondary,
               },
             },
@@ -126,7 +140,7 @@ const GreenFig1 = () => {
         setChartData(data);
         setChartOptions(options);
       } catch (err) {
-        console.error("Error loading green_fig1.csv:", err);
+        console.error("Error loading green_fig6.csv:", err);
         setError(err.message || "Unknown error");
       } finally {
         setLoading(false);
@@ -159,7 +173,7 @@ const GreenFig1 = () => {
     return (
       <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96">
         <h2 className="m-0 mb-2 text-xl">
-          Green Jobs Share Over Time (Arab Region)
+          Green Jobs in the Energy Sector (2021–2024)
         </h2>
         <p className="m-0 text-sm text-red-500">
           Error loading chart data: {error}
@@ -170,14 +184,14 @@ const GreenFig1 = () => {
 
   return (
     <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column align-items-center justify-content-center">
-      <div className="flex justify-content-between align-items-center mb-3 gap-3  w-[30%] p-4">
+      <div className="flex justify-content-between align-items-center mb-3 gap-3 w-[30%] p-4">
         <div>
           <h2 className="mt-1 mb-1 text-xl">
-            Green Jobs Share Over Time (Arab Region)
+            Green Jobs in the Energy Sector (2021–2024)
           </h2>
           <p className="m-0 text-sm text-color-secondary">
-            Percentage of green job postings among all scraped postings, by
-            year.
+            Share of green jobs among all energy-related job postings in recent
+            years.
           </p>
         </div>
       </div>
@@ -185,7 +199,7 @@ const GreenFig1 = () => {
       {/* Chart area */}
       <div className="w-[70%] min-h-100 max-h-[100%]">
         <Chart
-          className="chart-green-1"
+          className="chart-green-6"
           type="line"
           data={chartData}
           options={chartOptions}
@@ -195,4 +209,4 @@ const GreenFig1 = () => {
   );
 };
 
-export default GreenFig1;
+export default GreenFig6;

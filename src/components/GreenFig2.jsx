@@ -320,7 +320,7 @@ const GreenFig2 = () => {
       </div>
 
       {/* Chart area */}
-      <div className="w-[70%]">
+      <div className="w-[70%] min-h-100 max-h-[100%]0">
         <Chart
         className="chart-green-2"
           type="bar"

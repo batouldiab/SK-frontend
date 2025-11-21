@@ -47,6 +47,8 @@ const GreenFig1 = () => {
           const percentage = parseFloat(cols[3].toString().replace(",", "."));
 
           if (!year || isNaN(percentage)) return;
+          // We only care about 2021–2024
+            if (parseInt(year, 10) < 2021 || parseInt(year, 10) > 2024) return;
 
           years.push(year);
           percentages.push(percentage);

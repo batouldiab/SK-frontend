@@ -58,7 +58,7 @@ const GreenFig2 = () => {
             cols[3].toString().replace(",", ".")
           );
 
-          // Filter: only keep countries with total jobs > 60000
+          // Filter: only keep countries with total jobs > 60000 and year 2021–2024
           if (
             !country ||
             isNaN(total) ||
@@ -79,8 +79,10 @@ const GreenFig2 = () => {
           throw new Error("No valid rows parsed from CSV after filtering");
         }
 
+
         const averageDistribution =
           distributions.reduce((a, b) => a + b, 0) / distributions.length;
+
 
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue("--text-color");

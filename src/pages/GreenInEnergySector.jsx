@@ -1,9 +1,9 @@
 // src/pages/GreenInEnergySector.jsx
 import React from "react";
-import GreenFig3 from "../components/GreenFig3";
-import GreenFig4 from "../components/GreenFig4";
 import GreenFig6 from "../components/GreenFig6";
 import GreenFig7 from "../components/GreenFig7";
+import GreenFig8 from "../components/GreenFig8";
+import GreenFig9 from "../components/GreenFig9";
 
 const GreenInEnergySector = () => {
   return (
@@ -22,7 +22,6 @@ const GreenInEnergySector = () => {
             <div className="flex flex-col flex-wrap gap-4">
                 <GreenFig6 className="w-[50%]" />
                 <GreenFig7 className="w-[50%]" />
-                {/* <GreenFig4 /> */}
             </div>
         </div>
         <div className="card surface-card shadow-2 border-round-xl p-4">
@@ -37,9 +36,8 @@ const GreenInEnergySector = () => {
 
             {/* Charts grid */}
             <div className="flex flex-col flex-wrap gap-4">
-                <GreenFig3 />
-                <GreenFig4 />
-                {/* <GreenFig4 /> */}
+                <GreenFig8 />
+                <GreenFig9 />
             </div>
         </div>
     </div>

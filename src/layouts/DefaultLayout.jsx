@@ -4,20 +4,25 @@ import { Menubar } from "primereact/menubar";
 const DefaultLayout = () => {
   const navigate = useNavigate();
   const menuItems = [
-    { label: "Dashboard", icon: "pi pi-fw pi-home", command: () => navigate("/") },
+    { label: "Jobs Across ESCWA countries", icon: "pi pi-fw pi-home", command: () => navigate("/") },
     { 
-        label: "Green",   
+        label: "Green Jobs",   
         icon: "pi pi-fw pi-file", 
         items: [
                 {
-                    label: 'Components',
-                    icon: 'pi pi-bolt',
-                    command: () => navigate("/page1")
+                    label: 'Overview in Arab Region',
+                    icon: 'pi pi-chart-bar',
+                    command: () => navigate("/greenOverview")
                 },
                 {
-                    label: 'Charts',
-                    icon: 'pi pi-chart-bar',
-                    command: () => navigate("/page1")
+                    label: 'Explore Green Occupations',
+                    icon: 'pi pi-search',
+                    command: () => navigate("/green")
+                },
+                {
+                    label: 'Green Jobs in Energy Sector ',
+                    icon: 'pi pi-bolt',
+                    command: () => navigate("/green")
                 }
               ],
     },
@@ -29,12 +34,12 @@ const DefaultLayout = () => {
                 {
                     label: 'Reports',
                     icon: 'pi pi-chart-line',
-                    command: () => navigate("/page2")
+                    command: () => navigate("/benchmarking")
                 },
                 {
                     label: 'Analytics',
                     icon: 'pi pi-chart-pie',
-                    command: () => navigate("/page2")
+                    command: () => navigate("/benchmarking")
                 }
               ],
     }

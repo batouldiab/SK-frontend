@@ -11,13 +11,17 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.16",
+    "chart.js": "^4.5.1",
+    "hyparquet": "^1.20.2",
+    "lucide-react": "^0.554.0",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.7",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.5",
-    "tailwindcss": "^4.1.16"
+    "tailwindcss": "^4.1.16",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

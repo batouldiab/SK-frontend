@@ -78,10 +78,10 @@ const GreenFig8 = () => {
           throw new Error("No valid rows parsed from CSV");
         }
 
-        // Select only year 2021–2024
+        // Select only year 2021–2025
         const filteredDataRows = dataRows.filter((r) => {
           const year = parseInt(r.date);
-          return year >= 2021 && year <= 2024;
+          return year >= 2021 && year <= 2025;
         });
 
         const labels = filteredDataRows.map((r) => r.date);

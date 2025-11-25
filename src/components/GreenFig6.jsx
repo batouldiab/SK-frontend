@@ -49,8 +49,8 @@ const GreenFig6 = () => {
           const year = parseInt(yearStr, 10);
           if (isNaN(year)) return;
 
-          // We only care about 2021–2024
-          if (year < 2021 || year > 2024) return;
+          // We only care about 2021–2025
+          if (year < 2021 || year > 2025) return;
 
           const percentageStr = cols[4].toString().trim().replace(",", ".");
           const percentage = parseFloat(percentageStr);
@@ -60,10 +60,10 @@ const GreenFig6 = () => {
         });
 
         if (rawData.length === 0) {
-          throw new Error("No valid rows for years 2021–2024 parsed from CSV");
+          throw new Error("No valid rows for years 2021–2025 parsed from CSV");
         }
 
-        // Ensure years are sorted: 2021, 2022, 2023, 2024
+        // Ensure years are sorted: 2021, 2022, 2023, 2025
         const sorted = rawData.sort((a, b) => a.year - b.year);
         const years = sorted.map((d) => d.year.toString());
         const percentages = sorted.map((d) => d.percentage);

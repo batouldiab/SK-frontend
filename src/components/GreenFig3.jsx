@@ -73,7 +73,10 @@ const GreenFig3 = () => {
 
         // --- Keep only TOP 20 by greenShare (descending) for display ---
         jobRows.sort((a, b) => b.greenShare - a.greenShare);
-        const topJobs = jobRows.slice(0, 20);
+
+        // Filter out jobs with title 'V-belt finisher'
+        const filteredJobRows = jobRows.filter((r) => r.title !== "V-belt finisher");
+        const topJobs = filteredJobRows.slice(0, 20);
 
         const jobTitles = topJobs.map((r) => r.title);
         const greenShares = topJobs.map((r) => r.greenShare);

@@ -280,7 +280,7 @@ const GreenFig3 = () => {
     greenData.length > 0 ? Math.max(...greenData) : 0;
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-full flex flex-col lg:flex-row">
+    <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col lg:flex-row">
       <div className="justify-content-between align-items-start mb-3 gap-3 w-full lg:w-[30%]">
         <div className="w-full p-2">
           <h2 className="mt-1 mb-1 text-xl">
@@ -323,10 +323,10 @@ const GreenFig3 = () => {
       </div>
 
       {/* Chart area */}
-      <div className="w-full lg:w-[70%] min-h-100 max-h-[100%]">
+      <div className="w-full lg:w-[70%] h-full min-h-[360px]">
         {/* 🔹 Base type 'line' so the line layer is on top, like in your example */}
         <Chart
-          className="chart-green-3"
+          className="chart-green-3 w-full h-full"
           type="line"
           data={chartData}
           options={chartOptions}

@@ -89,11 +89,12 @@ const GreenFig7 = () => {
           return b.greenShare - a.greenShare;
         });
 
-        // Filter out jobs with titles "prison officer" and "sommelier"
+        // Filter out jobs with titles "prison officer" and "sommelier" and jobs with less than 9 posts
         const filteredJobs = jobRows.filter(
           (job) =>
             job.title.toLowerCase() !== "prison officer" &&
-            job.title.toLowerCase() !== "sommelier"
+            job.title.toLowerCase() !== "sommelier" &&
+            job.postsCount >= 9
         );
         const topJobs = filteredJobs.slice(0, 20);
 

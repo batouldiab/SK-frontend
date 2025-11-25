@@ -139,7 +139,6 @@ const GreenFig9 = () => {
                 label: function (context) {
                   const idx = context.dataIndex;
 
-                  // For bars: show country, total jobs, and share
                   if (context.dataset.type === "bar") {
                     const country = context.label;
                     const total = totalJobs[idx];
@@ -152,7 +151,6 @@ const GreenFig9 = () => {
                     ];
                   }
 
-                  // For the average line: simple label
                   if (context.dataset.type === "line") {
                     return (
                       context.dataset.label +
@@ -214,7 +212,7 @@ const GreenFig9 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-column">
         <div className="text-sm text-color-secondary mb-2">
           Loading chart data…
         </div>
@@ -233,7 +231,7 @@ const GreenFig9 = () => {
 
   if (error) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
         <h2 className="m-0 mb-2 text-xl">
           Green Jobs within O&amp;G Sectors by Country
         </h2>
@@ -259,8 +257,8 @@ const GreenFig9 = () => {
   const max = distData.length > 0 ? Math.max(...distData) : 0;
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column">
-      <div className="flex justify-content-between align-items-start mb-3 gap-3 w-[30%] p-4">
+    <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
+      <div className="justify-content-between align-items-center mb-3 gap-3 w-full">
         <div>
           <h2 className="mt-1 mb-1 text-xl">
             Green Jobs within O&amp;G Sectors by Country
@@ -313,9 +311,9 @@ const GreenFig9 = () => {
       </div>
 
       {/* Chart area */}
-      <div className="w-[70%] min-h-100 max-h-[100%]">
+      <div className="w-full mt-2" style={{ minHeight: "360px" }}>
         <Chart
-          className="chart-green-9"
+          className="chart-green-9 w-full h-full"
           type="bar"
           data={chartData}
           options={chartOptions}

@@ -81,9 +81,21 @@ const GreenFig7 = () => {
           jobRows.reduce((sum, r) => sum + r.greenShare, 0) / jobRows.length;
         setGlobalAvgGreen(globalAvgGreenShare);
 
-        // Sort by green share descending (like GreenFig3)
-        jobRows.sort((a, b) => b.greenShare - a.greenShare);
-        const topJobs = jobRows.slice(0, 20);
+        // Sort by green share descending then by posts count descending
+        jobRows.sort((a, b) => {
+          if (b.greenShare === a.greenShare) {
+            return b.postsCount - a.postsCount;
+          }
+          return b.greenShare - a.greenShare;
+        });
+
+        // Filter out jobs with titles "prison officer" and "sommelier"
+        const filteredJobs = jobRows.filter(
+          (job) =>
+            job.title.toLowerCase() !== "prison officer" &&
+            job.title.toLowerCase() !== "sommelier"
+        );
+        const topJobs = filteredJobs.slice(0, 20);
 
         const jobTitles = topJobs.map((r) => r.title);
         const greenShares = topJobs.map((r) => r.greenShare);
@@ -253,7 +265,7 @@ const GreenFig7 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-column">
         <div className="text-sm text-color-secondary mb-2">
           Loading chart data…
         </div>
@@ -272,7 +284,7 @@ const GreenFig7 = () => {
 
   if (error) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
         <h2 className="m-0 mb-2 text-xl">
           Green vs Non-Green Share by Occupation in the Energy Sector
         </h2>
@@ -293,9 +305,9 @@ const GreenFig7 = () => {
   const maxGreen = greenData.length > 0 ? Math.max(...greenData) : 0;
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-full flex flex-column gap-3">
-      <div className="flex justify-content-between align-items-start mb-3 gap-3 w-[30%]">
-        <div className="w-full p-2">
+    <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
+      <div className="justify-content-between align-items-start mb-3 gap-3 w-full">
+        <div className="p-2 text-wrap max-w-[100%]">
           <h2 className="mt-1 mb-1 text-xl">
             Green vs Non-Green Share by Occupation in the Energy Sector
           </h2>
@@ -345,9 +357,9 @@ const GreenFig7 = () => {
       </div>
 
       {/* Chart area */}
-      <div className="w-[70%] min-h-100 max-h-[100%]">
+      <div className="w-full h-full min-h-[360px]">
         <Chart
-          className="chart-green-7"
+          className="chart-green-7 w-full h-full"
           type="line" // base type 'line' so the line stays on top
           data={chartData}
           options={chartOptions}

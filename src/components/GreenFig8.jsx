@@ -162,7 +162,6 @@ const GreenFig8 = () => {
         };
 
         const options = {
-          // vertical bars (default indexAxis is 'x')
           maintainAspectRatio: false,
           responsive: true,
           layout: {
@@ -209,7 +208,7 @@ const GreenFig8 = () => {
               beginAtZero: true,
               ticks: {
                 color: textColorSecondary,
-                callback: (value) => value + "%",
+                callback: (value) => value + "%", // show '%' suffix
               },
               grid: {
                 color: surfaceBorder,
@@ -243,7 +242,7 @@ const GreenFig8 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-column">
         <div className="text-sm text-color-secondary mb-2">
           Loading chart data…
         </div>
@@ -262,7 +261,7 @@ const GreenFig8 = () => {
 
   if (error) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
         <h2 className="m-0 mb-2 text-xl">
           Green and O&G Jobs Shares over Time
         </h2>
@@ -276,28 +275,30 @@ const GreenFig8 = () => {
   if (!chartData) return null;
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column align-items-center justify-content-center">
-      <div className="flex justify-content-between align-items-center mb-3 gap-3 w-[30%] p-4">
+    <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
+      <div className="justify-content-between align-items-center mb-3 gap-3 w-full">
         <div>
-        <h2 className="mt-1 mb-1 text-xl">
-          Green and O&G Jobs Shares over Time
-        </h2>
-        <p className="m-0 text-sm text-color-secondary">
-          Stacked bars show the share of{" "}
-          <strong>green jobs outside O&amp;G</strong>,{" "}
-          <strong>all O&amp;G jobs</strong>, and{" "}
-          <strong>green jobs within O&amp;G</strong>. The line shows, for each
-          year, what share of all green jobs are in the O&amp;G sector.
-        </p>
-      </div>
+          <h2 className="mt-1 mb-1 text-xl">
+            Green and O&G Jobs Shares over Time
+          </h2>
+          <p className="m-0 text-sm text-color-secondary">
+            Stacked bars show the share of{" "}
+            <strong>green jobs outside O&amp;G</strong>,{" "}
+            <strong>all O&amp;G jobs</strong>, and{" "}
+            <strong>green jobs within O&amp;G</strong>. The line shows, for each
+            year, what share of all green jobs are in the O&amp;G sector.
+          </p>
+        </div>
       </div>
 
-      <div className="w-[70%] min-h-100 max-h-[100%]">
-        <Chart 
-        className="chart-green-8"
-        type="line" 
-        data={chartData} 
-        options={chartOptions} />
+      {/* Chart area */}
+      <div className="w-full mt-2" style={{ minHeight: "360px" }}>
+        <Chart
+          className="chart-green-8 w-full h-full"
+          type="line"
+          data={chartData}
+          options={chartOptions}
+        />
       </div>
     </div>
   );

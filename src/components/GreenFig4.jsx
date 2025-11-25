@@ -216,9 +216,9 @@ const GreenFig4 = () => {
   const labels = chartData.labels || [];
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-full flex flex-column">
+    <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-full flex flex-col lg:flex-row">
       {/* Header + stats */}
-      <div className="flex justify-content-between align-items-start mb-3 gap-3 w-[30%]">
+      <div className=" justify-content-between align-items-start mb-3 gap-3 w-full lg:w-[30%]">
         <div className="w-full p-2">
           <h2 className="mt-1 mb-1 text-xl">
             Green Demand by ESCO Job Title (Top 20)
@@ -259,7 +259,7 @@ const GreenFig4 = () => {
       </div>
 
       {/* Chart area */}
-      <div className="w-[70%] min-h-100 max-h-[100%]">
+      <div className="w-full lg:w-[70%] min-h-100 max-h-[100%]">
         <Chart
           className="chart-green-4"
           type="bar"

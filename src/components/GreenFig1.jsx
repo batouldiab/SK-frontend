@@ -171,13 +171,13 @@ const GreenFig1 = () => {
   }
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column align-items-center justify-content-center">
-      <div className="flex justify-content-between align-items-center mb-3 gap-3  w-[30%] p-4">
+    <div className="card surface-card shadow-2 border-round-xl p-4 w-full flex flex-col lg:flex-row align-items-center justify-content-center">
+      <div className="justify-content-between align-items-center mb-3 gap-3 w-full lg:w-[30%] p-4">
         <div>
-          <h2 className="mt-1 mb-1 text-xl">
+          <h2 className="mt-1 mb-1 text-xl text-center">
             Green Jobs Share Over Time (Arab Region)
           </h2>
-          <p className="m-0 text-sm text-color-secondary">
+          <p className="m-0 text-sm text-color-secondary text-center">
             Percentage of green job postings among all scraped postings, by
             year.
           </p>
@@ -185,7 +185,7 @@ const GreenFig1 = () => {
       </div>
 
       {/* Chart area */}
-      <div className="w-[70%] min-h-100 max-h-[100%]">
+      <div className="w-full lg:w-[70%] min-h-100 max-h-[100%]">
         <Chart
           className="chart-green-1"
           type="line"

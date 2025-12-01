@@ -53,15 +53,20 @@ const DefaultLayout = () => {
           : "",
         items: [
           {
-            label: "Reports",
+            label: "Occupational Demands",
             icon: "pi pi-chart-line",
-            command: () => navigate("/benchmarking"),
+            command: () => navigate("/benchmarkingOccupationalDemands"),
           },
           {
-            label: "Analytics",
+            label: "Quantifying Skill Similarity",
             icon: "pi pi-chart-pie",
-            command: () => navigate("/benchmarking"),
+            command: () => navigate("/benchmarSkillSimilarity"),
           },
+          {
+            label: "Occupational Pattern of Shared Skills",
+            icon: "pi pi-chart-scatter",
+            command: () => navigate("/benchmarkingOccupationalPattern"),
+          }
         ],
       },
     ],

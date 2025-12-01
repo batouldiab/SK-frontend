@@ -1,0 +1,384 @@
+Soft Skill,Category,Subcategory,UAE Count,Standardized Count UAE,USA Count,Standardized Count usa
+Adding Machines,Administration,Office and Productivity Equipment and Technology,12,0.00033261,38,0.00175712
+Administrative Functions,Administration,Administrative Support and Clerical Tasks,26068,0.72253058,10103,0.46716159
+Calendaring,Administration,Scheduling,75,0.00207879,240,0.01109757
+Checklists,Administration,Administrative Support and Clerical Tasks,536,0.01485639,395,0.01826476
+Clerical Works,Administration,Administrative Support and Clerical Tasks,12284,0.34047743,3994,0.18468211
+Data Reporting,Administration,Administrative Support and Clerical Tasks,1298,0.03597686,689,0.03185928
+Filing,Administration,Document Management,16443,0.45575304,3267,0.15106571
+Google Sheets,Administration,Office and Productivity Equipment and Technology,687,0.01904168,1016,0.04697973
+Memos,Administration,Administrative Support and Clerical Tasks,5020,0.13914008,1671,0.07726685
+Microsoft Excel,Administration,Office and Productivity Equipment and Technology,32770,0.90829089,21070,0.97427444
+Microsoft Office,Administration,Office and Productivity Equipment and Technology,41975,1.16342723,23624,1.09237111
+Microsoft PowerPoint,Administration,Office and Productivity Equipment and Technology,15779,0.43734885,10905,0.50424598
+Microsoft Word,Administration,Office and Productivity Equipment and Technology,8959,0.24831792,6082,0.281231
+Record Keeping,Administration,Document Management,11185,0.31001628,4186,0.19356017
+Scheduling,Administration,Scheduling,29677,0.82256176,22650,1.04733346
+Spreadsheets,Administration,Office and Productivity Equipment and Technology,2591,0.07181513,1173,0.05423939
+Taking Messages,Administration,Office and Productivity Equipment and Technology,1767,0.0489762,62,0.00286687
+Transcribing,Administration,Dictation,1722,0.04772893,2342,0.10829382
+Typewriters,Administration,Office and Productivity Equipment and Technology,16,0.00044347,18,0.00083232
+Webmail,Administration,Office and Productivity Equipment and Technology,22,0.00060978,15,0.0006936
+Arithmetic,Analysis,Mathematics and Mathematical Modeling,567,0.01571562,2553,0.11805043
+Discount Calculation,Analysis,Mathematics and Mathematical Modeling,21,0.00058206,12,0.00055488
+Forecasting,Analysis,Data Analysis,23378,0.64797145,7738,0.35780425
+Information Synthesis,Analysis,Data Analysis,144,0.00399127,209,0.00966414
+Mathematics,Analysis,Mathematics and Mathematical Modeling,13760,0.38138794,12257,0.56676231
+Metric System,Analysis,Mathematics and Mathematical Modeling,12,0.00033261,55,0.00254319
+Organizational Awareness,Analysis,Business Intelligence,137,0.00379725,49,0.00226575
+Electrical Metallic Tubing,Architecture and Construction,Electrical Construction,15,0.00041576,19,0.00087856
+Tape Measure,Architecture and Construction,General Construction and Construction Labor,90,0.00249454,490,0.02265755
+Adaptive Leadership,Business,Business Leadership,6,0.0001663,3,0.00013872
+Agenda (Meeting),Business,Business Management,53,0.00146901,118,0.00545631
+Business Administration,Business,Business Operations,21013,0.5824204,5352,0.24747588
+Business Ethics,Business,Business Management,1239,0.03434154,361,0.0166926
+Business Objectives,Business,Business Operations,11639,0.32259987,9261,0.4282276
+Business Proposals,Business,Business Strategy,1115,0.03090462,233,0.01077389
+Constructive Feedback,Business,People Management,3297,0.09138343,3964,0.18329492
+Consulting,Business,Business Consulting,28942,0.80218965,22356,1.03373893
+Coordinating,Business,Project Management,38341,1.06270311,20833,0.96331558
+Delegation Skills,Business,People Management,921,0.02552749,364,0.01683132
+Delivery Focused,Business,Project Management,171,0.00473963,138,0.0063811
+Distributed Team Management,Business,People Management,155,0.00429616,158,0.0073059
+Evaluating Staff,Business,Performance Management,58,0.00160759,35,0.0016184
+Governance,Business,Business Management,9105,0.25236462,7287,0.33695006
+Management,Business,Business Management,160705,4.45428403,76515,3.53804502
+Motivational Skills,Business,People Management,5150,0.1427433,2438,0.11273285
+Operations,Business,Business Operations,97777,2.71009944,61761,2.85582172
+Order Entry,Business,Business Operations,814,0.02256176,706,0.03264536
+People Management,Business,People Management,7197,0.1994803,2907,0.13441935
+Plan Execution,Business,Project Management,717,0.01987319,327,0.01512044
+Positive Reinforcement,Business,People Management,202,0.00559886,1006,0.04651733
+Prioritization,Business,Project Management,15699,0.43513148,14023,0.64842195
+Procedure Development,Business,Process Improvement and Optimization,463,0.01283304,338,0.01562908
+Progress Reporting,Business,Project Management,7827,0.21694211,1410,0.06519824
+Project Design,Business,Project Management,2138,0.05925926,969,0.04480645
+Relationship Building,Business,People Management,13151,0.36450819,12697,0.58710786
+Risk Mindset,Business,Risk Management,78,0.00216194,66,0.00305183
+Support Colleagues,Business,People Management,405,0.01122544,109,0.00504015
+Task Planning,Business,Project Management,67,0.00185705,74,0.00342175
+Team Building,Business,People Management,6581,0.18240654,9403,0.43479367
+Team Effectiveness,Business,People Management,144,0.00399127,563,0.02603306
+Team Leadership,Business,People Management,5470,0.15161279,6499,0.30051303
+Team Management,Business,People Management,7752,0.21486332,3108,0.14371357
+Team Motivation,Business,People Management,2092,0.05798427,1031,0.04767332
+Team Performance Management,Business,People Management,3052,0.08459273,2433,0.11250165
+Timelines,Business,Project Management,9843,0.27281987,6628,0.30647798
+Unpacking,Business,Project Management,154,0.00426844,332,0.01535164
+Virtual Collaboration,Business,Project Management,134,0.0037141,290,0.01340957
+Virtual Teams,Business,People Management,1716,0.04756262,2160,0.09987816
+Customer Service,Customer and Client Support,Customer Service,112676,3.1230572,61393,2.83880544
+Greeting Customers,Customer and Client Support,Customer Service,10721,0.29715553,2013,0.09308089
+Aesthetics,Design,Creative Design,2739,0.07591726,1628,0.07527854
+Creative Design,Design,Creative Design,1159,0.03212417,308,0.01424189
+Advocacy,"Economics, Policy, and Social Studies","Policy Analysis, Research, and Development",7518,0.20837751,12682,0.58641426
+Diversity Awareness,"Economics, Policy, and Social Studies",Social Studies,29,0.0008038,95,0.00439279
+Active Learning,Education and Training,Teaching,270,0.00748363,155,0.00716718
+Basic Reading,Education and Training,Childhood Education and Development,151,0.00418529,190,0.00878558
+Collaborative Learning,Education and Training,Instructional and Curriculum Design,90,0.00249454,92,0.00425407
+Cooperative Learning,Education and Training,Teaching,13,0.00036032,4,0.00018496
+Educational Leadership,Education and Training,Education Administration,683,0.01893081,174,0.00804574
+Elementary Mathematics,Education and Training,Childhood Education and Development,9,0.00024945,13,0.00060112
+Mentorship,Education and Training,Teaching,17913,0.49649725,31038,1.43519364
+Parent Communication,Education and Training,Teaching,1018,0.02821606,590,0.02728153
+Program Management,Education and Training,Program Management,4659,0.12913419,7207,0.33325087
+Teaching,Education and Training,Teaching,20031,0.55520216,8545,0.39511984
+Map Reading,Engineering,Surveying and Cartography,1357,0.03761217,52,0.00240447
+Budgeting,Finance,Budget Management,25728,0.71310675,9159,0.42351113
+Collections,Finance,Accounts Payable and Receivable,6388,0.17705713,4828,0.22324618
+Financial Literacy,Finance,Financial Advisement,353,0.00978415,181,0.00836942
+Advising,Health Care,Mental Health Therapies,6022,0.16691266,2649,0.12248946
+First Aid,Health Care,First Aid,1583,0.04387624,1077,0.04980036
+Socialization,Health Care,Home Health Care and Assisted Living,14,0.00038804,294,0.01359453
+Stress Management,Health Care,Mental Health Therapies,450,0.01247272,678,0.03135064
+Reservations,Hospitality and Food Services,Events and Conferences,8615,0.23878322,894,0.04133846
+Communication With Candidates,Human Resources,Recruitment,195,0.00540484,40,0.0018496
+Interviewing Skills,Human Resources,Recruitment,138,0.00382497,49,0.00226575
+Leadership Development,Human Resources,Employee Training,2177,0.06034023,4773,0.22070299
+Telecommuting,Human Resources,Compensation and Benefits,1533,0.04249039,1263,0.05840098
+Training And Development,Human Resources,Employee Training,23913,0.66280012,20017,0.92558384
+Apple IPad,Information Technology,Basic Technical Knowledge,183,0.00507224,786,0.03634455
+Basic Internet Skills,Information Technology,Basic Technical Knowledge,102,0.00282715,207,0.00957166
+Calculators,Information Technology,Basic Technical Knowledge,346,0.00959013,512,0.02367482
+Computer Literacy,Information Technology,Basic Technical Knowledge,22713,0.62953955,10256,0.47423629
+Computer Terminals,Information Technology,Basic Technical Knowledge,60,0.00166303,1703,0.07874653
+Context Switch,Information Technology,Data Management,12,0.00033261,29,0.00134096
+Data Compilation,Information Technology,Data Management,827,0.02292208,414,0.01914331
+Desktop Computing,Information Technology,Basic Technical Knowledge,118,0.00327062,98,0.00453151
+Digital Literacy,Information Technology,Basic Technical Knowledge,512,0.01419118,248,0.01146749
+Digitization,Information Technology,Computer Science,1222,0.03387035,1801,0.08327804
+Google Applications,Information Technology,Basic Technical Knowledge,35,0.0009701,87,0.00402287
+Handheld PC,Information Technology,Basic Technical Knowledge,1,0.00002772,146,0.00675102
+Information Literacy,Information Technology,Basic Technical Knowledge,114,0.00315975,7,0.00032368
+Information Organization,Information Technology,Data Management,267,0.00740048,176,0.00813822
+Information Processing,Information Technology,Data Management,193,0.00534941,461,0.02131659
+Information Technology,Information Technology,Computer Science,11337,0.31422929,10075,0.46586687
+Microsoft Internet Explorer,Information Technology,Basic Technical Knowledge,23,0.00063749,22,0.00101728
+Microsoft Software,Information Technology,Basic Technical Knowledge,284,0.00787167,162,0.00749086
+Microsoft Windows,Information Technology,Operating Systems,835,0.02314382,884,0.04087606
+Mobile Apps,Information Technology,Basic Technical Knowledge,70,0.0019402,20,0.0009248
+Mobile Devices,Information Technology,Basic Technical Knowledge,67,0.00185705,95,0.00439279
+Personal Computers,Information Technology,Basic Technical Knowledge,149,0.00412985,359,0.01660012
+Remote Troubleshooting,Information Technology,Technical Support and Services,106,0.00293802,115,0.00531759
+Screen Sharing,Information Technology,Basic Technical Knowledge,19,0.00052663,52,0.00240447
+Skype,Information Technology,Video and Web Conferencing,10,0.00027717,10,0.0004624
+Smartphone Operation,Information Technology,Basic Technical Knowledge,881,0.02441881,2632,0.12170338
+Tablets,Information Technology,Basic Technical Knowledge,321,0.0088972,1265,0.05849346
+Typing,Information Technology,Basic Technical Knowledge,7757,0.21500191,2325,0.10750774
+Video Conferencing,Information Technology,Video and Web Conferencing,951,0.02635901,800,0.03699191
+Voicemail,Information Technology,Telecommunications,192,0.00532169,728,0.03366264
+Web Browsers,Information Technology,Basic Technical Knowledge,266,0.00737276,418,0.01932827
+Web Conferencing,Information Technology,Video and Web Conferencing,547,0.01516128,574,0.0265417
+Web Navigation,Information Technology,Basic Technical Knowledge,210,0.0058206,75,0.00346799
+Wireless Communications,Information Technology,Wireless Technologies,451,0.01250043,1018,0.04707221
+Word Processing,Information Technology,Basic Technical Knowledge,1958,0.05427017,746,0.03449496
+Cleanliness,"Law, Regulation, and Compliance",Occupational Health and Safety,20786,0.57612861,4291,0.19841536
+Client Confidentiality,"Law, Regulation, and Compliance",Regulation and Legal Compliance,215,0.00595919,249,0.01151373
+Conciliation,"Law, Regulation, and Compliance",Litigation and Civil Justice,28,0.00077608,5,0.0002312
+Ethical Standards And Conduct,"Law, Regulation, and Compliance",Regulation and Legal Compliance,18976,0.52596057,16978,0.78506082
+Hand Hygiene,"Law, Regulation, and Compliance",Occupational Health and Safety,12,0.00033261,239,0.01105133
+Incident Reporting,"Law, Regulation, and Compliance",Regulation and Legal Compliance,2227,0.06172609,987,0.04563877
+Investigation,"Law, Regulation, and Compliance",Criminal Investigation and Forensics,7521,0.20846066,7907,0.36561879
+Problem Reporting,"Law, Regulation, and Compliance",Regulation and Legal Compliance,369,0.01022763,364,0.01683132
+Quality Assurance,"Law, Regulation, and Compliance",Quality Assurance and Control,17192,0.47651318,10852,0.50179526
+Quality Control,"Law, Regulation, and Compliance",Quality Assurance and Control,18252,0.50589336,8704,0.40247198
+Safety Assurance,"Law, Regulation, and Compliance",Occupational Health and Safety,55,0.00152444,11,0.00050864
+Sanitation,"Maintenance, Repair, and Facility Services",Cleaning and Janitorial Services,11639,0.32259987,4336,0.20049615
+Goal Setting,Marketing and Public Relations,Marketing Strategy and Techniques,2962,0.08209819,4712,0.21788235
+Active Listening,Media and Communications,Communication,2652,0.07350587,2666,0.12327554
+Arabic Language,Media and Communications,Language Competency,68619,1.90192288,765,0.03537351
+Armenian Language,Media and Communications,Language Competency,17,0.00047119,26,0.00120224
+Basic Writing,Media and Communications,Writing and Editing,104,0.00288258,173,0.0079995
+Bengali Language,Media and Communications,Language Competency,96,0.00266085,27,0.00124848
+Body Language,Media and Communications,Communication,415,0.01150262,632,0.02922361
+Cantonese Chinese,Media and Communications,Language Competency,193,0.00534941,239,0.01105133
+Chinese Language,Media and Communications,Language Competency,712,0.01973461,130,0.00601119
+Collaboration,Media and Communications,Communication,9350,0.25915532,12298,0.56865814
+Collaborative Communications,Media and Communications,Communication,32,0.00088695,65,0.00300559
+Concision,Media and Communications,Communication,481,0.01333195,367,0.01697004
+Consultative Approaches,Media and Communications,Communication,1112,0.03082147,1787,0.08263068
+Discussion Facilitation,Media and Communications,Communication,367,0.01017219,307,0.01419565
+Dynamic Communication,Media and Communications,Communication,6,0.0001663,191,0.00883182
+Editing,Media and Communications,Writing and Editing,5729,0.15879153,2032,0.09395945
+Email Etiquette,Media and Communications,Communication,102,0.00282715,62,0.00286687
+English Language,Media and Communications,Language Competency,157782,4.37326681,20668,0.955686
+Foreign Language,Media and Communications,Language Competency,876,0.02428022,596,0.02755897
+French Language,Media and Communications,Language Competency,8641,0.23950386,1445,0.06681664
+German Language,Media and Communications,Language Competency,2909,0.08062918,1159,0.05359203
+Grammar,Media and Communications,Writing and Editing,1440,0.03991269,1248,0.05770738
+Haitian Creole,Media and Communications,Language Competency,1,0.00002772,32,0.00147968
+Hand Signals,Media and Communications,Communication,12,0.00033261,19,0.00087856
+Hawaiian Language,Media and Communications,Language Competency,21,0.00058206,3,0.00013872
+Hebrew Language,Media and Communications,Language Competency,83,0.00230052,44,0.00203456
+Interactive Communications,Media and Communications,Communication,295,0.00817656,51,0.00235823
+Intercultural Communication,Media and Communications,Communication,10,0.00027717,6,0.00027744
+Interpersonal Communications,Media and Communications,Communication,78898,2.18682743,37140,1.71734944
+Italian Language,Media and Communications,Language Competency,2405,0.06665974,823,0.03805543
+Japanese Language,Media and Communications,Language Competency,84,0.00232824,796,0.03680695
+Knowledge Transfer,Media and Communications,Communication,1333,0.03694696,1392,0.06436592
+Korean Language,Media and Communications,Language Competency,547,0.01516128,532,0.02459962
+Listening Skills,Media and Communications,Communication,1736,0.04811697,1310,0.06057425
+Literacy,Media and Communications,Language Competency,1567,0.04343277,473,0.02187147
+Mandarin Chinese,Media and Communications,Language Competency,1832,0.05077781,1408,0.06510576
+Multilingualism,Media and Communications,Language Competency,4467,0.12381249,6038,0.27919644
+Non-Verbal Communication,Media and Communications,Communication,273,0.00756678,278,0.01285469
+Pashto Language,Media and Communications,Language Competency,64,0.0017739,12,0.00055488
+Persuasive Communication,Media and Communications,Communication,5736,0.15898555,2585,0.11953011
+Portuguese Language,Media and Communications,Language Competency,418,0.01158577,420,0.01942075
+Presentations,Media and Communications,Communication,57630,1.59733915,24897,1.15123449
+Professional Communication,Media and Communications,Communication,127,0.00352008,115,0.00531759
+Professional Networking,Media and Communications,Communication,1390,0.03852683,1026,0.04744213
+Public Speaking,Media and Communications,Communication,1411,0.03910889,915,0.0423095
+Questioning Skills,Media and Communications,Communication,40,0.00110869,62,0.00286687
+Reading Comprehension,Media and Communications,Language Competency,195,0.00540484,93,0.00430031
+Report Writing,Media and Communications,Writing and Editing,18560,0.51443024,4606,0.21298092
+Russian Language,Media and Communications,Language Competency,7018,0.19451893,285,0.01317837
+Sign Languages,Media and Communications,Language Competency,5,0.00013859,31,0.00143344
+Social Collaboration,Media and Communications,Communication,8,0.00022174,13,0.00060112
+Spanish Language,Media and Communications,Language Competency,1671,0.04631535,6342,0.29325337
+Swedish Language,Media and Communications,Language Competency,180,0.00498909,177,0.00818446
+Tagalog Language,Media and Communications,Language Competency,1702,0.04717458,110,0.00508639
+Telephone Skills,Media and Communications,Communication,11265,0.31223366,1785,0.0825382
+Urdu Language,Media and Communications,Language Competency,2661,0.07375533,41,0.00189584
+Verbal Communication Skills,Media and Communications,Communication,33526,0.92924505,25495,1.17888594
+Vietnamese Language,Media and Communications,Language Competency,141,0.00390812,245,0.01132877
+Writing,Media and Communications,Writing and Editing,39144,1.08495998,32636,1.50908498
+Written English,Media and Communications,Language Competency,7174,0.19884281,859,0.03972006
+Improvisation,"Performing Arts, Sports, and Recreation",Theatre and Performance Art,5,0.00013859,2,0.00009248
+Proper Body Mechanics,"Performing Arts, Sports, and Recreation",Coaching and Athletic Training,36,0.00099782,189,0.00873934
+Swimming,"Performing Arts, Sports, and Recreation",Sports and Recreation,981,0.02719052,254,0.01174493
+Ability To Meet Deadlines,Physical and Inherent Abilities,Initiative and Leadership,16626,0.46082528,11082,0.51243044
+Accountability,Physical and Inherent Abilities,Initiative and Leadership,14728,0.40821813,16763,0.77511924
+Adaptability,Physical and Inherent Abilities,Personal Attributes,9391,0.26029172,8313,0.38439219
+Adaptive Reasoning,Physical and Inherent Abilities,Critical Thinking and Problem Solving,1,0.00002772,9,0.00041616
+Analytical Skills,Physical and Inherent Abilities,Critical Thinking and Problem Solving,30401,0.84262897,14894,0.68869689
+Analytical Thinking,Physical and Inherent Abilities,Critical Thinking and Problem Solving,4060,0.11253161,2527,0.1168482
+Assertiveness,Physical and Inherent Abilities,Personal Attributes,1947,0.05396528,618,0.02857625
+Brainstorming,Physical and Inherent Abilities,Critical Thinking and Problem Solving,553,0.01532758,362,0.01673884
+Business Acumen,Physical and Inherent Abilities,Personal Attributes,7684,0.21297855,5154,0.23832038
+Business Etiquette,Physical and Inherent Abilities,Social Skills,353,0.00978415,622,0.02876121
+Calmness Under Pressure,Physical and Inherent Abilities,Personal Attributes,3137,0.08694869,896,0.04143094
+Cardiovascular Fitness,Physical and Inherent Abilities,Physical Abilities,10,0.00027717,1,0.00004624
+Caring Nature,Physical and Inherent Abilities,Personal Attributes,49,0.00135814,7,0.00032368
+Challenge Driven,Physical and Inherent Abilities,Initiative and Leadership,57,0.00157988,12,0.00055488
+Change Agility,Physical and Inherent Abilities,Critical Thinking and Problem Solving,44,0.00121955,39,0.00180336
+Coaching,Physical and Inherent Abilities,Initiative and Leadership,27344,0.75789765,24512,1.13343213
+Cognitive Flexibility,Physical and Inherent Abilities,Personal Attributes,44,0.00121955,8,0.00036992
+Community Leadership,Physical and Inherent Abilities,Initiative and Leadership,29,0.0008038,367,0.01697004
+Compassion,Physical and Inherent Abilities,Social Skills,8557,0.23717562,29273,1.35358024
+Complex Problem Solving,Physical and Inherent Abilities,Critical Thinking and Problem Solving,1612,0.04468004,2244,0.10376231
+Composure,Physical and Inherent Abilities,Personal Attributes,3632,0.10066868,2620,0.12114851
+Confident Communicator,Physical and Inherent Abilities,Personal Attributes,607,0.01682431,362,0.01673884
+Cooperation,Physical and Inherent Abilities,Social Skills,5846,0.16203444,2105,0.09733496
+Courage,Physical and Inherent Abilities,Personal Attributes,3885,0.10768111,7609,0.35183931
+Creative Problem Solving,Physical and Inherent Abilities,Critical Thinking and Problem Solving,2143,0.05939784,2877,0.13303216
+Creative Thinking,Physical and Inherent Abilities,Initiative and Leadership,3834,0.10626754,1466,0.06778768
+Creativity,Physical and Inherent Abilities,Personal Attributes,24709,0.68486297,15608,0.72171217
+Critical Thinking,Physical and Inherent Abilities,Critical Thinking and Problem Solving,11292,0.31298202,12791,0.59145441
+Cultural Humility,Physical and Inherent Abilities,Social Skills,20,0.00055434,119,0.00550255
+Cultural Responsiveness,Physical and Inherent Abilities,Social Skills,286,0.0079271,530,0.02450714
+Cultural Sensitivity,Physical and Inherent Abilities,Social Skills,1686,0.04673111,680,0.03144312
+Curiosity,Physical and Inherent Abilities,Personal Attributes,14287,0.39599487,16133,0.74598811
+Dealing With Ambiguity,Physical and Inherent Abilities,Critical Thinking and Problem Solving,942,0.02610955,750,0.03467992
+Decision Making,Physical and Inherent Abilities,Initiative and Leadership,28168,0.78073658,18384,0.8500741
+Decisiveness,Physical and Inherent Abilities,Personal Attributes,2054,0.05693102,1492,0.06898991
+Deductive Reasoning,Physical and Inherent Abilities,Critical Thinking and Problem Solving,26,0.00072065,352,0.01627644
+Depth Perception,Physical and Inherent Abilities,Physical Abilities,25,0.00069293,6,0.00027744
+Detail Oriented,Physical and Inherent Abilities,Personal Attributes,102037,2.82817448,62453,2.88781972
+Diagnostic Skills,Physical and Inherent Abilities,Critical Thinking and Problem Solving,449,0.012445,356,0.0164614
+Diplomacy,Physical and Inherent Abilities,Social Skills,3277,0.09082909,1240,0.05733746
+Driven Personality,Physical and Inherent Abilities,Personal Attributes,194,0.00537713,43,0.00198832
+Dynamic Balance,Physical and Inherent Abilities,Physical Abilities,9,0.00024945,3,0.00013872
+Dynamic Personality,Physical and Inherent Abilities,Personal Attributes,421,0.01166892,266,0.01229981
+Emotional Intelligence,Physical and Inherent Abilities,Initiative and Leadership,1588,0.04401483,1814,0.08387916
+Emotional Stability,Physical and Inherent Abilities,Personal Attributes,29,0.0008038,26,0.00120224
+Empathy,Physical and Inherent Abilities,Social Skills,9569,0.26522538,15840,0.73243982
+Energetic,Physical and Inherent Abilities,Physical Abilities,18863,0.52282853,13891,0.64231828
+Engagement Skills,Physical and Inherent Abilities,Personal Attributes,209,0.00579288,132,0.00610367
+Enthusiasm,Physical and Inherent Abilities,Personal Attributes,36059,0.99945259,17388,0.80401917
+Entrepreneurship,Physical and Inherent Abilities,Initiative and Leadership,3024,0.08381665,1605,0.07421502
+Executive Presence,Physical and Inherent Abilities,Initiative and Leadership,496,0.0137477,840,0.03884151
+Extroverted,Physical and Inherent Abilities,Personal Attributes,618,0.0171292,15,0.0006936
+Eye Contact,Physical and Inherent Abilities,Social Skills,126,0.00349236,5,0.0002312
+Financial Acumen,Physical and Inherent Abilities,Personal Attributes,1760,0.04878218,1223,0.05655138
+Fine Motor Skills,Physical and Inherent Abilities,Physical Abilities,3970,0.11003707,4203,0.19434625
+Finger Dexterity,Physical and Inherent Abilities,Physical Abilities,3,0.00008315,706,0.03264536
+Following Directions,Physical and Inherent Abilities,Personal Attributes,78,0.00216194,30,0.0013872
+Friendliness,Physical and Inherent Abilities,Social Skills,2087,0.05784568,858,0.03967382
+Goal-Oriented,Physical and Inherent Abilities,Initiative and Leadership,3334,0.09240897,2699,0.12480146
+Good Driving Record,Physical and Inherent Abilities,Personal Attributes,5337,0.14792641,12445,0.57545541
+Growth Mindedness,Physical and Inherent Abilities,Personal Attributes,2306,0.06391574,6014,0.27808669
+Handling Confrontation,Physical and Inherent Abilities,Social Skills,8,0.00022174,20,0.0009248
+Honesty,Physical and Inherent Abilities,Personal Attributes,8160,0.22617192,15511,0.7172269
+Hospitality,Physical and Inherent Abilities,Personal Attributes,1203,0.03334373,876,0.04050614
+Humility,Physical and Inherent Abilities,Personal Attributes,524,0.01452378,1096,0.05067892
+Ideation,Physical and Inherent Abilities,Critical Thinking and Problem Solving,2241,0.06211413,1887,0.08725467
+Imagination,Physical and Inherent Abilities,Personal Attributes,6064,0.16807678,1349,0.06237761
+Independent Thinking,Physical and Inherent Abilities,Critical Thinking and Problem Solving,465,0.01288847,743,0.03435624
+Inductive Reasoning,Physical and Inherent Abilities,Critical Thinking and Problem Solving,10,0.00027717,9,0.00041616
+Influencing Skills,Physical and Inherent Abilities,Initiative and Leadership,23241,0.6441742,20291,0.93825357
+Ingenuity,Physical and Inherent Abilities,Personal Attributes,972,0.02694107,1549,0.07162559
+Innovation,Physical and Inherent Abilities,Critical Thinking and Problem Solving,78268,2.16936562,73019,3.37639038
+Integrative Thinking,Physical and Inherent Abilities,Critical Thinking and Problem Solving,28,0.00077608,14,0.00064736
+Intellectual Curiosity,Physical and Inherent Abilities,Personal Attributes,2925,0.08107265,4319,0.19971008
+Intercultural Competence,Physical and Inherent Abilities,Social Skills,118,0.00327062,240,0.01109757
+Intrapreneurship,Physical and Inherent Abilities,Critical Thinking and Problem Solving,17,0.00047119,75,0.00346799
+Lateral Thinking,Physical and Inherent Abilities,Critical Thinking and Problem Solving,256,0.00709559,14,0.00064736
+Leadership,Physical and Inherent Abilities,Initiative and Leadership,78109,2.1649586,64514,2.98312013
+Learning Agility,Physical and Inherent Abilities,Personal Attributes,468,0.01297162,272,0.01257725
+Level Headed,Physical and Inherent Abilities,Personal Attributes,81,0.00224509,11,0.00050864
+Lifelong Learning,Physical and Inherent Abilities,Personal Attributes,1037,0.02874268,490,0.02265755
+Lifting Ability,Physical and Inherent Abilities,Physical Abilities,7077,0.19615425,21167,0.97875971
+Logical Reasoning,Physical and Inherent Abilities,Critical Thinking and Problem Solving,260,0.00720646,162,0.00749086
+Mechanical Aptitude,Physical and Inherent Abilities,Personal Attributes,598,0.01657485,1508,0.06972975
+Mental Agility,Physical and Inherent Abilities,Personal Attributes,73,0.00202335,7,0.00032368
+Mental Concentration,Physical and Inherent Abilities,Personal Attributes,662,0.01834875,1142,0.05280595
+Mental Stamina,Physical and Inherent Abilities,Personal Attributes,52,0.00144129,4,0.00018496
+Motion Sickness Resilience,Physical and Inherent Abilities,Physical Abilities,1,0.00002772,4,0.00018496
+Motor Coordination,Physical and Inherent Abilities,Physical Abilities,65,0.00180161,33,0.00152592
+Multitasking,Physical and Inherent Abilities,Personal Attributes,46302,1.28335932,24461,1.1310739
+Muscular Strength And Endurance,Physical and Inherent Abilities,Physical Abilities,5,0.00013859,1,0.00004624
+Needs Assessment,Physical and Inherent Abilities,Critical Thinking and Problem Solving,1658,0.04595503,1034,0.04781204
+Open Mindset,Physical and Inherent Abilities,Personal Attributes,2063,0.05718047,1423,0.06579936
+Optimism,Physical and Inherent Abilities,Personal Attributes,1636,0.04534525,1934,0.08942794
+Organizational Skills,Physical and Inherent Abilities,Personal Attributes,55137,1.52824031,30646,1.41706761
+Overcoming Obstacles,Physical and Inherent Abilities,Personal Attributes,328,0.00909122,485,0.02242635
+Patience,Physical and Inherent Abilities,Personal Attributes,5183,0.14365797,4021,0.18593059
+Persistence,Physical and Inherent Abilities,Personal Attributes,790,0.02189655,862,0.03985878
+Personal Integrity,Physical and Inherent Abilities,Personal Attributes,1423,0.0394415,1453,0.06718656
+Physical Fitness,Physical and Inherent Abilities,Physical Abilities,2157,0.05978589,754,0.03486488
+Physical Stamina,Physical and Inherent Abilities,Physical Abilities,5407,0.14986661,1621,0.07495486
+Physical Strength,Physical and Inherent Abilities,Physical Abilities,48,0.00133042,6,0.00027744
+Planning,Physical and Inherent Abilities,Initiative and Leadership,100259,2.77889339,39262,1.81547048
+Politeness,Physical and Inherent Abilities,Personal Attributes,241,0.00667983,24,0.00110976
+Positivity,Physical and Inherent Abilities,Personal Attributes,19604,0.54336694,12878,0.59547728
+Preparedness,Physical and Inherent Abilities,Personal Attributes,145,0.00401899,120,0.00554879
+Proactivity,Physical and Inherent Abilities,Initiative and Leadership,7344,0.20355472,4631,0.21413692
+Problem Solving,Physical and Inherent Abilities,Critical Thinking and Problem Solving,108163,2.99796972,69250,3.20211224
+Professional Responsibility,Physical and Inherent Abilities,Initiative and Leadership,353,0.00978415,96,0.00443903
+Professionalism,Physical and Inherent Abilities,Personal Attributes,32416,0.89847902,21221,0.98125666
+Proper Posture,Physical and Inherent Abilities,Physical Abilities,42,0.00116412,6,0.00027744
+Punctuality,Physical and Inherent Abilities,Initiative and Leadership,2821,0.07819007,2965,0.13710127
+Quick Learning,Physical and Inherent Abilities,Personal Attributes,5427,0.15042095,4041,0.18685539
+Rapport Building,Physical and Inherent Abilities,Social Skills,4970,0.13775422,3910,0.18079796
+Recognizing Strengths,Physical and Inherent Abilities,Personal Attributes,5,0.00013859,11,0.00050864
+Relationship Management,Physical and Inherent Abilities,Social Skills,9917,0.27487094,5109,0.23623959
+Reliability,Physical and Inherent Abilities,Personal Attributes,2184,0.06053425,4689,0.21681883
+Resilience,Physical and Inherent Abilities,Personal Attributes,10685,0.29615771,12262,0.56699351
+Resourcefulness,Physical and Inherent Abilities,Personal Attributes,4228,0.1171881,3517,0.16262569
+Results Focused,Physical and Inherent Abilities,Initiative and Leadership,571,0.01582649,878,0.04059862
+Sales Acumen,Physical and Inherent Abilities,Personal Attributes,492,0.01363684,355,0.01641516
+Self Evaluation,Physical and Inherent Abilities,Initiative and Leadership,407,0.01128088,30,0.0013872
+Self-Awareness,Physical and Inherent Abilities,Personal Attributes,1586,0.04395939,1320,0.06103665
+Self-Confidence,Physical and Inherent Abilities,Personal Attributes,440,0.01219554,148,0.0068435
+Self-Control,Physical and Inherent Abilities,Personal Attributes,806,0.02234002,140,0.00647358
+Self-Discipline,Physical and Inherent Abilities,Personal Attributes,1656,0.04589959,2473,0.11435124
+Self-Motivation,Physical and Inherent Abilities,Initiative and Leadership,44803,1.24181132,33431,1.54584569
+Self-Sufficiency,Physical and Inherent Abilities,Initiative and Leadership,102,0.00282715,164,0.00758334
+Sense Of Smell,Physical and Inherent Abilities,Physical Abilities,67,0.00185705,21,0.00097104
+Sincerity,Physical and Inherent Abilities,Personal Attributes,192,0.00532169,693,0.03204424
+Social Intelligence,Physical and Inherent Abilities,Social Skills,18,0.00049891,16,0.00073984
+Social Perceptiveness,Physical and Inherent Abilities,Social Skills,100,0.00277171,51,0.00235823
+Social Skills,Physical and Inherent Abilities,Social Skills,1172,0.0324845,1039,0.04804324
+Solutions Focused,Physical and Inherent Abilities,Personal Attributes,1375,0.03811108,928,0.04291062
+Spatial Abilities,Physical and Inherent Abilities,Physical Abilities,132,0.00365866,49,0.00226575
+Stewardship,Physical and Inherent Abilities,Initiative and Leadership,24,0.00066521,94,0.00434655
+Strategic Planning,Physical and Inherent Abilities,Critical Thinking and Problem Solving,14082,0.39031286,7120,0.329228
+Strategic Thinking,Physical and Inherent Abilities,Critical Thinking and Problem Solving,6519,0.18068808,3898,0.18024308
+Strong Work Ethic,Physical and Inherent Abilities,Personal Attributes,13121,0.36367668,10507,0.4858425
+Studious,Physical and Inherent Abilities,Personal Attributes,9,0.00024945,2,0.00009248
+Success Driven,Physical and Inherent Abilities,Initiative and Leadership,80,0.00221737,84,0.00388415
+Supervision,Physical and Inherent Abilities,Initiative and Leadership,6027,0.16705124,3550,0.1641516
+Systems Thinking,Physical and Inherent Abilities,Personal Attributes,353,0.00978415,498,0.02302746
+Tacit Knowledge,Physical and Inherent Abilities,Personal Attributes,3,0.00008315,15,0.0006936
+Tactfulness,Physical and Inherent Abilities,Personal Attributes,2871,0.07957593,3466,0.16026745
+Team Oriented,Physical and Inherent Abilities,Social Skills,4456,0.1235076,10636,0.49180745
+Teamwork,Physical and Inherent Abilities,Social Skills,37079,1.02772408,29271,1.35348776
+Technical Acumen,Physical and Inherent Abilities,Personal Attributes,4013,0.11122891,4838,0.22370858
+Technical Curiosity,Physical and Inherent Abilities,Personal Attributes,64,0.0017739,109,0.00504015
+Tenacity,Physical and Inherent Abilities,Personal Attributes,1638,0.04540069,1833,0.08475771
+Time Management,Physical and Inherent Abilities,Initiative and Leadership,46645,1.2928663,24592,1.13713132
+Transformational Leadership,Physical and Inherent Abilities,Initiative and Leadership,48,0.00133042,154,0.00712094
+Troubleshooting (Problem Solving),Physical and Inherent Abilities,Critical Thinking and Problem Solving,18963,0.52560025,21147,0.97783491
+Trustworthiness,Physical and Inherent Abilities,Personal Attributes,4641,0.12863528,2622,0.12124099
+Visionary,Physical and Inherent Abilities,Initiative and Leadership,2345,0.06499671,2017,0.09326585
+Visual Acuity,Physical and Inherent Abilities,Physical Abilities,332,0.00920209,3244,0.1500022
+Willingness To Learn,Physical and Inherent Abilities,Personal Attributes,13622,0.37756297,11147,0.51543603
+Working Quickly,Physical and Inherent Abilities,Personal Attributes,119,0.00329834,62,0.00286687
+Real Estate,Property and Real Estate,Real Estate Sales,11441,0.31711187,3341,0.15448747
+Emergency Procedures,Public Safety and National Security,Emergency Services,3346,0.09274157,959,0.04434405
+Information Gathering,Public Safety and National Security,Intelligence Collection and Analysis,4373,0.12120708,2007,0.09280346
+Security Policies,Public Safety and National Security,Safety and Security,10638,0.294855,3892,0.17996564
+Negotiation,Sales,General Sales Practices,37521,1.03997505,10880,0.50308998
+Retail Sales,Sales,Retail Sales,5251,0.14554274,4568,0.21122381
+Sales,Sales,General Sales Practices,180585,5.0053009,66790,3.08836211
+Internet Research,Science and Research,General Science and Research,515,0.01427433,284,0.01313213
+Natural Sciences,Science and Research,General Science and Research,104,0.00288258,53,0.00245071
+Research,Science and Research,General Science and Research,32110,0.88999757,22668,1.04816578
+Defensive Driving,"Transportation, Supply Chain, and Logistics",Transportation Operations,94,0.00260541,208,0.0096179
+Dollies,"Transportation, Supply Chain, and Logistics",Material Handling,149,0.00412985,260,0.01202237
+Hand Trucks,"Transportation, Supply Chain, and Logistics",Material Handling,219,0.00607006,355,0.01641516
+Loading And Unloading,"Transportation, Supply Chain, and Logistics",Material Handling,11094,0.30749402,2941,0.13599151
+Packaging And Labeling,"Transportation, Supply Chain, and Logistics",General Shipping and Receiving,8685,0.24072342,4606,0.21298092
+Sorting,"Transportation, Supply Chain, and Logistics",Inventory and Warehousing,2347,0.06505214,733,0.03389384
+Communications,Uncategorized,Uncategorized,328359,9.10117451,160067,7.40148014

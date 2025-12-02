@@ -1,11 +1,11 @@
-// src/components/BenchmarkingFig3.jsx
+// src/components/BenchmarkingFig4.jsx
 import React, { useState, useEffect } from "react";
 import { Chart } from "primereact/chart";
 import { Checkbox } from "primereact/checkbox";
 import { Dropdown } from "primereact/dropdown";
 import Papa from "papaparse";
 
-const BenchmarkingFig3 = () => {
+const BenchmarkingFig4 = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -33,7 +33,7 @@ const BenchmarkingFig3 = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("/data/benchmarking_fig3_5.csv");
+        const response = await fetch("/data/benchmarking_fig4_5.csv");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -54,17 +54,17 @@ const BenchmarkingFig3 = () => {
 
               // Parse all rows
               results.data.forEach((row) => {
-                // Get the first column (soft skill name) - adjust column name as needed
-                const softSkill = row["Soft Skill"] || row[Object.keys(row)[0]];
+                // Get the first column (hard skill name) - adjust column name as needed
+                const hardSkill = row["Hard Skill"] || row[Object.keys(row)[0]];
                 
                 // Get UAE and US standardized counts - adjust column names as needed
                 const uaeCount = parseFloat(row["Standardized Count UAE"]);
                 const usCount = parseFloat(row["Standardized Count US"]);
 
-                if (!softSkill || isNaN(uaeCount) || isNaN(usCount)) return;
+                if (!hardSkill || isNaN(uaeCount) || isNaN(usCount)) return;
 
                 allSkills.push({
-                  softSkill: softSkill.trim(),
+                  hardSkill: hardSkill.trim(),
                   uaeCount,
                   usCount,
                 });
@@ -118,7 +118,7 @@ const BenchmarkingFig3 = () => {
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
 
-    // Color palette for soft skills
+    // Color palette for hard skills
     const colors = [
       "#3b82f6", // blue
       "#8b5cf6", // purple
@@ -134,7 +134,7 @@ const BenchmarkingFig3 = () => {
 
     // UAE Chart Data
     const uaeData = {
-      labels: uaeTopSkills.map((s) => s.softSkill),
+      labels: uaeTopSkills.map((s) => s.hardSkill),
       datasets: [
         {
           label: "UAE Standardized Count",
@@ -148,7 +148,7 @@ const BenchmarkingFig3 = () => {
 
     // US Chart Data
     const usData = {
-      labels: usTopSkills.map((s) => s.softSkill),
+      labels: usTopSkills.map((s) => s.hardSkill),
       datasets: [
         {
           label: "US Standardized Count",
@@ -229,7 +229,7 @@ const BenchmarkingFig3 = () => {
     return (
       <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
         <h2 className="m-0 mb-2 text-xl">
-          Top 10 Soft Skills: UAE vs US
+          Top 10 Hard Skills: UAE vs US
         </h2>
         <p className="m-0 text-sm text-red-500">
           Error loading chart data: {error}
@@ -320,7 +320,7 @@ const BenchmarkingFig3 = () => {
         {showUAEChart && (
           <div className="flex flex-column align-items-center" style={{ flex: 1, minWidth: "300px", maxWidth: "500px" }}>
             <h3 className="text-md font-semibold mb-2" style={{ color: "var(--blue-500)" }}>
-              UAE Top 10 Soft Skills
+              UAE Top 10 Hard Skills
             </h3>
             <div style={{ width: "100%", height: "400px" }}>
               <Chart
@@ -337,7 +337,7 @@ const BenchmarkingFig3 = () => {
         {showUSChart && (
           <div className="flex flex-column align-items-center" style={{ flex: 1, minWidth: "300px", maxWidth: "500px" }}>
             <h3 className="text-md font-semibold mb-2" style={{ color: "var(--pink-500)" }}>
-              US Top 10 Soft Skills
+              US Top 10 Hard Skills
             </h3>
             <div style={{ width: "100%", height: "400px" }}>
               <Chart
@@ -354,7 +354,7 @@ const BenchmarkingFig3 = () => {
       {/* Skill selector & details */}
       <div className="w-full mt-4 pt-3 border-top-1 surface-border">
         <h3 className="text-sm font-semibold mb-2">
-          Inspect standardized count for any soft skill
+          Inspect standardized count for any hard skill
         </h3>
         <div className="flex flex-column md:flex-row gap-3 align-items-start md:align-items-center">
           <div className="flex-1">
@@ -362,8 +362,8 @@ const BenchmarkingFig3 = () => {
               value={selectedSkill}
               onChange={(e) => setSelectedSkill(e.value)}
               options={allSkillsData}
-              optionLabel="softSkill"
-              placeholder="Select a soft skill"
+              optionLabel="hardSkill"
+              placeholder="Select a hard skill"
               className="w-full md:w-20rem"
               filter
               showClear
@@ -396,4 +396,4 @@ const BenchmarkingFig3 = () => {
   );
 };
 
-export default BenchmarkingFig3;
+export default BenchmarkingFig4;

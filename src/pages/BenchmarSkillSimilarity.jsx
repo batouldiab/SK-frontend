@@ -2,8 +2,8 @@
 import React from "react";
 import BenchmarkingFig3 from "../components/BenchmarkingFig3";
 import BenchmarkingFig4 from "../components/BenchmarkingFig4";
-import BenchmarkingFig5 from "../components/BenchmarkingFig5";
-import BenchmarkingFig6 from "../components/BenchmarkingFig6";
+import BenchmarkingFig5_1 from "../components/BenchmarkingFig5_1";
+import BenchmarkingFig5_2 from "../components/BenchmarkingFig5_2";
 
 const BenchmarkSkillSimilarity = () => {
   return (
@@ -151,7 +151,7 @@ const BenchmarkSkillSimilarity = () => {
           {/* Figure 4 */}
           <div className="flex justify-content-center">
             <div className="min-h-[420px] min-w-0 flex w-full">
-              <BenchmarkingFig5 />
+              <BenchmarkingFig5_1 />
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@ const BenchmarkSkillSimilarity = () => {
           {/* Figure 4 */}
           <div className="flex justify-content-center">
             <div className="min-h-[420px] min-w-0 flex w-full">
-              <BenchmarkingFig6 />
+              <BenchmarkingFig5_2 />
             </div>
           </div>
         </div>

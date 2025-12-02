@@ -6,6 +6,7 @@ import GreenOccupations from "./pages/GreenOccupations";
 import GreenInEnergySector from "./pages/GreenInEnergySector";
 import BenchmarkingOccupationalDemands from "./pages/BenchmarkingOccupationalDemands";
 import BenchmarkSkillSimilarity from "./pages/BenchmarSkillSimilarity";
+import BenchmarkingOccupationalPattern from "./pages/BenchmarkingOccupationalPattern"
 
 const AppRoutes = () => (
   <Routes>
@@ -17,6 +18,7 @@ const AppRoutes = () => (
       <Route path="greenInEnergySector" element={<GreenInEnergySector />} />
       <Route path="benchmarkingOccupationalDemands" element={<BenchmarkingOccupationalDemands />} />
       <Route path="benchmarSkillSimilarity" element={<BenchmarkSkillSimilarity />} />
+      <Route path="benchmarkingOccupationalPattern" element={<BenchmarkingOccupationalPattern />} />
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>

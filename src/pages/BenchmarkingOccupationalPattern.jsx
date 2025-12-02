@@ -1,6 +1,7 @@
 // src/pages/BenchmarkingOccupationalPattern.jsx
 import React from "react";
 import BenchmarkingFig6 from "../components/BenchmarkingFig6";
+import BenchmarkingFig8 from "../components/BenchmarkingFig8";
 
 const BenchmarkingOccupationalPattern = () => {
   return (
@@ -22,7 +23,7 @@ const BenchmarkingOccupationalPattern = () => {
         </div>
       </header>
 
-      {/* Section 1: Fig 3 */}
+      {/* Section 1: Fig 6 */}
       <section
         className="
           relative overflow-hidden
@@ -50,17 +51,61 @@ const BenchmarkingOccupationalPattern = () => {
             </div>
 
             <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-              Top 10 Job Titles: UAE vs US
+              Top Job Titles: UAE vs US
             </h2>
             <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-              Standardized count distribution of top 10 job titles for selected skill across UAE and US markets.
+              Standardized count distribution of top job titles for selected skill across UAE and US markets.
             </p>
           </div>
 
-          {/* Figure 3 */}
+          {/* Figure 6 */}
           <div className="flex justify-content-center">
             <div className="min-h-[420px] min-w-0 flex w-full">
               <BenchmarkingFig6 />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 2: Fig 8 */}
+      <section
+        className="
+          relative overflow-hidden
+          card surface-card border-round-xl p-4 md:p-5
+          bg-gradient-to-br from-blue-50/80 via-white to-pink-50/80
+          dark:from-blue-950/60 dark:via-slate-950 dark:to-pink-950/60
+          border border-blue-100/80 dark:border-blue-900/70
+          shadow-[0_18px_45px_rgba(15,23,42,0.12)]
+        "
+      >
+        {/* soft gradient flare */}
+        <div
+          className="
+            pointer-events-none absolute inset-0 opacity-70
+            bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.18),transparent_55%),radial-gradient(circle_at_bottom_right,rgba(244,114,182,0.20),transparent_55%)]
+          "
+        />
+        <div className="relative">
+          <div className="pb-3 mb-4 border-b border-surface-200/60 dark:border-surface-800/80 flex flex-col gap-2">
+            <div className="inline-flex items-center gap-2 rounded-full bg-blue-100/80 dark:bg-blue-900/70 px-3 py-1 text-[0.7rem] uppercase tracking-[0.2em] font-semibold text-blue-800 dark:text-blue-100 w-fit">
+              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/80 dark:bg-blue-950">
+                <i className="pi pi-chart-bar text-[0.55rem]" />
+              </span>
+              <span>Section 2 · Skill Distribution by Hierarchy Level</span>
+            </div>
+
+            <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
+              Skill Distribution by Hierarchy Level: UAE vs US
+            </h2>
+            <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
+              Standardized count distribution of Hierarchy Level for selected skill across UAE and US markets.
+            </p>
+          </div>
+
+          {/* Figure 8 */}
+          <div className="flex justify-content-center">
+            <div className="min-h-[420px] min-w-0 flex w-full">
+              <BenchmarkingFig8 />
             </div>
           </div>
         </div>

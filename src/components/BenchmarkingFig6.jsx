@@ -294,7 +294,6 @@ const BenchmarkingFig6 = () => {
   if (error) {
     return (
       <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
-        <h2 className="m-0 mb-2 text-xl">Top Titles by Skill: UAE vs US</h2>
         <p className="m-0 text-sm text-red-500">Error loading chart data: {error}</p>
       </div>
     );
@@ -303,7 +302,6 @@ const BenchmarkingFig6 = () => {
   if (!chartData || commonSkills.length === 0) {
     return (
       <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
-        <h2 className="m-0 mb-2 text-xl">Top Titles by Skill: UAE vs US</h2>
         <p className="m-0 text-sm text-color-secondary">No common skills found between the two datasets.</p>
       </div>
     );
@@ -313,7 +311,6 @@ const BenchmarkingFig6 = () => {
     <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
       {/* Header with skill selector */}
       <div className="mb-3">
-        <h2 className="m-0 mb-3 text-xl">Top Titles by Skill: UAE vs US</h2>
 
         {/* Skill selector */}
         <div className="mb-3">

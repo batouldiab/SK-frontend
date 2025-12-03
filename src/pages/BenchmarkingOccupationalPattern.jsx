@@ -5,21 +5,24 @@ import BenchmarkingFig8 from "../components/BenchmarkingFig8";
 
 const BenchmarkingOccupationalPattern = () => {
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="page-grid">
       {/* Page intro */}
-      <header className="mb-1 space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-blue-100/80 dark:bg-blue-900/70 px-3 py-1 text-[0.7rem] uppercase tracking-[0.22em] font-semibold text-blue-800 dark:text-blue-100">
-          <span className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
-          <span>Benchmarking Analysis</span>
+      <header className="page-hero">
+        <div className="page-hero__eyebrow">
+          <i className="pi pi-sliders-h text-xs" />
+          Benchmarking
         </div>
-
-        <div className="bg-white/70 dark:bg-slate-900/70 border border-surface-200 dark:border-surface-800 rounded-2xl px-4 py-3 shadow-sm">
-          <h1 className="text-lg md:text-xl font-semibold mb-1">
-            Occupational Pattern of Shared Skills
-          </h1>
-          <p className="text-xs md:text-sm text-color-secondary m-0">
-            Comparative analysis of job titles of shared skills.
-          </p>
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
+          <div>
+            <h1 className="page-hero__title">Occupational Pattern of Shared Skills</h1>
+            <p className="page-hero__meta">
+              Comparative analysis of job titles of shared skills.
+            </p>
+          </div>
+          <span className="badge-soft">
+            <i className="pi pi-share-alt" />
+            Dual market
+          </span>
         </div>
       </header>
 

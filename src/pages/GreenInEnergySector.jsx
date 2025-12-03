@@ -7,26 +7,27 @@ import GreenFig9 from "../components/GreenFig9";
 
 const GreenInEnergySector = () => {
   return (
-    <div className="space-y-6 md:space-y-8">
-      {/* Page intro */}
-      <header className="mb-1 space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100/80 dark:bg-emerald-900/70 px-3 py-1 text-[0.7rem] uppercase tracking-[0.22em] font-semibold text-emerald-800 dark:text-emerald-100">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Energy sector focus</span>
+    <div className="page-grid">
+      <header className="page-hero">
+        <div className="page-hero__eyebrow">
+          <i className="pi pi-bolt text-xs" />
+          Energy sector focus
         </div>
-
-        <div className="bg-white/70 dark:bg-slate-900/70 border border-surface-200 dark:border-surface-800 rounded-2xl px-4 py-3 shadow-sm">
-        <h1 className="text-lg md:text-xl font-semibold mb-1">
-          Green Occupations in the Arab Region
-        </h1>
-        <p className="text-xs md:text-sm text-color-secondary m-0">
-          Overview of occupations labelled as green across ESCWA countries.
-        </p>
-      </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
+          <div>
+            <h1 className="page-hero__title">Green Occupations in the Energy Sector</h1>
+            <p className="page-hero__meta">
+              How green-labelled occupations evolve and compare across ESCWA countries.
+            </p>
+          </div>
+          <span className="badge-soft">
+            <i className="pi pi-globe" />
+            ESCWA wide
+          </span>
+        </div>
       </header>
 
       {/* Section 1: Fig 6 + Fig 7 */}
-      {/* You can reuse this section wrapper on other pages */}
       <section
         className="
           relative overflow-hidden

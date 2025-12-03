@@ -1,190 +1,299 @@
 #root {
-  /* max-width: 1280px; */
   width: 100%;
   margin: 0 auto;
-  /* padding: 2rem; */
-  text-align: center;
+  text-align: left;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.theme-shell {
+  position: relative;
+  min-height: 100vh;
+  color: var(--theme-ink);
+  background: radial-gradient(
+      circle at 12% 18%,
+      rgba(255, 255, 255, 0.08),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 88% 10%,
+      rgba(255, 255, 255, 0.06),
+      transparent 22%
+    ),
+    linear-gradient(145deg, #0b1021 0%, #0f172a 35%, #0b1224 100%);
+  transition: background 220ms ease, color 220ms ease;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.theme-shell .theme-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  background-image: radial-gradient(
+      circle at 18% 18%,
+      var(--theme-veil-from),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 78% 10%,
+      var(--theme-veil-to),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 20% 78%,
+      var(--theme-accent-soft),
+      transparent 38%
+    );
+  filter: blur(25px);
 }
 
-.card {
-  padding: 2em;
+.theme-shell .theme-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
 }
 
-.read-the-docs {
-  color: #888;
+.theme-shell > * {
+  position: relative;
 }
 
-/* Center the menu items and stretch them across the full menubar width */
-.p-menubar {
-  justify-content: center !important;
+.theme-purple {
+  --theme-accent: #8b5cf6;
+  --theme-accent-strong: #6d28d9;
+  --theme-accent-soft: rgba(139, 92, 246, 0.13);
+  --theme-ink: #0f172a;
+  --theme-muted: #475569;
+  --theme-surface: rgba(255, 255, 255, 0.9);
+  --theme-surface-border: rgba(139, 92, 246, 0.18);
+  --theme-shadow-soft: 0 24px 80px rgba(139, 92, 246, 0.2);
+  --theme-veil-from: rgba(139, 92, 246, 0.16);
+  --theme-veil-to: rgba(79, 70, 229, 0.12);
 }
 
-.p-menubar-root-list {
-  flex: 1;
-  /* display: flex; */
-  justify-content: center;
-  gap: 1.5rem; /* adjust spacing between items as you like */
+.theme-green {
+  --theme-accent: #0ea36d;
+  --theme-accent-strong: #047857;
+  --theme-accent-soft: rgba(16, 185, 129, 0.16);
+  --theme-ink: #0f172a;
+  --theme-muted: #1f2937;
+  --theme-surface: rgba(255, 255, 255, 0.92);
+  --theme-surface-border: rgba(16, 185, 129, 0.16);
+  --theme-shadow-soft: 0 24px 80px rgba(16, 185, 129, 0.18);
+  --theme-veil-from: rgba(16, 185, 129, 0.14);
+  --theme-veil-to: rgba(14, 165, 233, 0.11);
 }
 
-/* Styles for Charts */
-.chart-green-1 {
-  width: 100% !important;
-  height: 100% !important;
+.theme-blue {
+  --theme-accent: #0ea5e9;
+  --theme-accent-strong: #0369a1;
+  --theme-accent-soft: rgba(14, 165, 233, 0.14);
+  --theme-ink: #0f172a;
+  --theme-muted: #1f2937;
+  --theme-surface: rgba(255, 255, 255, 0.9);
+  --theme-surface-border: rgba(14, 165, 233, 0.16);
+  --theme-shadow-soft: 0 24px 80px rgba(14, 165, 233, 0.2);
+  --theme-veil-from: rgba(56, 189, 248, 0.16);
+  --theme-veil-to: rgba(14, 165, 233, 0.12);
 }
 
-.chart-green-2 {
-  width: 100% !important;
-  height: 100% !important;
+.shell-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.04)
+  );
+  backdrop-filter: blur(14px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
 
-.chart-green-3 {
-  width: 100% !important;
-  height: 100% !important;
+.glass-panel {
+  background: var(--theme-surface);
+  border-radius: 18px;
+  border: 1px solid var(--theme-surface-border);
+  box-shadow: var(--theme-shadow-soft);
+  backdrop-filter: blur(12px);
 }
 
-.chart-green-4 {
-  width: 100% !important;
-  height: 100% !important;
+.page-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 1.25rem 1.25rem 1.5rem;
+  border-radius: 18px;
+  background: linear-gradient(
+    120deg,
+    var(--theme-accent-soft),
+    rgba(255, 255, 255, 0.94)
+  );
+  border: 1px solid var(--theme-surface-border);
+  box-shadow: var(--theme-shadow-soft);
 }
 
-
-.chart-green-6 {
-  width: 100% !important;
-  height: 100% !important;
+.page-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+      circle at 20% 25%,
+      rgba(255, 255, 255, 0.6),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 80% 0%,
+      rgba(255, 255, 255, 0.35),
+      transparent 25%
+    );
+  opacity: 0.5;
+  pointer-events: none;
 }
 
-.chart-green-7 {
-  width: 100% !important;
-  height: 100% !important;
+.page-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--theme-accent-strong);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--theme-surface-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-.chart-green-8 {
-  width: 100% !important;
-  height: 100% !important;
+.page-hero__title {
+  margin: 0.25rem 0 0;
+  font-size: clamp(1.35rem, 1vw + 1rem, 2rem);
+  letter-spacing: -0.02em;
+  color: var(--theme-ink);
 }
 
-.chart-green-9 {
-  width: 100% !important;
-  height: 100% !important;
+.page-hero__meta {
+  margin: 0.2rem 0 0;
+  color: var(--theme-muted);
+  font-size: 0.95rem;
 }
 
-/* --- Menubar: kill PrimeReact grey boxes & use our pill hover/active --- */
+.badge-soft {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--theme-accent-strong);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--theme-surface-border);
+}
 
-/* Make sure list items themselves never carry the grey background */
-.app-menubar .p-menubar-root-list > .p-menuitem,
-.app-menubar .p-menubar-root-list > .p-menuitem.p-menuitem-active,
-.app-menubar .p-menubar-root-list > .p-menuitem.p-highlight,
-.app-menubar .p-menubar-root-list > .p-menuitem.p-focus {
+.page-panel {
+  padding: 1.25rem;
+  border-radius: 18px;
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-surface-border);
+  box-shadow: var(--theme-shadow-soft);
+  backdrop-filter: blur(10px);
+}
+
+.panel-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.app-menubar {
+  border: none !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.12);
+  padding: 0.2rem 0.4rem;
+}
+
+.app-menubar .p-menubar-root-list {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.app-menubar .p-menubar-root-list > .p-menuitem {
   background-color: transparent !important;
 }
 
-/* Also clear background on the wrapper div if your theme uses p-menuitem-content */
-.app-menubar .p-menubar-root-list > .p-menuitem > .p-menuitem-content {
-  background-color: transparent !important;
-}
-
-/* Base style for top-level links (so they look like pills) */
 .app-menubar
   .p-menubar-root-list
   > .p-menuitem
   > .p-menuitem-content
   > .p-menuitem-link {
-  border-radius: 9999px;
-  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  padding: 0.5rem 0.95rem;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   background-color: transparent;
-  color: #0f172a;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  transition:
-    background-color 150ms ease-out,
-    color 150ms ease-out,
-    box-shadow 150ms ease-out,
-    transform 150ms ease-out;
+  color: var(--theme-ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 150ms ease-out;
 }
 
-/* Hover + active + selected all share the same green pill style */
 .app-menubar
   .p-menubar-root-list
   > .p-menuitem
   > .p-menuitem-content
-  > .p-menuitem-link:hover,
-.app-menubar
-  .p-menubar-root-list
-  > .p-menuitem.p-menuitem-active
-  > .p-menuitem-content
-  > .p-menuitem-link,
-.app-menubar
-  .p-menubar-root-list
-  > .p-menuitem.p-highlight
-  > .p-menuitem-content
-  > .p-menuitem-link,
-.app-menubar
-  .p-menubar-root-list
-  > .p-menuitem
-  > .p-menuitem-content
-  > .p-menuitem-link.p-highlight {
-  background-color: #dcfce7 !important; /* replaces grey */
-  color: #166534 !important;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+  > .p-menuitem-link:not(.p-disabled):hover {
+  background-color: var(--theme-accent-soft) !important;
+  color: var(--theme-accent-strong) !important;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08),
+    0 12px 32px var(--theme-accent-soft);
   transform: translateY(-1px);
 }
 
-/* Optional: also nuke grey in submenus, but keep a softer hover */
-.app-menubar .p-submenu-list .p-menuitem,
-.app-menubar .p-submenu-list .p-menuitem.p-highlight,
-.app-menubar .p-submenu-list .p-menuitem.p-menuitem-active {
-  background-color: transparent !important;
+.app-menubar .p-submenu-list {
+  padding: 0.35rem;
+  border-radius: 14px;
+  border: 1px solid var(--theme-surface-border);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
 }
 
 .app-menubar .p-submenu-list .p-menuitem-link {
-  border-radius: 0.75rem;
-  padding: 0.4rem 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.875rem;
-  background-color: transparent;
-  color: #0f172a;
-  transition:
-    background-color 150ms ease-out,
-    color 150ms ease-out,
-    box-shadow 150ms ease-out;
+  border-radius: 12px;
+  padding: 0.45rem 0.85rem;
+  color: var(--theme-ink);
 }
 
-.app-menubar .p-submenu-list .p-menuitem-link:hover,
-.app-menubar .p-submenu-list .p-menuitem.p-highlight > .p-menuitem-link {
-  background-color: #e0f2fe !important; /* light sky */
-  color: #0369a1 !important;
-  box-shadow: 0 2px 5px rgba(56, 189, 248, 0.2);
+.app-menubar
+  .p-submenu-list
+  .p-menuitem-link:not(.p-disabled):hover {
+  background-color: var(--theme-accent-soft) !important;
+  color: var(--theme-accent-strong) !important;
+}
+
+.app-menubar .menu-accent > .p-menuitem-content > .p-menuitem-link {
+  background: linear-gradient(
+    120deg,
+    var(--theme-accent-soft),
+    rgba(255, 255, 255, 0.98)
+  );
+  color: var(--theme-accent-strong) !important;
+  box-shadow: 0 20px 50px var(--theme-accent-soft);
+  border: 1px solid var(--theme-surface-border);
+  transform: translateY(-1px);
+}
+
+/* Charts sizing */
+.chart-green-1,
+.chart-green-2,
+.chart-green-3,
+.chart-green-4,
+.chart-green-6,
+.chart-green-7,
+.chart-green-8,
+.chart-green-9 {
+  width: 100% !important;
+  height: 100% !important;
 }

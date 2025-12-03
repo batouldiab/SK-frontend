@@ -5,19 +5,27 @@ import GreenFig2 from "../components/GreenFig2";
 
 const GreenOverview = () => {
   return (
-    <div className="space-y-4">
-      {/* Page header */}
-      <div className="bg-white/70 dark:bg-slate-900/70 border border-surface-200 dark:border-surface-800 rounded-2xl px-4 py-3 shadow-sm">
-        <h1 className="text-lg md:text-xl font-semibold mb-1">
-          Green Jobs in the Arab Region
-        </h1>
-        <p className="text-xs md:text-sm text-color-secondary m-0">
-          Overview of green labour demand over time and across ESCWA countries.
-        </p>
+    <div className="page-grid">
+      <div className="page-hero">
+        <div className="page-hero__eyebrow">
+          <i className="pi pi-leaf text-xs" />
+          Green jobs
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
+          <div>
+            <h1 className="page-hero__title">Green Jobs in the Arab Region</h1>
+            <p className="page-hero__meta">
+              Overview of green labour demand over time and across ESCWA countries.
+            </p>
+          </div>
+          <span className="badge-soft">
+            <i className="pi pi-bolt" />
+            Updated insights
+          </span>
+        </div>
       </div>
 
-      {/* Charts grid */}
-      <div className="flex flex-row flex-wrap gap-4">
+      <div className="page-panel grid grid-cols-1 lg:grid-cols-2 gap-4">
         <GreenFig1 />
         <GreenFig2 />
       </div>

@@ -251,12 +251,6 @@ const BenchmarkingFig1Fig2 = () => {
     <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
       <div className="justify-content-between align-items-start mb-3 gap-3 w-full">
         <div>
-          <h2 className="mt-1 mb-1 text-xl">
-            Job Title Distribution: UAE vs US
-          </h2>
-          <p className="m-0 text-sm text-color-secondary">
-            Standardized percentage distribution of top 10 job titles across UAE and US markets.
-          </p>
 
           {/* Statistics cards */}
           <div className="flex gap-2 flex-wrap justify-content-start align-items-center mt-3">

@@ -243,10 +243,10 @@ const CountryCitiesMap = () => {
   if (!centersData) return <ErrorMessage message="No data available" />;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <PageHeader />
+    <div className="page-grid">
+      <PageHeader />
 
+      <div className="page-panel panel-grid">
         <ControlsPanel
           countries={countries}
           cities={cities}
@@ -259,27 +259,29 @@ const CountryCitiesMap = () => {
         />
 
         <InfoBox minRadius={radiusRange.min} maxRadius={radiusRange.max} />
+      </div>
 
-        <div className="mt-6">
-          <MapView
-            centers={currentCenters}
-            selectedCity={selectedCity}
-            onCityClick={handleCityClick}
-            bubbleMode={bubbleMode}
-            minRadius={radiusRange.min}
-            maxRadius={radiusRange.max}
-          />
-        </div>
+      <div className="page-panel">
+        <MapView
+          centers={currentCenters}
+          selectedCity={selectedCity}
+          onCityClick={handleCityClick}
+          bubbleMode={bubbleMode}
+          minRadius={radiusRange.min}
+          maxRadius={radiusRange.max}
+        />
+      </div>
 
-        {selectedCountry !== 'All' && selectedCity !== 'All' && currentSkills.length > 0 && (
+      {selectedCountry !== 'All' && selectedCity !== 'All' && currentSkills.length > 0 && (
+        <div className="page-panel">
           <SkillsPanel
             skills={currentSkills}
             country={selectedCountry}
             city={selectedCity}
             scope={`Aggregated within ${currentCenters.find(c => normcase(c.Center_City) === normcase(selectedCity))?.Radius_km_max || 0} km`}
           />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

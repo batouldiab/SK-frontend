@@ -11,8 +11,8 @@ import BenchmarkingOccupationalPattern from "./pages/BenchmarkingOccupationalPat
 const AppRoutes = () => (
   <Routes>
     <Route element={<DefaultLayout />}>
-      {/* <Route path="/" element={<CountryCitiesMap />} /> */}
-      <Route path="/" />
+      <Route path="/" element={<CountryCitiesMap />} />
+      {/* <Route path="/" /> */}
       <Route path="greenOverview" element={<GreenOverview />} />
       <Route path="greenOccupations" element={<GreenOccupations />} />
       <Route path="greenInEnergySector" element={<GreenInEnergySector />} />

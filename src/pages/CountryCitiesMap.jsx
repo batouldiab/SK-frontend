@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import * as XLSX from 'xlsx';
 
-import MapView from '../components/MapView';
+// import MapView from '../components/MapView';
+import StreamlitEmbed from '../components/StreamlitMap'
 import ControlsPanel from '../components/ControlsPanel';
 import InfoBox from '../components/InfoBox';
 import SkillsPanel from '../components/SkillsPanel';
@@ -244,45 +245,69 @@ const CountryCitiesMap = () => {
 
   return (
     <div className="page-grid">
-      <PageHeader />
-
-      <div className="page-panel panel-grid">
-        <ControlsPanel
-          countries={countries}
-          cities={cities}
-          selectedCountry={selectedCountry}
-          selectedCity={selectedCity}
-          bubbleMode={bubbleMode}
-          onCountryChange={handleCountryChange}
-          onCityChange={setSelectedCity}
-          onBubbleModeChange={setBubbleMode}
-        />
-
-        <InfoBox minRadius={radiusRange.min} maxRadius={radiusRange.max} />
-      </div>
-
-      <div className="page-panel">
-        <MapView
-          centers={currentCenters}
-          selectedCity={selectedCity}
-          onCityClick={handleCityClick}
-          bubbleMode={bubbleMode}
-          minRadius={radiusRange.min}
-          maxRadius={radiusRange.max}
-        />
-      </div>
-
-      {selectedCountry !== 'All' && selectedCity !== 'All' && currentSkills.length > 0 && (
-        <div className="page-panel">
-          <SkillsPanel
-            skills={currentSkills}
-            country={selectedCountry}
-            city={selectedCity}
-            scope={`Aggregated within ${currentCenters.find(c => normcase(c.Center_City) === normcase(selectedCity))?.Radius_km_max || 0} km`}
-          />
+      <div className="page-hero">
+        <div className="page-hero__eyebrow">
+          <i className="pi pi-leaf text-xs" />
+          Jobs Distribution Across ESCWA Countries
         </div>
-      )}
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
+          <div>
+            <h1 className="page-hero__title">Jobs/Skills Demand in the Arab Region</h1>
+            <p className="page-hero__meta">
+              Overview of jobs/skills demand over across ESCWA countries.
+            </p>
+          </div>
+          <span className="badge-soft">
+            <i className="pi pi-bolt" />
+            Updated insights
+          </span>
+        </div>
+      </div>
+
+      <div className="page-panel grid grid-cols-1 lg:grid-cols-1 gap-4">
+        <StreamlitEmbed />
+      </div>
     </div>
+    // <div className="page-grid">
+    //   <PageHeader />
+
+    //   <div className="page-panel panel-grid">
+    //     <ControlsPanel
+    //       countries={countries}
+    //       cities={cities}
+    //       selectedCountry={selectedCountry}
+    //       selectedCity={selectedCity}
+    //       bubbleMode={bubbleMode}
+    //       onCountryChange={handleCountryChange}
+    //       onCityChange={setSelectedCity}
+    //       onBubbleModeChange={setBubbleMode}
+    //     />
+
+    //     <InfoBox minRadius={radiusRange.min} maxRadius={radiusRange.max} />
+    //   </div>
+
+    //   <div className="page-panel">
+    //     <MapView
+    //       centers={currentCenters}
+    //       selectedCity={selectedCity}
+    //       onCityClick={handleCityClick}
+    //       bubbleMode={bubbleMode}
+    //       minRadius={radiusRange.min}
+    //       maxRadius={radiusRange.max}
+    //     />
+    //   </div>
+
+    //   {selectedCountry !== 'All' && selectedCity !== 'All' && currentSkills.length > 0 && (
+    //     <div className="page-panel">
+    //       <SkillsPanel
+    //         skills={currentSkills}
+    //         country={selectedCountry}
+    //         city={selectedCity}
+    //         scope={`Aggregated within ${currentCenters.find(c => normcase(c.Center_City) === normcase(selectedCity))?.Radius_km_max || 0} km`}
+    //       />
+    //     </div>
+    //   )}
+    // </div>
   );
 };
 

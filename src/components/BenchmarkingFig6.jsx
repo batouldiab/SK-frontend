@@ -4,6 +4,14 @@ import { Chart } from "primereact/chart";
 import { Dropdown } from "primereact/dropdown";
 import Papa from "papaparse";
 
+const dropdownPerfProps = {
+  filter: true,
+  filterDelay: 120,
+  resetFilterOnHide: true,
+  virtualScrollerOptions: { itemSize: 38, showLoader: true },
+  scrollHeight: "260px",
+};
+
 const BenchmarkingFig6 = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -343,8 +351,8 @@ const BenchmarkingFig6 = () => {
             options={commonSkills}
             placeholder="Choose a skill"
             className="w-full md:w-20rem"
-            filter
             showClear={false}
+            {...dropdownPerfProps}
           />
         </div>
 

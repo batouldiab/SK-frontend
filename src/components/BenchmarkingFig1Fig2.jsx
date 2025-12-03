@@ -4,6 +4,14 @@ import { Chart } from "primereact/chart";
 import { Checkbox } from "primereact/checkbox";
 import { Dropdown } from "primereact/dropdown";
 
+const dropdownPerfProps = {
+  filter: true,
+  filterDelay: 120,
+  resetFilterOnHide: true,
+  virtualScrollerOptions: { itemSize: 38, showLoader: true },
+  scrollHeight: "260px",
+};
+
 const BenchmarkingFig1Fig2 = () => {
   const [chartData, setChartData] = useState(null);
   const [chartOptions, setChartOptions] = useState({});
@@ -345,8 +353,8 @@ const BenchmarkingFig1Fig2 = () => {
               optionLabel="jobTitle"
               placeholder="Select a job title"
               className="w-full md:w-20rem"
-              filter
               showClear
+              {...dropdownPerfProps}
             />
           </div>
 

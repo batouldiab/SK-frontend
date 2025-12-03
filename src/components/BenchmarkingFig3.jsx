@@ -5,6 +5,14 @@ import { Checkbox } from "primereact/checkbox";
 import { Dropdown } from "primereact/dropdown";
 import Papa from "papaparse";
 
+const dropdownPerfProps = {
+  filter: true,
+  filterDelay: 120,
+  resetFilterOnHide: true,
+  virtualScrollerOptions: { itemSize: 38, showLoader: true },
+  scrollHeight: "260px",
+};
+
 const BenchmarkingFig3 = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -365,8 +373,8 @@ const BenchmarkingFig3 = () => {
               optionLabel="softSkill"
               placeholder="Select a soft skill"
               className="w-full md:w-20rem"
-              filter
               showClear
+              {...dropdownPerfProps}
             />
           </div>
 

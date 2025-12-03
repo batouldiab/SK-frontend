@@ -7,6 +7,14 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import Papa from "papaparse";
 
+const dropdownPerfProps = {
+  filter: true,
+  filterDelay: 120,
+  resetFilterOnHide: true,
+  virtualScrollerOptions: { itemSize: 38, showLoader: true },
+  scrollHeight: "260px",
+};
+
 const BenchmarkingFig5_1 = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -548,6 +556,7 @@ const BenchmarkingFig5_1 = () => {
             placeholder="Select a category"
             className="w-full md:w-20rem"
             showClear
+            {...dropdownPerfProps}
           />
 
           {selectedCategory && categorySkills.length > 0 && (

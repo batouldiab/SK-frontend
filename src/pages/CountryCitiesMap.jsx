@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import * as XLSX from 'xlsx';
 
-// import MapView from '../components/MapView';
+import MapView from '../components/MapView';
 import StreamlitEmbed from '../components/StreamlitMap'
 import ControlsPanel from '../components/ControlsPanel';
 import InfoBox from '../components/InfoBox';
@@ -15,20 +14,33 @@ import { normcase, cleanString } from '../utils/stringUtils';
 import { safeParseInt, safeParseFloat } from '../utils/ParseUtils';
 import haversineKm from '../utils/haversineKm';
 
+const yieldToBrowser = () =>
+  new Promise((resolve) => {
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(() => resolve());
+    } else {
+      setTimeout(resolve, 0);
+    }
+  });
+
+const useLocalMap = false; // toggle to true if you want the in-app map instead of Streamlit embed
+
 // ============================================
 // DATA LOADING FUNCTIONS
 // ============================================
 
 const loadCentersData = async () => {
   try {
+    const XLSX = await import('xlsx');
     const response = await fetch('/data/grouped_country_with_desc_updated_aggregated_clustered.xlsx');
     const arrayBuffer = await response.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: 'array' });
     
     const centersData = {};
     
-    workbook.SheetNames.forEach(sheetName => {
-      if (sheetName === 'Unknown_Country') return;
+    for (const sheetName of workbook.SheetNames) {
+      if (sheetName === 'Unknown_Country') continue;
+      await yieldToBrowser();
       
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
@@ -58,7 +70,7 @@ const loadCentersData = async () => {
       if (centers.length > 0) {
         centersData[sheetName] = centers;
       }
-    });
+    }
     
     return centersData;
   } catch (error) {
@@ -69,14 +81,16 @@ const loadCentersData = async () => {
 
 const loadSkillsData = async () => {
   try {
+    const XLSX = await import('xlsx');
     const response = await fetch('/data/cities_skills_with_desc_updated.xlsx');
     const arrayBuffer = await response.arrayBuffer();
     const workbook = XLSX.read(arrayBuffer, { type: 'array' });
     
     const skillsData = {};
     
-    workbook.SheetNames.forEach(sheetName => {
-      if (sheetName === 'Unknown_Country') return;
+    for (const sheetName of workbook.SheetNames) {
+      if (sheetName === 'Unknown_Country') continue;
+      await yieldToBrowser();
       
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
@@ -106,7 +120,7 @@ const loadSkillsData = async () => {
       if (skills.length > 0) {
         skillsData[sheetName] = skills;
       }
-    });
+    }
     
     return skillsData;
   } catch (error) {
@@ -130,6 +144,11 @@ const CountryCitiesMap = () => {
 
   // Load data on mount
   useEffect(() => {
+    if (!useLocalMap) {
+      setLoading(false);
+      return;
+    }
+
     const loadData = async () => {
       try {
         setLoading(true);
@@ -238,76 +257,82 @@ const CountryCitiesMap = () => {
     setSelectedCity('All');
   };
 
-  // Render states
+  // If using the embedded Streamlit map, bypass heavy XLSX parsing to avoid main-thread stalls
+  if (!useLocalMap) {
+    return (
+      <div className="page-grid">
+        <div className="page-hero">
+          <div className="page-hero__eyebrow">
+            <i className="pi pi-leaf text-xs" />
+            Jobs Distribution Across ESCWA Countries
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
+            <div>
+              <h1 className="page-hero__title">Jobs/Skills Demand in the Arab Region</h1>
+              <p className="page-hero__meta">
+                Overview of jobs/skills demand across ESCWA countries.
+              </p>
+            </div>
+            <span className="badge-soft">
+              <i className="pi pi-bolt" />
+              Updated insights
+            </span>
+          </div>
+        </div>
+
+        <div className="page-panel grid grid-cols-1 lg:grid-cols-1 gap-4">
+          <StreamlitEmbed />
+        </div>
+      </div>
+    );
+  }
+
+  // Render states for local map mode
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />;
   if (!centersData) return <ErrorMessage message="No data available" />;
 
   return (
     <div className="page-grid">
-      <div className="page-hero">
-        <div className="page-hero__eyebrow">
-          <i className="pi pi-leaf text-xs" />
-          Jobs Distribution Across ESCWA Countries
-        </div>
-        <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
-          <div>
-            <h1 className="page-hero__title">Jobs/Skills Demand in the Arab Region</h1>
-            <p className="page-hero__meta">
-              Overview of jobs/skills demand over across ESCWA countries.
-            </p>
-          </div>
-          <span className="badge-soft">
-            <i className="pi pi-bolt" />
-            Updated insights
-          </span>
-        </div>
+      <PageHeader />
+
+      <div className="page-panel panel-grid">
+        <ControlsPanel
+          countries={countries}
+          cities={cities}
+          selectedCountry={selectedCountry}
+          selectedCity={selectedCity}
+          bubbleMode={bubbleMode}
+          onCountryChange={handleCountryChange}
+          onCityChange={setSelectedCity}
+          onBubbleModeChange={setBubbleMode}
+        />
+
+        <InfoBox minRadius={radiusRange.min} maxRadius={radiusRange.max} />
       </div>
 
-      <div className="page-panel grid grid-cols-1 lg:grid-cols-1 gap-4">
-        <StreamlitEmbed />
+      <div className="page-panel">
+        <MapView
+          centers={currentCenters}
+          selectedCity={selectedCity}
+          onCityClick={handleCityClick}
+          bubbleMode={bubbleMode}
+          minRadius={radiusRange.min}
+          maxRadius={radiusRange.max}
+        />
       </div>
+
+      {selectedCountry !== 'All' && selectedCity !== 'All' && currentSkills.length > 0 && (
+        <div className="page-panel">
+          <SkillsPanel
+            skills={currentSkills}
+            country={selectedCountry}
+            city={selectedCity}
+            scope={`Aggregated within ${currentCenters.find(c => normcase(c.Center_City) === normcase(selectedCity))?.Radius_km_max || 0} km`}
+          />
+        </div>
+      )}
     </div>
-    // <div className="page-grid">
-    //   <PageHeader />
-
-    //   <div className="page-panel panel-grid">
-    //     <ControlsPanel
-    //       countries={countries}
-    //       cities={cities}
-    //       selectedCountry={selectedCountry}
-    //       selectedCity={selectedCity}
-    //       bubbleMode={bubbleMode}
-    //       onCountryChange={handleCountryChange}
-    //       onCityChange={setSelectedCity}
-    //       onBubbleModeChange={setBubbleMode}
-    //     />
-
-    //     <InfoBox minRadius={radiusRange.min} maxRadius={radiusRange.max} />
-    //   </div>
-
-    //   <div className="page-panel">
-    //     <MapView
-    //       centers={currentCenters}
-    //       selectedCity={selectedCity}
-    //       onCityClick={handleCityClick}
-    //       bubbleMode={bubbleMode}
-    //       minRadius={radiusRange.min}
-    //       maxRadius={radiusRange.max}
-    //     />
-    //   </div>
-
-    //   {selectedCountry !== 'All' && selectedCity !== 'All' && currentSkills.length > 0 && (
-    //     <div className="page-panel">
-    //       <SkillsPanel
-    //         skills={currentSkills}
-    //         country={selectedCountry}
-    //         city={selectedCity}
-    //         scope={`Aggregated within ${currentCenters.find(c => normcase(c.Center_City) === normcase(selectedCity))?.Radius_km_max || 0} km`}
-    //       />
-    //     </div>
-    //   )}
-    // </div>
   );
 };
 

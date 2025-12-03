@@ -132,14 +132,32 @@ const BenchmarkingFig6 = () => {
       const uaeSkillData = uaeData.filter((row) => row.skill === selectedSkill);
       const usSkillData = usData.filter((row) => row.skill === selectedSkill);
 
+      // Calculate total count for UAE skill titles
+      const uaeTotalCount = uaeSkillData.reduce((sum, row) => sum + row.count, 0);
+      
+      // Calculate total count for US skill titles
+      const usTotalCount = usSkillData.reduce((sum, row) => sum + row.count, 0);
+
+      // Add percentage to UAE data
+      const uaeSkillDataWithPercentage = uaeSkillData.map(row => ({
+        ...row,
+        percentage: uaeTotalCount > 0 ? row.count / uaeTotalCount : 0
+      }));
+
+      // Add percentage to US data
+      const usSkillDataWithPercentage = usSkillData.map(row => ({
+        ...row,
+        percentage: usTotalCount > 0 ? row.count / usTotalCount : 0
+      }));
+
       // Get top 10 titles from UAE
-      const uaeTop10 = [...uaeSkillData]
-        .sort((a, b) => b.standardizedCount - a.standardizedCount)
+      const uaeTop10 = [...uaeSkillDataWithPercentage]
+        .sort((a, b) => b.percentage - a.percentage)
         .slice(0, 10);
 
       // Get top 10 titles from US
-      const usTop10 = [...usSkillData]
-        .sort((a, b) => b.standardizedCount - a.standardizedCount)
+      const usTop10 = [...usSkillDataWithPercentage]
+        .sort((a, b) => b.percentage - a.percentage)
         .slice(0, 10);
 
       // Combine and deduplicate titles
@@ -150,18 +168,18 @@ const BenchmarkingFig6 = () => {
 
       const uniqueTitles = [...allTitles];
 
-      // Create datasets
+      // Create datasets using percentages
       const uaeDataset = uniqueTitles.map((title) => {
-        const match = uaeSkillData.find((row) => row.title === title);
-        return match ? match.standardizedCount : 0;
+        const match = uaeSkillDataWithPercentage.find((row) => row.title === title);
+        return match ? match.percentage : 0;
       });
 
       const usDataset = uniqueTitles.map((title) => {
-        const match = usSkillData.find((row) => row.title === title);
-        return match ? match.standardizedCount : 0;
+        const match = usSkillDataWithPercentage.find((row) => row.title === title);
+        return match ? match.percentage : 0;
       });
 
-      // Sort titles by total count (UAE + US) for better visualization
+      // Sort titles by total percentage (UAE + US) for better visualization
       const titlesWithTotal = uniqueTitles.map((title, idx) => ({
         title,
         uaeCount: uaeDataset[idx],
@@ -226,7 +244,8 @@ const BenchmarkingFig6 = () => {
           tooltip: {
             callbacks: {
               label: function (context) {
-                return `${context.dataset.label}: ${context.parsed.x.toFixed(6)}`;
+                const percentage = (context.parsed.x * 100).toFixed(2);
+                return `${context.dataset.label}: ${percentage}%`;
               },
             },
           },
@@ -238,7 +257,7 @@ const BenchmarkingFig6 = () => {
               font: {
                 weight: 500,
               },
-              callback: (value) => value.toFixed(4),
+              callback: (value) => `${(value * 100).toFixed(1)}%`,
             },
             grid: {
               display: false,
@@ -336,12 +355,12 @@ const BenchmarkingFig6 = () => {
             <span className="block text-sm font-semibold">{stats.totalTitles}</span>
           </div>
           <div className="surface-100 border-round-lg px-3 py-2 text-right">
-            <span className="block text-xs text-color-secondary">Avg. UAE Count</span>
-            <span className="block text-sm font-semibold">{stats.uaeAvg.toFixed(6)}</span>
+            <span className="block text-xs text-color-secondary">Avg. UAE %</span>
+            <span className="block text-sm font-semibold">{(stats.uaeAvg * 100).toFixed(2)}%</span>
           </div>
           <div className="surface-100 border-round-lg px-3 py-2 text-right">
-            <span className="block text-xs text-color-secondary">Avg. US Count</span>
-            <span className="block text-sm font-semibold">{stats.usAvg.toFixed(6)}</span>
+            <span className="block text-xs text-color-secondary">Avg. US %</span>
+            <span className="block text-sm font-semibold">{(stats.usAvg * 100).toFixed(2)}%</span>
           </div>
         </div>
       </div>

@@ -181,7 +181,7 @@ const GreenFig4 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-col">
         <div className="text-sm text-color-secondary mb-2">
           Loading chart data…
         </div>
@@ -216,9 +216,9 @@ const GreenFig4 = () => {
   const labels = chartData.labels || [];
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col lg:flex-row">
+    <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
       {/* Header + stats */}
-      <div className=" justify-content-between align-items-start mb-3 gap-3 w-full lg:w-[30%]">
+      <div className=" justify-content-between align-items-start mb-3 gap-3 w-full">
         <div className="w-full p-2">
           <h2 className="mt-1 mb-1 text-xl">
             Green Demand by ESCO Job Title (Top 20)
@@ -259,7 +259,7 @@ const GreenFig4 = () => {
       </div>
 
       {/* Chart area */}
-      <div className="w-full lg:w-[70%] h-full min-h-[360px]">
+      <div className="w-full  min-h-100 max-h-150">
         <Chart
           className="chart-green-4 w-full h-full"
           type="bar"

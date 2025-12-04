@@ -14,7 +14,7 @@ const BenchmarkingOccupationalDemands = () => {
         <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
           <div>
             <h1 className="page-hero__title">
-              Occupational Demands: UAE vs US Comparison
+              Benchmarking occupational demand 
             </h1>
             <p className="page-hero__meta">
               Comparative analysis of job market demands across different occupations.
@@ -55,12 +55,12 @@ const BenchmarkingOccupationalDemands = () => {
             </div>
 
             <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-              Standardized Occupational Demands: UAE vs US
+              Standardized Occupational Demands
             </h2>
             <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
+            
               A comparative radar chart showing the{" "}
-              <strong>standardized percentage distribution</strong> of top job
-              titles in the UAE labor market versus the United States.
+              <strong>standardized distribution</strong> of top unique occupations in the labor market versus the United States.
             </p>
           </div>
 

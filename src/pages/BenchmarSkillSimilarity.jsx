@@ -54,14 +54,14 @@ const BenchmarkSkillSimilarity = () => {
               <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/80 dark:bg-blue-950">
                 <i className="pi pi-chart-bar text-[0.55rem]" />
               </span>
-              <span>Section 1 · Soft Skills Distribution</span>
+              <span>Section 1 · Quantifying skill similarity across markets</span>
             </div>
 
             <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-              Top 10 Soft Skills: UAE vs US
+              Soft skills: shared foundations and frontier gaps
             </h2>
             <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-              Standardized count distribution of top 10 soft skills across UAE and US markets.
+              Country-specific soft skills demanded among the soft skills.
             </p>
           </div>
 
@@ -98,14 +98,14 @@ const BenchmarkSkillSimilarity = () => {
               <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/80 dark:bg-blue-950">
                 <i className="pi pi-chart-bar text-[0.55rem]" />
               </span>
-              <span>Section 2 · Hard Skills Distribution</span>
+              <span>Section 2 · Quantifying skill similarity across markets</span>
             </div>
 
             <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-              Top 10 Hard Skills: UAE vs US
+              Hard skills: shared foundations and frontier gaps
             </h2>
             <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-              Standardized count distribution of top 10 hard skills across UAE and US markets.
+              Country-specific hard skills demanded among the hard skills.
             </p>
           </div>
 
@@ -146,10 +146,10 @@ const BenchmarkSkillSimilarity = () => {
             </div>
 
             <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-              Soft Skills Categories Distribution: UAE vs US
+              Comparative breakdown of unique soft skill demand
             </h2>
             <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-              Distribution of Soft Skills Categories in Demand Across UAE and US.
+              Distribution of Soft Skills Categories in Demand.
             </p>
           </div>
 
@@ -190,10 +190,10 @@ const BenchmarkSkillSimilarity = () => {
             </div>
 
             <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-              Hard Skills Categories Distribution: UAE vs US
+              Comparative breakdown of unique hard skill demand
             </h2>
             <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-              Distribution of Hard Skills Categories in Demand Across UAE and US.
+              Distribution of Hard Skills Categories in Demand.
             </p>
           </div>
 

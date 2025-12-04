@@ -266,7 +266,7 @@ const GreenFig7 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-column">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
         <div className="text-sm text-color-secondary mb-2">
           Loading chart data…
         </div>

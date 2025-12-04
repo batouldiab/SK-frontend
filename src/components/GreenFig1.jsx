@@ -140,7 +140,7 @@ const GreenFig1 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-column">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full h-96 flex flex-col">
         <div className="text-sm text-color-secondary mb-2">
           Loading chart data…
         </div>
@@ -171,8 +171,8 @@ const GreenFig1 = () => {
   }
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full flex flex-col lg:flex-row align-items-center justify-content-center">
-      <div className="justify-content-between align-items-center mb-3 gap-3 w-full lg:w-[30%] p-4">
+    <div className="card surface-card shadow-2 border-round-xl p-4 w-full flex flex-col lg:flex-col align-items-center justify-content-center">
+      <div className="justify-content-between align-items-center mb-3 gap-3 w-full p-4  min-h-50">
         <div>
           <h2 className="mt-1 mb-1 text-xl text-center">
             Green Jobs Share Over Time (Arab Region)
@@ -185,7 +185,7 @@ const GreenFig1 = () => {
       </div>
 
       {/* Chart area */}
-      <div className="w-full lg:w-[70%] min-h-100 max-h-[100%]">
+      <div className="w-full  min-h-100 max-h-150">
         <Chart
           className="chart-green-1"
           type="line"

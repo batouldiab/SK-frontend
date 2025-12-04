@@ -23,6 +23,7 @@ const BenchmarkingFig5_1 = () => {
   const [uaeChartData, setUaeChartData] = useState(null);
   const [usChartData, setUsChartData] = useState(null);
   const [chartOptions, setChartOptions] = useState({});
+  const [legendData, setLegendData] = useState([]);
 
   // Processed data
   const [categoryData, setCategoryData] = useState([]);
@@ -34,9 +35,8 @@ const BenchmarkingFig5_1 = () => {
   const [showUAEChart, setShowUAEChart] = useState(true);
   const [showUSChart, setShowUSChart] = useState(true);
 
-  // Subcategory bar chart data
-  const [uaeSubcategoryChartData, setUaeSubcategoryChartData] = useState(null);
-  const [usSubcategoryChartData, setUsSubcategoryChartData] = useState(null);
+  // Unified subcategory bar chart data
+  const [subcategoryChartData, setSubcategoryChartData] = useState(null);
   const [subcategoryChartOptions, setSubcategoryChartOptions] = useState({});
 
   // Color palette for categories
@@ -176,6 +176,15 @@ const BenchmarkingFig5_1 = () => {
     const colors = categoryData.map((_, idx) => colorPalette[idx % colorPalette.length]);
     const backgroundColors = colors.map((c) => c + "CC");
 
+    // Store legend data for unified legend
+    setLegendData(
+      categoryData.map((c, idx) => ({
+        label: c.category,
+        color: colors[idx],
+        backgroundColor: backgroundColors[idx],
+      }))
+    );
+
     // UAE Chart Data
     const uaeData = {
       labels: categoryData.map((c) => c.category),
@@ -202,23 +211,13 @@ const BenchmarkingFig5_1 = () => {
       ],
     };
 
+    // Chart options without legend (we'll render it separately)
     const options = {
       maintainAspectRatio: false,
       responsive: true,
       plugins: {
         legend: {
-          display: true,
-          position: "bottom",
-          labels: {
-            color: textColor,
-            usePointStyle: true,
-            font: {
-              size: 11,
-            },
-            padding: 15,
-            boxWidth: 15,
-            boxHeight: 15,
-          },
+          display: false, // Hide individual chart legends
         },
         tooltip: {
           callbacks: {
@@ -245,8 +244,7 @@ const BenchmarkingFig5_1 = () => {
   useEffect(() => {
     if (!selectedCategory || allSkillsData.length === 0) {
       setCategorySkills([]);
-      setUaeSubcategoryChartData(null);
-      setUsSubcategoryChartData(null);
+      setSubcategoryChartData(null);
       return;
     }
 
@@ -287,21 +285,27 @@ const BenchmarkingFig5_1 = () => {
       usPercentage: usTotal > 0 ? (sub.usTotal / usTotal) * 100 : 0,
     }));
 
-    // Sort by UAE percentage descending
-    subcategoriesWithPercentages.sort((a, b) => b.uaePercentage - a.uaePercentage);
+    // Get top 10 for UAE
+    const sortedByUAE = [...subcategoriesWithPercentages].sort((a, b) => b.uaePercentage - a.uaePercentage);
+    const uaeTop10 = sortedByUAE.slice(0, 10);
 
-    // Find the maximum percentage across both UAE and US for dynamic y-axis
-    const maxUaePercentage = Math.max(...subcategoriesWithPercentages.map(s => s.uaePercentage), 0);
-    const maxUsPercentage = Math.max(...subcategoriesWithPercentages.map(s => s.usPercentage), 0);
-    const maxPercentage = Math.max(maxUaePercentage, maxUsPercentage);
-    // Add 10% padding to the max for better visualization
-    const yAxisMax = Math.ceil(maxPercentage * 1.1);
+    // Get top 10 for US
+    const sortedByUS = [...subcategoriesWithPercentages].sort((a, b) => b.usPercentage - a.usPercentage);
+    const usTop10 = sortedByUS.slice(0, 10);
 
-    // Generate colors for subcategories
-    const subcategoryColors = subcategoriesWithPercentages.map((_, idx) => 
-      colorPalette[idx % colorPalette.length]
-    );
-    const subcategoryBackgroundColors = subcategoryColors.map((c) => c + "AA");
+    // Create unified top subcategories list (10-20 subcategories)
+    const unifiedSubcategoryNames = new Set(uaeTop10.map(s => s.subcategory));
+    const unifiedSubcategories = [...uaeTop10];
+
+    usTop10.forEach(sub => {
+      if (!unifiedSubcategoryNames.has(sub.subcategory)) {
+        unifiedSubcategoryNames.add(sub.subcategory);
+        unifiedSubcategories.push(sub);
+      }
+    });
+
+    // Sort unified list by UAE percentage for consistent display
+    unifiedSubcategories.sort((a, b) => b.uaePercentage - a.uaePercentage);
 
     // Prepare chart data
     const documentStyle = getComputedStyle(document.documentElement);
@@ -309,40 +313,43 @@ const BenchmarkingFig5_1 = () => {
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
     const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
 
-    // UAE Subcategory Chart
-    const uaeSubData = {
-      labels: subcategoriesWithPercentages.map((s) => s.subcategory),
+    // Find the maximum percentage across both UAE and US for dynamic y-axis
+    const maxUaePercentage = Math.max(...unifiedSubcategories.map(s => s.uaePercentage), 0);
+    const maxUsPercentage = Math.max(...unifiedSubcategories.map(s => s.usPercentage), 0);
+    const maxPercentage = Math.max(maxUaePercentage, maxUsPercentage);
+    // Add 10% padding to the max for better visualization
+    const yAxisMax = Math.ceil(maxPercentage * 1.1);
+
+    // Unified Subcategory Bar Chart with two datasets
+    const unifiedSubData = {
+      labels: unifiedSubcategories.map((s) => s.subcategory),
       datasets: [
         {
           label: 'UAE Subcategory %',
-          data: subcategoriesWithPercentages.map((s) => s.uaePercentage),
-          backgroundColor: subcategoryBackgroundColors,
-          borderColor: subcategoryColors,
-          borderWidth: 1,
+          backgroundColor: documentStyle.getPropertyValue('--blue-500') || '#3b82f6',
+          borderColor: documentStyle.getPropertyValue('--blue-500') || '#3b82f6',
+          data: unifiedSubcategories.map((s) => s.uaePercentage),
         },
-      ],
-    };
-
-    // US Subcategory Chart
-    const usSubData = {
-      labels: subcategoriesWithPercentages.map((s) => s.subcategory),
-      datasets: [
         {
           label: 'US Subcategory %',
-          data: subcategoriesWithPercentages.map((s) => s.usPercentage),
-          backgroundColor: subcategoryBackgroundColors,
-          borderColor: subcategoryColors,
-          borderWidth: 1,
+          backgroundColor: documentStyle.getPropertyValue('--pink-500') || '#ec4899',
+          borderColor: documentStyle.getPropertyValue('--pink-500') || '#ec4899',
+          data: unifiedSubcategories.map((s) => s.usPercentage),
         },
       ],
     };
 
     const subChartOptions = {
       maintainAspectRatio: false,
+      aspectRatio: 0.8,
       responsive: true,
       plugins: {
         legend: {
-          display: false,
+          display: true,
+          position: 'bottom',
+          labels: {
+            color: textColor,
+          },
         },
         tooltip: {
           callbacks: {
@@ -354,6 +361,18 @@ const BenchmarkingFig5_1 = () => {
         },
       },
       scales: {
+        x: {
+          ticks: {
+            color: textColorSecondary,
+            font: {
+              weight: 500,
+            },
+          },
+          grid: {
+            display: false,
+            drawBorder: false,
+          },
+        },
         y: {
           beginAtZero: true,
           max: yAxisMax,
@@ -361,40 +380,49 @@ const BenchmarkingFig5_1 = () => {
             color: textColorSecondary,
             callback: function(value) {
               return value + '%';
-            }
+            },
           },
           grid: {
             color: surfaceBorder,
-          },
-        },
-        x: {
-          ticks: {
-            color: textColorSecondary,
-          },
-          grid: {
-            color: surfaceBorder,
+            drawBorder: false,
           },
         },
       },
     };
 
-    setUaeSubcategoryChartData(uaeSubData);
-    setUsSubcategoryChartData(usSubData);
+    setSubcategoryChartData(unifiedSubData);
     setSubcategoryChartOptions(subChartOptions);
 
   }, [selectedCategory, allSkillsData]);
 
-  // Calculate dynamic height based on number of categories
-  // Base height for chart + additional height per legend item
-  const calculateChartHeight = () => {
-    const baseChartSize = 350; // Size of the doughnut itself
-    const legendItemHeight = 25; // Approximate height per legend item
-    const legendPadding = 40; // Extra padding for legend area
-    const itemsPerRow = Math.floor(500 / 120); // Approximate items that fit in one row
-    const rows = Math.ceil(categoryData.length / itemsPerRow);
-    const legendHeight = rows * legendItemHeight + legendPadding;
-    
-    return baseChartSize + legendHeight;
+  // Unified Legend Component
+  const UnifiedLegend = () => {
+    if (legendData.length === 0) return null;
+
+    return (
+      <div className="flex flex-wrap justify-content-center gap-3 mt-3 px-4">
+        {legendData.map((item, idx) => (
+          <div
+            key={idx}
+            className="flex align-items-center gap-2"
+            style={{ fontSize: "11px" }}
+          >
+            <span
+              style={{
+                width: "12px",
+                height: "12px",
+                borderRadius: "50%",
+                backgroundColor: item.backgroundColor,
+                border: `2px solid ${item.color}`,
+                display: "inline-block",
+                flexShrink: 0,
+              }}
+            />
+            <span className="text-color">{item.label}</span>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   if (loading) {
@@ -431,7 +459,6 @@ const BenchmarkingFig5_1 = () => {
 
   const totalUAECount = categoryData.reduce((sum, c) => sum + c.uaeTotal, 0);
   const totalUSCount = categoryData.reduce((sum, c) => sum + c.usTotal, 0);
-  const chartHeight = calculateChartHeight();
 
   return (
     <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
@@ -508,7 +535,7 @@ const BenchmarkingFig5_1 = () => {
             >
               UAE Category Distribution
             </h3>
-            <div style={{ width: "100%", height: `${chartHeight}px` }}>
+            <div style={{ width: "100%", height: "350px" }}>
               <Chart
                 type="doughnut"
                 data={uaeChartData}
@@ -531,7 +558,7 @@ const BenchmarkingFig5_1 = () => {
             >
               US Category Distribution
             </h3>
-            <div style={{ width: "100%", height: `${chartHeight}px` }}>
+            <div style={{ width: "100%", height: "350px" }}>
               <Chart
                 type="doughnut"
                 data={usChartData}
@@ -542,6 +569,9 @@ const BenchmarkingFig5_1 = () => {
           </div>
         )}
       </div>
+
+      {/* Unified Legend */}
+      {(showUAEChart || showUSChart) && <UnifiedLegend />}
 
       {/* Category selector & skills list */}
       <div className="w-full mt-4 pt-3 border-top-1 surface-border">
@@ -608,48 +638,19 @@ const BenchmarkingFig5_1 = () => {
                 />
               </DataTable>
 
-              {/* Subcategory Bar Charts */}
-              {uaeSubcategoryChartData && usSubcategoryChartData && (
+              {/* Unified Subcategory Bar Chart */}
+              {subcategoryChartData && (
                 <div className="mt-4 pt-3 border-top-1 surface-border">
                   <h4 className="text-sm font-semibold mb-3">
-                    Subcategory Distribution (%)
+                    Unified Top Subcategory Distribution: UAE vs US (%)
                   </h4>
-                  <div className="w-full flex flex-col md:flex-row gap-4">
-                    {/* UAE Subcategory Bar Chart */}
-                    <div className="flex flex-col" style={{ flex: 1 }}>
-                      <h5
-                        className="text-sm font-semibold mb-2 text-center"
-                        style={{ color: "var(--blue-500)" }}
-                      >
-                        UAE Subcategories
-                      </h5>
-                      <div style={{ width: "100%", height: "400px" }}>
-                        <Chart
-                          type="bar"
-                          data={uaeSubcategoryChartData}
-                          options={subcategoryChartOptions}
-                          className="w-full h-full"
-                        />
-                      </div>
-                    </div>
-
-                    {/* US Subcategory Bar Chart */}
-                    <div className="flex flex-col" style={{ flex: 1 }}>
-                      <h5
-                        className="text-sm font-semibold mb-2 text-center"
-                        style={{ color: "var(--pink-500)" }}
-                      >
-                        US Subcategories
-                      </h5>
-                      <div style={{ width: "100%", height: "400px" }}>
-                        <Chart
-                          type="bar"
-                          data={usSubcategoryChartData}
-                          options={subcategoryChartOptions}
-                          className="w-full h-full"
-                        />
-                      </div>
-                    </div>
+                  <div style={{ width: "100%", height: "400px" }}>
+                    <Chart
+                      type="bar"
+                      data={subcategoryChartData}
+                      options={subcategoryChartOptions}
+                      className="w-full h-full"
+                    />
                   </div>
                 </div>
               )}

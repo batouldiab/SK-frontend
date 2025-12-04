@@ -179,7 +179,7 @@ const BenchmarkingFig1Fig2 = () => {
         tooltip: {
           callbacks: {
             label: function (context) {
-              return `${context.dataset.label}: ${context.parsed.r.toFixed(2)}%`;
+              return `${context.dataset.label}: ${context.parsed.r.toFixed(2)}`;
             },
           },
         },
@@ -190,7 +190,7 @@ const BenchmarkingFig1Fig2 = () => {
           ticks: {
             color: textColorSecondary,
             backdropColor: "transparent",
-            callback: (value) => value.toFixed(1) + "%",
+            callback: (value) => value.toFixed(1),
           },
           grid: {
             color: textColorSecondary + "40",
@@ -215,7 +215,7 @@ const BenchmarkingFig1Fig2 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-column">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
         <div className="text-sm text-color-secondary mb-2">
           Loading chart data…
         </div>
@@ -272,18 +272,18 @@ const BenchmarkingFig1Fig2 = () => {
             </div>
             <div className="surface-100 border-round-lg px-3 py-2 text-right">
               <span className="block text-xs text-color-secondary">
-                Avg. UAE %
+                Avg. UAE
               </span>
               <span className="block text-sm font-semibold">
-                {uaeAvg.toFixed(2)}%
+                {uaeAvg.toFixed(2)}
               </span>
             </div>
             <div className="surface-100 border-round-lg px-3 py-2 text-right">
               <span className="block text-xs text-color-secondary">
-                Avg. US %
+                Avg. US
               </span>
               <span className="block text-sm font-semibold">
-                {usAvg.toFixed(2)}%
+                {usAvg.toFixed(2)}
               </span>
             </div>
           </div>
@@ -342,9 +342,9 @@ const BenchmarkingFig1Fig2 = () => {
       {/* Job selector & textual standardized percentages */}
       <div className="w-full mt-4 pt-3 border-top-1 surface-border">
         <h3 className="text-sm font-semibold mb-2">
-          Inspect standardized percentage for any job title
+          Inspect standardized distribution for any job title
         </h3>
-        <div className="flex flex-column md:flex-row gap-3 align-items-start md:align-items-center">
+        <div className="flex flex-col md:flex-row gap-3 align-items-start md:align-items-center">
           <div className="flex-1">
             <Dropdown
               value={selectedJob}
@@ -362,34 +362,18 @@ const BenchmarkingFig1Fig2 = () => {
             <div className="flex gap-4 text-sm flex-wrap">
               <div>
                 <span className="block text-color-secondary text-xs">
-                  UAE standardized %
+                  UAE standardized
                 </span>
                 <span className="block font-semibold">
-                  {selectedJob.uaePercent.toFixed(2)}%
+                  {selectedJob.uaePercent.toFixed(2)}
                 </span>
               </div>
               <div>
                 <span className="block text-color-secondary text-xs">
-                  UAE Count
+                  US standardized
                 </span>
                 <span className="block font-semibold">
-                  {selectedJob.uaeCount}
-                </span>
-              </div>
-              <div>
-                <span className="block text-color-secondary text-xs">
-                  US standardized %
-                </span>
-                <span className="block font-semibold">
-                  {selectedJob.usPercent.toFixed(2)}%
-                </span>
-              </div>
-              <div>
-                <span className="block text-color-secondary text-xs">
-                  US Count
-                </span>
-                <span className="block font-semibold">
-                  {selectedJob.usCount}
+                  {selectedJob.usPercent.toFixed(2)}
                 </span>
               </div>
             </div>

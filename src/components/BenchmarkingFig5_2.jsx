@@ -123,16 +123,19 @@ const BenchmarkingFig5_2 = () => {
                 throw new Error("No valid data found in CSV");
               }
 
-              // Calculate totals
-              const uaeTotalCount = skillsData.reduce((sum, s) => sum + s.uaeCount, 0);
-              const usTotalCount = skillsData.reduce((sum, s) => sum + s.usCount, 0);
+              // Calculate totals (excluding 'Uncategorized' for percentage calculation)
+              const filteredSkillsData = skillsData.filter(s => s.category !== "Uncategorized");
+              const uaeTotalCount = filteredSkillsData.reduce((sum, s) => sum + s.uaeCount, 0);
+              const usTotalCount = filteredSkillsData.reduce((sum, s) => sum + s.usCount, 0);
 
-              // Convert category map to array with percentages
-              const categoriesArray = Array.from(categoryMap.values()).map((cat) => ({
-                ...cat,
-                uaePercentage: (cat.uaeTotal / uaeTotalCount) * 100,
-                usPercentage: (cat.usTotal / usTotalCount) * 100,
-              }));
+              // Convert category map to array with percentages, filtering out 'Uncategorized'
+              const categoriesArray = Array.from(categoryMap.values())
+                .filter((cat) => cat.category !== "Uncategorized")
+                .map((cat) => ({
+                  ...cat,
+                  uaePercentage: (cat.uaeTotal / uaeTotalCount) * 100,
+                  usPercentage: (cat.usTotal / usTotalCount) * 100,
+                }));
 
               // Sort by UAE percentage descending
               categoriesArray.sort((a, b) => b.uaePercentage - a.uaePercentage);

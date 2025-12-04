@@ -1,7 +1,6 @@
 // src/components/BenchmarkingFig4.jsx
 import React, { useState, useEffect } from "react";
 import { Chart } from "primereact/chart";
-import { Checkbox } from "primereact/checkbox";
 import { Dropdown } from "primereact/dropdown";
 import Papa from "papaparse";
 
@@ -17,22 +16,16 @@ const BenchmarkingFig4 = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Data for UAE and US charts (top 10 each)
-  const [uaeChartData, setUaeChartData] = useState(null);
-  const [usChartData, setUsChartData] = useState(null);
+  // Radar chart data
+  const [radarChartData, setRadarChartData] = useState(null);
   const [chartOptions, setChartOptions] = useState({});
 
-  // Raw data from CSV
-  const [uaeTopSkills, setUaeTopSkills] = useState([]);
-  const [usTopSkills, setUsTopSkills] = useState([]);
+  // Unified top skills list
+  const [unifiedTopSkills, setUnifiedTopSkills] = useState([]);
 
   // All skills for dropdown
   const [allSkillsData, setAllSkillsData] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
-
-  // Chart visibility toggles
-  const [showUAEChart, setShowUAEChart] = useState(true);
-  const [showUSChart, setShowUSChart] = useState(true);
 
   // Load CSV data
   useEffect(() => {
@@ -82,16 +75,27 @@ const BenchmarkingFig4 = () => {
                 throw new Error("No valid data found in CSV");
               }
 
-              // Get top 10 for UAE (already sorted in CSV)
+              // Get top 10 for UAE
               const sortedByUAE = [...allSkills].sort((a, b) => b.uaeCount - a.uaeCount);
               const uaeTop10 = sortedByUAE.slice(0, 10);
-              setUaeTopSkills(uaeTop10);
 
-              // Sort by US count to get US top 10
+              // Get top 10 for US
               const sortedByUS = [...allSkills].sort((a, b) => b.usCount - a.usCount);
               const usTop10 = sortedByUS.slice(0, 10);
-              setUsTopSkills(usTop10);
 
+              // Create unified top skills list (10-20 skills)
+              // Start with UAE top 10, then add US skills that aren't already included
+              const unifiedSkillNames = new Set(uaeTop10.map(s => s.hardSkill));
+              const unified = [...uaeTop10];
+
+              usTop10.forEach(skill => {
+                if (!unifiedSkillNames.has(skill.hardSkill)) {
+                  unifiedSkillNames.add(skill.hardSkill);
+                  unified.push(skill);
+                }
+              });
+
+              setUnifiedTopSkills(unified);
               setAllSkillsData(allSkills);
               setSelectedSkill(allSkills[0]);
             } catch (err) {
@@ -118,52 +122,39 @@ const BenchmarkingFig4 = () => {
     loadCsv();
   }, []);
 
-  // Update charts when data changes
+  // Update radar chart when unified data changes
   useEffect(() => {
-    if (uaeTopSkills.length === 0 || usTopSkills.length === 0) return;
+    if (unifiedTopSkills.length === 0) return;
 
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
 
-    // Color palette for hard skills
-    const colors = [
-      "#3b82f6", // blue
-      "#8b5cf6", // purple
-      "#ec4899", // pink
-      "#f59e0b", // amber
-      "#10b981", // emerald
-      "#06b6d4", // cyan
-      "#f97316", // orange
-      "#6366f1", // indigo
-      "#14b8a6", // teal
-      "#a855f7", // violet
-    ];
-
-    // UAE Chart Data
-    const uaeData = {
-      labels: uaeTopSkills.map((s) => s.hardSkill),
+    // Radar Chart Data with UAE and US datasets
+    const radarData = {
+      labels: unifiedTopSkills.map((s) => s.hardSkill),
       datasets: [
         {
           label: "UAE Standardized Count",
-          data: uaeTopSkills.map((s) => s.uaeCount),
-          backgroundColor: colors.map(c => c + "CC"),
-          borderColor: colors,
-          borderWidth: 2,
+          borderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
+          pointBackgroundColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
+          pointBorderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
+          pointHoverBackgroundColor: textColor,
+          pointHoverBorderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
+          backgroundColor: (documentStyle.getPropertyValue("--blue-400") || "#3b82f6") + "33",
+          data: unifiedTopSkills.map((s) => s.uaeCount),
+          fill: true,
         },
-      ],
-    };
-
-    // US Chart Data
-    const usData = {
-      labels: usTopSkills.map((s) => s.hardSkill),
-      datasets: [
         {
           label: "US Standardized Count",
-          data: usTopSkills.map((s) => s.usCount),
-          backgroundColor: colors.map(c => c + "CC"),
-          borderColor: colors,
-          borderWidth: 2,
+          borderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
+          pointBackgroundColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
+          pointBorderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
+          pointHoverBackgroundColor: textColor,
+          pointHoverBorderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
+          backgroundColor: (documentStyle.getPropertyValue("--pink-400") || "#ec4899") + "33",
+          data: unifiedTopSkills.map((s) => s.usCount),
+          fill: true,
         },
       ],
     };
@@ -174,12 +165,15 @@ const BenchmarkingFig4 = () => {
       plugins: {
         legend: {
           display: true,
-          position: 'bottom'
+          position: "bottom",
+          labels: {
+            color: textColor,
+          },
         },
         tooltip: {
           callbacks: {
             label: function (context) {
-              return `${context.label}: ${context.parsed.r.toFixed(4)}`;
+              return `${context.dataset.label}: ${context.parsed.r.toFixed(4)}`;
             },
           },
         },
@@ -198,7 +192,7 @@ const BenchmarkingFig4 = () => {
           pointLabels: {
             color: textColorSecondary,
             font: {
-              size: 10,
+              size: 11,
             },
           },
         },
@@ -209,14 +203,13 @@ const BenchmarkingFig4 = () => {
       },
     };
 
-    setUaeChartData(uaeData);
-    setUsChartData(usData);
+    setRadarChartData(radarData);
     setChartOptions(options);
-  }, [uaeTopSkills, usTopSkills]);
+  }, [unifiedTopSkills]);
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-column">
+      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
         <div className="text-sm text-color-secondary mb-2">
           Loading chart data…
         </div>
@@ -237,7 +230,7 @@ const BenchmarkingFig4 = () => {
     return (
       <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
         <h2 className="m-0 mb-2 text-xl">
-          Top 10 Hard Skills: UAE vs US
+          Top Hard Skills: UAE vs US
         </h2>
         <p className="m-0 text-sm text-red-500">
           Error loading chart data: {error}
@@ -246,12 +239,12 @@ const BenchmarkingFig4 = () => {
     );
   }
 
-  if (!uaeChartData || !usChartData) return null;
+  if (!radarChartData) return null;
 
-  const uaeTotal = uaeTopSkills.reduce((sum, s) => sum + s.uaeCount, 0);
-  const usTotal = usTopSkills.reduce((sum, s) => sum + s.usCount, 0);
-  const uaeAvg = uaeTotal / uaeTopSkills.length;
-  const usAvg = usTotal / usTopSkills.length;
+  const uaeTotal = unifiedTopSkills.reduce((sum, s) => sum + s.uaeCount, 0);
+  const usTotal = unifiedTopSkills.reduce((sum, s) => sum + s.usCount, 0);
+  const uaeAvg = uaeTotal / unifiedTopSkills.length;
+  const usAvg = usTotal / unifiedTopSkills.length;
 
   return (
     <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
@@ -261,10 +254,18 @@ const BenchmarkingFig4 = () => {
           <div className="flex gap-2 flex-wrap justify-content-start align-items-center mt-3">
             <div className="surface-100 border-round-lg px-3 py-2 text-right">
               <span className="block text-xs text-color-secondary">
-                Total Skills
+                Total Skills in Dataset
               </span>
               <span className="block text-sm font-semibold">
                 {allSkillsData.length}
+              </span>
+            </div>
+            <div className="surface-100 border-round-lg px-3 py-2 text-right">
+              <span className="block text-xs text-color-secondary">
+                Unified Top Skills
+              </span>
+              <span className="block text-sm font-semibold">
+                {unifiedTopSkills.length}
               </span>
             </div>
             <div className="surface-100 border-round-lg px-3 py-2 text-right">
@@ -284,79 +285,24 @@ const BenchmarkingFig4 = () => {
               </span>
             </div>
           </div>
-
-          {/* Chart toggles */}
-          <div className="flex gap-4 mt-4 align-items-center">
-            <span className="text-sm font-semibold text-color-secondary">
-              Show charts:
-            </span>
-            <div className="flex align-items-center gap-2">
-              <Checkbox
-                inputId="toggle-uae-chart"
-                checked={showUAEChart}
-                onChange={(e) => setShowUAEChart(e.checked)}
-              />
-              <label
-                htmlFor="toggle-uae-chart"
-                className="text-sm cursor-pointer select-none"
-                style={{ color: "var(--blue-500)" }}
-              >
-                UAE
-              </label>
-            </div>
-            <div className="flex align-items-center gap-2">
-              <Checkbox
-                inputId="toggle-us-chart"
-                checked={showUSChart}
-                onChange={(e) => setShowUSChart(e.checked)}
-              />
-              <label
-                htmlFor="toggle-us-chart"
-                className="text-sm cursor-pointer select-none"
-                style={{ color: "var(--pink-500)" }}
-              >
-                US
-              </label>
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* Charts area - two adjacent polar area charts */}
-      <div className="w-full mt-3 flex flex-column md:flex-row gap-4 justify-content-center align-items-center">
-        {/* UAE Chart */}
-        {showUAEChart && (
-          <div className="flex flex-column align-items-center" style={{ flex: 1, minWidth: "300px", maxWidth: "500px" }}>
-            <h3 className="text-md font-semibold mb-2" style={{ color: "var(--blue-500)" }}>
-              UAE Top 10 Hard Skills
-            </h3>
-            <div style={{ width: "100%", height: "400px" }}>
-              <Chart
-                type="polarArea"
-                data={uaeChartData}
-                options={chartOptions}
-                className="w-full h-full"
-              />
-            </div>
+      {/* Radar Chart - UAE vs US comparison */}
+      <div className="w-full mt-3 flex justify-content-center align-items-center">
+        <div className="flex flex-col align-items-center w-full" style={{ maxWidth: "700px" }}>
+          <h3 className="text-md font-semibold mb-2 text-color">
+            UAE vs US: Unified Top Hard Skills Comparison
+          </h3>
+          <div style={{ width: "100%", height: "500px" }}>
+            <Chart
+              type="radar"
+              data={radarChartData}
+              options={chartOptions}
+              className="w-full h-full"
+            />
           </div>
-        )}
-
-        {/* US Chart */}
-        {showUSChart && (
-          <div className="flex flex-column align-items-center" style={{ flex: 1, minWidth: "300px", maxWidth: "500px" }}>
-            <h3 className="text-md font-semibold mb-2" style={{ color: "var(--pink-500)" }}>
-              US Top 10 Hard Skills
-            </h3>
-            <div style={{ width: "100%", height: "400px" }}>
-              <Chart
-                type="polarArea"
-                data={usChartData}
-                options={chartOptions}
-                className="w-full h-full"
-              />
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Skill selector & details */}
@@ -364,7 +310,7 @@ const BenchmarkingFig4 = () => {
         <h3 className="text-sm font-semibold mb-2">
           Inspect standardized count for any hard skill
         </h3>
-        <div className="flex flex-column md:flex-row gap-3 align-items-start md:align-items-center">
+        <div className="flex flex-col md:flex-row gap-3 align-items-start md:align-items-center">
           <div className="flex-1">
             <Dropdown
               value={selectedSkill}
@@ -384,7 +330,7 @@ const BenchmarkingFig4 = () => {
                 <span className="block text-color-secondary text-xs">
                   UAE
                 </span>
-                <span className="block font-semibold">
+                <span className="block font-semibold" style={{ color: "var(--blue-500)" }}>
                   {selectedSkill.uaeCount.toFixed(4)}
                 </span>
               </div>
@@ -392,7 +338,7 @@ const BenchmarkingFig4 = () => {
                 <span className="block text-color-secondary text-xs">
                   US
                 </span>
-                <span className="block font-semibold">
+                <span className="block font-semibold" style={{ color: "var(--pink-500)" }}>
                   {selectedSkill.usCount.toFixed(4)}
                 </span>
               </div>

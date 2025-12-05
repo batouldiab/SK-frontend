@@ -18,8 +18,9 @@ const BenchmarkingFig1Fig2 = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Data for the radar chart (top 10)
+  // Data for the radar chart (unified top jobs)
   const [rawData, setRawData] = useState(null);
+  const [unifiedTopJobs, setUnifiedTopJobs] = useState([]);
 
   // Data for ALL job titles (for the selector)
   const [allJobsData, setAllJobsData] = useState([]);
@@ -82,16 +83,28 @@ const BenchmarkingFig1Fig2 = () => {
           throw new Error("No valid data found in CSV");
         }
 
-        // Prepare top 10 for the radar chart
-        const top10 = allJobData.slice(0, 10);
-        const jobTitles = top10.map((d) => d.jobTitle);
-        const uaePercentages = top10.map((d) => d.uaePercent);
-        const usPercentages = top10.map((d) => d.usPercent);
+        // Build unified top jobs (top 10 per market, combined unique list)
+        const sortedByUAE = [...allJobData].sort((a, b) => b.uaePercent - a.uaePercent);
+        const sortedByUS = [...allJobData].sort((a, b) => b.usPercent - a.usPercent);
+        const uaeTop10 = sortedByUAE.slice(0, 10);
+        const usTop10 = sortedByUS.slice(0, 10);
+
+        const unified = [...uaeTop10];
+        const unifiedNames = new Set(uaeTop10.map((item) => item.jobTitle));
+
+        usTop10.forEach((job) => {
+          if (!unifiedNames.has(job.jobTitle)) {
+            unifiedNames.add(job.jobTitle);
+            unified.push(job);
+          }
+        });
+
+        setUnifiedTopJobs(unified);
 
         setRawData({
-          jobTitles,
-          uaePercentages,
-          usPercentages
+          jobTitles: unified.map((d) => d.jobTitle),
+          uaePercentages: unified.map((d) => d.uaePercent),
+          usPercentages: unified.map((d) => d.usPercent),
         });
 
         setAllJobsData(allJobData);
@@ -247,13 +260,13 @@ const BenchmarkingFig1Fig2 = () => {
 
   if (!chartData || !rawData) return null;
 
-  const uaeAvg =
-    rawData.uaePercentages.reduce((a, b) => a + b, 0) /
-    rawData.uaePercentages.length;
-  const usAvg =
-    rawData.usPercentages.reduce((a, b) => a + b, 0) /
-    rawData.usPercentages.length;
-  const totalJobs = rawData.jobTitles.length;
+  const uaeAvg = unifiedTopJobs.length
+    ? unifiedTopJobs.reduce((sum, job) => sum + job.uaePercent, 0) / unifiedTopJobs.length
+    : rawData.uaePercentages.reduce((a, b) => a + b, 0) / rawData.uaePercentages.length;
+  const usAvg = unifiedTopJobs.length
+    ? unifiedTopJobs.reduce((sum, job) => sum + job.usPercent, 0) / unifiedTopJobs.length
+    : rawData.usPercentages.reduce((a, b) => a + b, 0) / rawData.usPercentages.length;
+  const totalJobs = unifiedTopJobs.length || rawData.jobTitles.length;
 
   return (
     <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">

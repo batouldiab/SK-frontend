@@ -287,11 +287,11 @@ const BenchmarkingFig5_1 = () => {
     const sortedByUS = [...subcategoriesWithPercentages].sort((a, b) => b.usPercentage - a.usPercentage);
     const usTop10 = sortedByUS.slice(0, 10);
 
-    // Create unified top subcategories list (10-20 subcategories)
-    const unifiedSubcategoryNames = new Set(uaeTop10.map(s => s.subcategory));
-    const unifiedSubcategories = [...uaeTop10];
+    // Create unified top subcategories list (10-20 subcategories) - US driven first
+    const unifiedSubcategoryNames = new Set(usTop10.map(s => s.subcategory));
+    const unifiedSubcategories = [...usTop10];
 
-    usTop10.forEach(sub => {
+    uaeTop10.forEach(sub => {
       if (!unifiedSubcategoryNames.has(sub.subcategory)) {
         unifiedSubcategoryNames.add(sub.subcategory);
         unifiedSubcategories.push(sub);

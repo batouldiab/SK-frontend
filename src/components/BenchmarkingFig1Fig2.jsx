@@ -85,16 +85,16 @@ const BenchmarkingFig1Fig2 = () => {
           throw new Error("No valid data found in CSV");
         }
 
-        // Build unified top jobs (top 10 per market, combined unique list)
+        // Build unified top jobs (top 10 per market, combined unique list) - US driven first
         const sortedByUAE = [...allJobData].sort((a, b) => b.uaePercent - a.uaePercent);
         const sortedByUS = [...allJobData].sort((a, b) => b.usPercent - a.usPercent);
         const uaeTop10 = sortedByUAE.slice(0, 10);
         const usTop10 = sortedByUS.slice(0, 10);
 
-        const unified = [...uaeTop10];
-        const unifiedNames = new Set(uaeTop10.map((item) => item.jobTitle));
+        const unified = [...usTop10];
+        const unifiedNames = new Set(usTop10.map((item) => item.jobTitle));
 
-        usTop10.forEach((job) => {
+        uaeTop10.forEach((job) => {
           if (!unifiedNames.has(job.jobTitle)) {
             unifiedNames.add(job.jobTitle);
             unified.push(job);

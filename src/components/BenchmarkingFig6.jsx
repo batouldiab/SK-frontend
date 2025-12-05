@@ -170,8 +170,8 @@ const BenchmarkingFig6 = () => {
 
       // Combine and deduplicate titles
       const allTitles = new Set([
-        ...uaeTop10.map((row) => row.title),
         ...usTop10.map((row) => row.title),
+        ...uaeTop10.map((row) => row.title),
       ]);
 
       const uniqueTitles = [...allTitles];

@@ -83,12 +83,11 @@ const BenchmarkingFig3 = () => {
               const sortedByUS = [...allSkills].sort((a, b) => b.usCount - a.usCount);
               const usTop10 = sortedByUS.slice(0, 10);
 
-              // Create unified top skills list (10-20 skills)
-              // Start with UAE top 10, then add US skills that aren't already included
-              const unifiedSkillNames = new Set(uaeTop10.map(s => s.softSkill));
-              const unified = [...uaeTop10];
+              // Create unified top skills list (10-20 skills) - US driven first
+              const unifiedSkillNames = new Set(usTop10.map(s => s.softSkill));
+              const unified = [...usTop10];
 
-              usTop10.forEach(skill => {
+              uaeTop10.forEach(skill => {
                 if (!unifiedSkillNames.has(skill.softSkill)) {
                   unifiedSkillNames.add(skill.softSkill);
                   unified.push(skill);

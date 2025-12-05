@@ -314,28 +314,39 @@ const BenchmarkingFig5_1 = () => {
     // Add 10% padding to the max for better visualization
     const yAxisMax = Math.ceil(maxPercentage * 1.1);
 
-    // Unified Subcategory Bar Chart with two datasets
+    const blueColor = documentStyle.getPropertyValue('--blue-500') || '#3b82f6';
+    const pinkColor = documentStyle.getPropertyValue('--pink-500') || '#ec4899';
+
+    // Unified Subcategory Radar Chart with two datasets
     const unifiedSubData = {
       labels: unifiedSubcategories.map((s) => s.subcategory),
       datasets: [
         {
           label: 'UAE Subcategory %',
-          backgroundColor: documentStyle.getPropertyValue('--blue-500') || '#3b82f6',
-          borderColor: documentStyle.getPropertyValue('--blue-500') || '#3b82f6',
+          backgroundColor: blueColor + '33',
+          borderColor: blueColor,
+          pointBackgroundColor: blueColor,
+          pointBorderColor: blueColor,
+          borderWidth: 2,
           data: unifiedSubcategories.map((s) => s.uaePercentage),
+          fill: true,
         },
         {
           label: 'US Subcategory %',
-          backgroundColor: documentStyle.getPropertyValue('--pink-500') || '#ec4899',
-          borderColor: documentStyle.getPropertyValue('--pink-500') || '#ec4899',
+          backgroundColor: pinkColor + '33',
+          borderColor: pinkColor,
+          pointBackgroundColor: pinkColor,
+          pointBorderColor: pinkColor,
+          borderWidth: 2,
           data: unifiedSubcategories.map((s) => s.usPercentage),
+          fill: true,
         },
       ],
     };
 
     const subChartOptions = {
       maintainAspectRatio: false,
-      aspectRatio: 0.8,
+      aspectRatio: 0.9,
       responsive: true,
       plugins: {
         legend: {
@@ -348,39 +359,37 @@ const BenchmarkingFig5_1 = () => {
         tooltip: {
           callbacks: {
             label: function (context) {
-              const value = context.parsed.y || 0;
+              const value = context.parsed.r || 0;
               return `${context.dataset.label}: ${value.toFixed(2)}%`;
             },
           },
         },
       },
       scales: {
-        x: {
-          ticks: {
-            color: textColorSecondary,
-            font: {
-              weight: 500,
-            },
-          },
-          grid: {
-            display: false,
-            drawBorder: false,
-          },
-        },
-        y: {
+        r: {
           beginAtZero: true,
-          max: yAxisMax,
+          suggestedMax: yAxisMax,
           ticks: {
             color: textColorSecondary,
             callback: function(value) {
               return value + '%';
             },
+            backdropColor: 'transparent',
           },
           grid: {
             color: surfaceBorder,
-            drawBorder: false,
+          },
+          pointLabels: {
+            color: textColorSecondary,
+            font: {
+              size: 11,
+            },
           },
         },
+      },
+      animation: {
+        duration: 800,
+        easing: "easeOutQuart",
       },
     };
 
@@ -566,14 +575,14 @@ const BenchmarkingFig5_1 = () => {
                   <h4 className="text-sm font-semibold mb-3">
                     Unified Top Subcategory Distribution: UAE vs US (%)
                   </h4>
-                  <div style={{ width: "100%", height: "400px" }}>
-                    <Chart
-                      type="bar"
-                      data={subcategoryChartData}
-                      options={subcategoryChartOptions}
-                      className="w-full h-full"
-                    />
-                  </div>
+              <div style={{ width: "100%", height: "400px" }}>
+                <Chart
+                  type="radar"
+                  data={subcategoryChartData}
+                  options={subcategoryChartOptions}
+                  className="w-full h-full"
+                />
+              </div>
                 </div>
               )}
             </div>

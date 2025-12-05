@@ -288,7 +288,7 @@ const BenchmarkingFig1Fig2 = () => {
             </div>
             <div className="surface-100 border-round-lg px-3 py-2 text-right">
               <span className="block text-xs text-color-secondary">
-                Avg. UAE
+                Avg. UAE Job Count per 1000 OJA
               </span>
               <span className="block text-sm font-semibold">
                 {(uaeAvg * DISPLAY_SCALE).toFixed(2)}
@@ -296,7 +296,7 @@ const BenchmarkingFig1Fig2 = () => {
             </div>
             <div className="surface-100 border-round-lg px-3 py-2 text-right">
               <span className="block text-xs text-color-secondary">
-                Avg. US
+                Avg. US Job Count per 1000 OJA
               </span>
               <span className="block text-sm font-semibold">
                 {(usAvg * DISPLAY_SCALE).toFixed(2)}

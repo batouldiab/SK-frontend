@@ -309,7 +309,7 @@ const BenchmarkingFig4 = () => {
       <div className="w-full mt-3 flex justify-content-center align-items-center">
         <div className="flex flex-col align-items-center w-full" style={{ maxWidth: "700px" }}>
           <h3 className="text-md font-semibold mb-2 text-color">
-            Top Distinct Hard Skills Comparison
+            Top Distinct Hard Skills Comparison: <span className="font-light">Skills count per 100 OJAs</span>
           </h3>
           <div style={{ width: "100%", height: "500px" }}>
             <Chart

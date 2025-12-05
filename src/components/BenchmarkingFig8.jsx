@@ -1,8 +1,9 @@
 // src/components/BenchmarkingFig8.jsx
 import React, { useState, useEffect } from "react";
-import { Chart } from "primereact/chart";
-import { Dropdown } from "primereact/dropdown";
+import { MultiSelect } from "primereact/multiselect";
 import Papa from "papaparse";
+import { AgCharts } from "ag-charts-react";
+import "ag-charts-enterprise";
 
 const dropdownPerfProps = {
   filter: true,
@@ -21,17 +22,15 @@ const BenchmarkingFig8 = () => {
 
   // Skills available in the dataset
   const [skills, setSkills] = useState([]);
-  const [selectedSkill, setSelectedSkill] = useState(null);
+  const [selectedSkills, setSelectedSkills] = useState([]);
 
   // Chart data
-  const [chartData, setChartData] = useState(null);
-  const [chartOptions, setChartOptions] = useState({});
+  const [heatmapOptions, setHeatmapOptions] = useState(null);
 
   // Statistics
   const [stats, setStats] = useState({
     totalHierarchyLevels: 0,
-    uaeTotal: 0,
-    usTotal: 0,
+    selectedSkillCount: 0,
   });
 
   // Load CSV file
@@ -84,9 +83,8 @@ const BenchmarkingFig8 = () => {
 
         setSkills(skillOptions);
 
-        if (skillOptions.length > 0) {
-          setSelectedSkill(skillOptions[0].value);
-        }
+        // Preselect a small set to render the heatmap immediately
+        setSelectedSkills(skillOptions.slice(0, 3).map((s) => s.value));
 
         setLoading(false);
       } catch (err) {
@@ -99,131 +97,126 @@ const BenchmarkingFig8 = () => {
     loadCsvFile();
   }, []);
 
-  // Update chart when selected skill changes
+  // Update chart when selected skills change
   useEffect(() => {
-    if (!selectedSkill || data.length === 0) return;
+    if (selectedSkills.length === 0 || data.length === 0) {
+      setHeatmapOptions(null);
+      return;
+    }
 
     try {
-      // Filter data for selected skill
-      const skillData = data.filter((row) => row.skill === selectedSkill);
-
-      // Calculate total counts for UAE and US
-      const totalSkillCountUAE = skillData.reduce((sum, row) => sum + row.countInUAE, 0);
-      const totalSkillCountUS = skillData.reduce((sum, row) => sum + row.countInUS, 0);
-
       // Get all unique hierarchy levels from entire dataset
       const allHierarchyLevels = [...new Set(data.map((row) => row.hierarchyLevel))].sort();
 
-      // Calculate percentages for each hierarchy level
-      const uaeDataset = allHierarchyLevels.map((level) => {
-        const match = skillData.find((row) => row.hierarchyLevel === level);
-        if (!match || totalSkillCountUAE === 0) return 0;
-        return (match.countInUAE / totalSkillCountUAE) * 100;
+      const heatmapData = [];
+
+      selectedSkills.forEach((skill) => {
+        const skillData = data.filter((row) => row.skill === skill);
+
+        // Calculate totals to turn counts into percentages per country
+        const totalSkillCountUAE = skillData.reduce((sum, row) => sum + row.countInUAE, 0);
+        const totalSkillCountUS = skillData.reduce((sum, row) => sum + row.countInUS, 0);
+
+        allHierarchyLevels.forEach((level) => {
+          const match = skillData.find((row) => row.hierarchyLevel === level);
+          const uaePercentage =
+            totalSkillCountUAE > 0 && match ? (match.countInUAE / totalSkillCountUAE) * 100 : 0;
+          const usPercentage =
+            totalSkillCountUS > 0 && match ? (match.countInUS / totalSkillCountUS) * 100 : 0;
+
+          heatmapData.push({
+            skill,
+            hierarchyLevel: level,
+            rowLabel: `${skill} - UAE`,
+            country: "UAE",
+            percentage: uaePercentage,
+            absolute: match?.countInUAE ?? 0,
+          });
+
+          heatmapData.push({
+            skill,
+            hierarchyLevel: level,
+            rowLabel: `${skill} - US`,
+            country: "US",
+            percentage: usPercentage,
+            absolute: match?.countInUS ?? 0,
+          });
+        });
       });
 
-      const usDataset = allHierarchyLevels.map((level) => {
-        const match = skillData.find((row) => row.hierarchyLevel === level);
-        if (!match || totalSkillCountUS === 0) return 0;
-        return (match.countInUS / totalSkillCountUS) * 100;
-      });
+      const documentStyle = getComputedStyle(document.documentElement);
+      const textColor = documentStyle.getPropertyValue("--text-color") || "#111827";
+      const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary") || "#6b7280";
 
-      // Calculate statistics
+      const maxValue = Math.max(...heatmapData.map((d) => d.percentage), 0);
+
       setStats({
         totalHierarchyLevels: allHierarchyLevels.length,
-        uaeTotal: totalSkillCountUAE,
-        usTotal: totalSkillCountUS,
+        selectedSkillCount: selectedSkills.length,
       });
 
-      // Configure chart
-      const documentStyle = getComputedStyle(document.documentElement);
-      const textColor = documentStyle.getPropertyValue("--text-color");
-      const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
-      const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
-
-      const chartDataObj = {
-        labels: allHierarchyLevels,
-        datasets: [
+      setHeatmapOptions({
+        data: heatmapData,
+        title: {
+          text: "Share of hierarchy levels by skill and country",
+        },
+        series: [
           {
-            label: "UAE",
-            backgroundColor: documentStyle.getPropertyValue("--blue-500"),
-            borderColor: documentStyle.getPropertyValue("--blue-500"),
-            data: uaeDataset,
-          },
-          {
-            label: "US",
-            backgroundColor: documentStyle.getPropertyValue("--pink-500"),
-            borderColor: documentStyle.getPropertyValue("--pink-500"),
-            data: usDataset,
+            type: "heatmap",
+            xKey: "hierarchyLevel",
+            xName: "Hierarchy Level",
+            yKey: "rowLabel",
+            yName: "Skill / Country",
+            colorKey: "percentage",
+            colorName: "Share (%)",
+            colorRange: ["#e0f2fe", "#1d4ed8"],
+            colorDomain: [0, Math.max(100, Math.ceil(maxValue))],
+            label: {
+              formatter: ({ value }) => `${value.toFixed(1)}%`,
+              color: textColor,
+            },
+            tooltip: {
+              renderer: ({ datum }) => {
+                return {
+                  title: datum.rowLabel,
+                  content: `${datum.hierarchyLevel}: ${datum.percentage.toFixed(2)}% (${datum.absolute.toLocaleString()} postings)`,
+                };
+              },
+            },
           },
         ],
-      };
-
-      const options = {
-        maintainAspectRatio: false,
-        aspectRatio: 0.8,
-        plugins: {
-          legend: {
-            display: true,
-            position: "bottom",
-            labels: {
-              color: textColor,
-              usePointStyle: true,
-              padding: 15,
-            },
-          },
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}%`;
-              },
-            },
-          },
-        },
-        scales: {
-          x: {
-            ticks: {
+        axes: [
+          {
+            type: "category",
+            position: "top",
+            label: {
+              rotation: -90,
               color: textColorSecondary,
-              font: {
-                weight: 500,
-              },
-            },
-            grid: {
-              display: false,
-              drawBorder: false,
             },
           },
-          y: {
-            ticks: {
+          {
+            type: "category",
+            position: "left",
+            label: {
               color: textColorSecondary,
-              callback: (value) => `${value}%`,
             },
-            grid: {
-              color: surfaceBorder,
-              drawBorder: false,
-            },
-            beginAtZero: true,
-            max: 100,
           },
+        ],
+        gradientLegend: {
+          position: "right",
         },
-        animation: {
-          duration: 800,
-          easing: "easeOutQuart",
-        },
-      };
-
-      setChartData(chartDataObj);
-      setChartOptions(options);
+      });
     } catch (err) {
       console.error("Error processing chart data:", err);
       setError(err.message || "Error processing chart data");
     }
-  }, [selectedSkill, data]);
+  }, [selectedSkills, data]);
 
   if (loading) {
     return (
       <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
         <div className="text-sm text-color-secondary mb-2">
-          Loading chart data…
+          Loading chart data...
         </div>
         <div
           className="mt-2"
@@ -246,7 +239,7 @@ const BenchmarkingFig8 = () => {
     );
   }
 
-  if (!chartData || skills.length === 0) {
+  if (skills.length === 0) {
     return (
       <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
         <p className="m-0 text-sm text-color-secondary">No skills found in the dataset.</p>
@@ -262,16 +255,18 @@ const BenchmarkingFig8 = () => {
         {/* Skill selector */}
         <div className="mb-3">
           <label htmlFor="skill-select" className="block text-sm font-semibold mb-2 text-color-secondary">
-            Select a Skill
+            Select Skills
           </label>
-          <Dropdown
+          <MultiSelect
             inputId="skill-select"
-            value={selectedSkill}
-            onChange={(e) => setSelectedSkill(e.value)}
+            value={selectedSkills}
+            onChange={(e) => setSelectedSkills(e.value)}
             options={skills}
-            placeholder="Choose a skill"
+            placeholder="Choose one or more skills"
             className="w-full md:w-20rem"
-            showClear={false}
+            display="chip"
+            showClear
+            showSelectAll = {false}
             {...dropdownPerfProps}
           />
         </div>
@@ -282,15 +277,28 @@ const BenchmarkingFig8 = () => {
             <span className="block text-xs text-color-secondary">Hierarchy Levels</span>
             <span className="block text-sm font-semibold">{stats.totalHierarchyLevels}</span>
           </div>
+          <div className="surface-100 border-round-lg px-3 py-2 text-right">
+            <span className="block text-xs text-color-secondary">Skills Selected</span>
+            <span className="block text-sm font-semibold">{stats.selectedSkillCount}</span>
+          </div>
         </div>
       </div>
 
       {/* Chart */}
       <div className="flex-1" style={{ minHeight: "400px" }}>
-        <Chart type="bar" data={chartData} options={chartOptions} className="w-full h-full" />
+        {heatmapOptions ? (
+          <AgCharts options={heatmapOptions} className="w-full h-full" />
+        ) : (
+          <div className="flex items-center justify-center h-full text-sm text-color-secondary">
+            Select at least one skill to view the heatmap.
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default BenchmarkingFig8;
+
+
+

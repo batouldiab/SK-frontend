@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.16",
+    "ag-charts-enterprise": "^12.3.1",
+    "ag-charts-react": "^12.3.1",
     "chart.js": "^4.5.1",
     "hyparquet": "^1.20.2",
     "lucide-react": "^0.554.0",

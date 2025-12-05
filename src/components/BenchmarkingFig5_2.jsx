@@ -20,10 +20,8 @@ const BenchmarkingFig5_2 = () => {
   const [error, setError] = useState(null);
 
   // Chart data
-  const [uaeChartData, setUaeChartData] = useState(null);
-  const [usChartData, setUsChartData] = useState(null);
+  const [radarChartData, setRadarChartData] = useState(null);
   const [chartOptions, setChartOptions] = useState({});
-  const [legendData, setLegendData] = useState([]);
 
   // Processed data
   const [categoryData, setCategoryData] = useState([]);
@@ -38,25 +36,6 @@ const BenchmarkingFig5_2 = () => {
   // Unified subcategory bar chart data
   const [subcategoryChartData, setSubcategoryChartData] = useState(null);
   const [subcategoryChartOptions, setSubcategoryChartOptions] = useState({});
-
-  // Color palette for categories
-  const colorPalette = [
-    "#3b82f6", // blue
-    "#8b5cf6", // purple
-    "#ec4899", // pink
-    "#f59e0b", // amber
-    "#10b981", // emerald
-    "#06b6d4", // cyan
-    "#f97316", // orange
-    "#6366f1", // indigo
-    "#14b8a6", // teal
-    "#a855f7", // violet
-    "#ef4444", // red
-    "#84cc16", // lime
-    "#0ea5e9", // sky
-    "#d946ef", // fuchsia
-    "#f43f5e", // rose
-  ];
 
   // Load and process CSV data
   useEffect(() => {
@@ -175,59 +154,75 @@ const BenchmarkingFig5_2 = () => {
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
 
-    // Assign colors to categories
-    const colors = categoryData.map((_, idx) => colorPalette[idx % colorPalette.length]);
-    const backgroundColors = colors.map((c) => c + "CC");
+    const datasets = [];
 
-    // Store legend data for unified legend
-    setLegendData(
-      categoryData.map((c, idx) => ({
-        label: c.category,
-        color: colors[idx],
-        backgroundColor: backgroundColors[idx],
-      }))
-    );
+    if (showUAEChart) {
+      datasets.push({
+        label: "UAE Percentage",
+        borderColor: documentStyle.getPropertyValue("--blue-500") || "#3b82f6",
+        pointBackgroundColor: documentStyle.getPropertyValue("--blue-500") || "#3b82f6",
+        pointBorderColor: documentStyle.getPropertyValue("--blue-500") || "#3b82f6",
+        pointHoverBackgroundColor: textColor,
+        pointHoverBorderColor: documentStyle.getPropertyValue("--blue-500") || "#3b82f6",
+        backgroundColor: (documentStyle.getPropertyValue("--blue-500") || "#3b82f6") + "33",
+        data: categoryData.map((c) => c.uaePercentage),
+        fill: true,
+      });
+    }
 
-    // UAE Chart Data
-    const uaeData = {
+    if (showUSChart) {
+      datasets.push({
+        label: "US Percentage",
+        borderColor: documentStyle.getPropertyValue("--pink-500") || "#ec4899",
+        pointBackgroundColor: documentStyle.getPropertyValue("--pink-500") || "#ec4899",
+        pointBorderColor: documentStyle.getPropertyValue("--pink-500") || "#ec4899",
+        pointHoverBackgroundColor: textColor,
+        pointHoverBorderColor: documentStyle.getPropertyValue("--pink-500") || "#ec4899",
+        backgroundColor: (documentStyle.getPropertyValue("--pink-500") || "#ec4899") + "33",
+        data: categoryData.map((c) => c.usPercentage),
+        fill: true,
+      });
+    }
+
+    const radarData = {
       labels: categoryData.map((c) => c.category),
-      datasets: [
-        {
-          data: categoryData.map((c) => c.uaePercentage),
-          backgroundColor: backgroundColors,
-          borderColor: colors,
-          borderWidth: 2,
-        },
-      ],
+      datasets,
     };
 
-    // US Chart Data
-    const usData = {
-      labels: categoryData.map((c) => c.category),
-      datasets: [
-        {
-          data: categoryData.map((c) => c.usPercentage),
-          backgroundColor: backgroundColors,
-          borderColor: colors,
-          borderWidth: 2,
-        },
-      ],
-    };
-
-    // Chart options without legend (we'll render it separately)
     const options = {
       maintainAspectRatio: false,
       responsive: true,
       plugins: {
         legend: {
-          display: false, // Hide individual chart legends
+          display: true,
+          position: "bottom",
+          labels: {
+            color: textColor,
+          },
         },
         tooltip: {
           callbacks: {
             label: function (context) {
-              const label = context.label || "";
-              const value = context.parsed || 0;
-              return `${label}: ${value.toFixed(2)}%`;
+              return `${context.dataset.label}: ${context.parsed.r.toFixed(2)}%`;
+            },
+          },
+        },
+      },
+      scales: {
+        r: {
+          beginAtZero: true,
+          ticks: {
+            color: textColorSecondary,
+            backdropColor: "transparent",
+            callback: (value) => `${value.toFixed(1)}%`,
+          },
+          grid: {
+            color: textColorSecondary + "40",
+          },
+          pointLabels: {
+            color: textColorSecondary,
+            font: {
+              size: 11,
             },
           },
         },
@@ -238,10 +233,9 @@ const BenchmarkingFig5_2 = () => {
       },
     };
 
-    setUaeChartData(uaeData);
-    setUsChartData(usData);
+    setRadarChartData(radarData);
     setChartOptions(options);
-  }, [categoryData]);
+  }, [categoryData, showUAEChart, showUSChart]);
 
   // Update category skills when selected category changes
   useEffect(() => {
@@ -398,36 +392,6 @@ const BenchmarkingFig5_2 = () => {
 
   }, [selectedCategory, allSkillsData]);
 
-  // Unified Legend Component
-  const UnifiedLegend = () => {
-    if (legendData.length === 0) return null;
-
-    return (
-      <div className="flex flex-wrap justify-content-center gap-3 mt-3 px-4">
-        {legendData.map((item, idx) => (
-          <div
-            key={idx}
-            className="flex align-items-center gap-2"
-            style={{ fontSize: "11px" }}
-          >
-            <span
-              style={{
-                width: "12px",
-                height: "12px",
-                borderRadius: "50%",
-                backgroundColor: item.backgroundColor,
-                border: `2px solid ${item.color}`,
-                display: "inline-block",
-                flexShrink: 0,
-              }}
-            />
-            <span className="text-color">{item.label}</span>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   if (loading) {
     return (
       <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
@@ -458,7 +422,7 @@ const BenchmarkingFig5_2 = () => {
     );
   }
 
-  if (!uaeChartData || !usChartData) return null;
+  if (!radarChartData) return null;
 
   const totalUAECount = categoryData.reduce((sum, c) => sum + c.uaeTotal, 0);
   const totalUSCount = categoryData.reduce((sum, c) => sum + c.usTotal, 0);
@@ -490,7 +454,7 @@ const BenchmarkingFig5_2 = () => {
           {/* Chart toggles */}
           <div className="flex gap-4 mt-4 align-items-center">
             <span className="text-sm font-semibold text-color-secondary">
-              Show charts:
+              Show datasets:
             </span>
             <div className="flex align-items-center gap-2">
               <Checkbox
@@ -524,57 +488,15 @@ const BenchmarkingFig5_2 = () => {
         </div>
       </div>
 
-      {/* Charts area - two adjacent doughnut charts */}
-      <div className="w-full mt-3 flex flex-col md:flex-row gap-4 justify-content-center align-items-center">
-        {/* UAE Chart */}
-        {showUAEChart && (
-          <div
-            className="flex flex-col align-items-center"
-            style={{ flex: 1, minWidth: "300px", maxWidth: "500px" }}
-          >
-            <h3
-              className="text-md font-semibold mb-2"
-              style={{ color: "var(--blue-500)" }}
-            >
-              UAE Category Distribution
-            </h3>
-            <div style={{ width: "100%", height: "350px" }}>
-              <Chart
-                type="doughnut"
-                data={uaeChartData}
-                options={chartOptions}
-                className="w-full h-full"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* US Chart */}
-        {showUSChart && (
-          <div
-            className="flex flex-col align-items-center"
-            style={{ flex: 1, minWidth: "300px", maxWidth: "500px" }}
-          >
-            <h3
-              className="text-md font-semibold mb-2"
-              style={{ color: "var(--pink-500)" }}
-            >
-              US Category Distribution
-            </h3>
-            <div style={{ width: "100%", height: "350px" }}>
-              <Chart
-                type="doughnut"
-                data={usChartData}
-                options={chartOptions}
-                className="w-full h-full"
-              />
-            </div>
-          </div>
-        )}
+      {/* Radar chart for all categories */}
+      <div className="w-full mt-3 flex flex-col justify-content-center align-items-center">
+        <h3 className="text-md font-semibold mb-2 text-center">
+          UAE vs US: Hard Skill Categories (All)
+        </h3>
+        <div style={{ width: "100%", maxWidth: "820px", height: "460px" }}>
+          <Chart type="radar" data={radarChartData} options={chartOptions} className="w-full h-full" />
+        </div>
       </div>
-
-      {/* Unified Legend */}
-      {(showUAEChart || showUSChart) && <UnifiedLegend />}
 
       {/* Category selector & skills list */}
       <div className="w-full mt-4 pt-3 border-top-1 surface-border">

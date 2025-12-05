@@ -82,23 +82,7 @@ const DefaultLayout = () => {
         label: "Benchmarking",
         icon: "pi pi-fw pi-sliders-h",
         className: isBenchmarkingRoute ? "menu-accent" : "",
-        items: [
-          {
-            label: "Occupational Demands",
-            icon: "pi pi-chart-line",
-            command: () => navigate("/benchmarkingOccupationalDemands"),
-          },
-          {
-            label: "Quantifying Skill Similarity",
-            icon: "pi pi-chart-pie",
-            command: () => navigate("/benchmarSkillSimilarity"),
-          },
-          {
-            label: "Occupational Pattern of Shared Skills",
-            icon: "pi pi-chart-scatter",
-            command: () => navigate("/benchmarkingOccupationalPattern"),
-          },
-        ],
+        command: () => navigate("/benchmarking"),
       },
     ],
     [isHomeRoute, isGreenRoute, isBenchmarkingRoute, navigate]

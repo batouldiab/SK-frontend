@@ -4,9 +4,7 @@ import CountryCitiesMap from "./pages/CountryCitiesMap";
 import GreenOverview from "./pages/GreenOverview";
 import GreenOccupations from "./pages/GreenOccupations";
 import GreenInEnergySector from "./pages/GreenInEnergySector";
-import BenchmarkingOccupationalDemands from "./pages/BenchmarkingOccupationalDemands";
-import BenchmarkSkillSimilarity from "./pages/BenchmarSkillSimilarity";
-import BenchmarkingOccupationalPattern from "./pages/BenchmarkingOccupationalPattern"
+import Benchmarking from "./pages/Benchmarking";
 
 const AppRoutes = () => (
   <Routes>
@@ -16,9 +14,10 @@ const AppRoutes = () => (
       <Route path="greenOverview" element={<GreenOverview />} />
       <Route path="greenOccupations" element={<GreenOccupations />} />
       <Route path="greenInEnergySector" element={<GreenInEnergySector />} />
-      <Route path="benchmarkingOccupationalDemands" element={<BenchmarkingOccupationalDemands />} />
-      <Route path="benchmarSkillSimilarity" element={<BenchmarkSkillSimilarity />} />
-      <Route path="benchmarkingOccupationalPattern" element={<BenchmarkingOccupationalPattern />} />
+      <Route path="benchmarking" element={<Benchmarking />} />
+      <Route path="benchmarkingOccupationalDemands" element={<Navigate to="/benchmarking" replace />} />
+      <Route path="benchmarSkillSimilarity" element={<Navigate to="/benchmarking" replace />} />
+      <Route path="benchmarkingOccupationalPattern" element={<Navigate to="/benchmarking" replace />} />
     </Route>
     <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>

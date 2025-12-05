@@ -20,7 +20,7 @@ const Benchmarking = () => {
           <div>
             <h1 className="page-hero__title">Benchmarking labour market signals</h1>
             <p className="page-hero__meta">
-              A consolidated view of occupational demand, skill similarity, and shared-skill patterns across UAE and US markets.
+              A consolidated view of occupational demand, skill similarity, and shared-skill patterns across countries markets.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -64,14 +64,14 @@ const Benchmarking = () => {
                 <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/80 dark:bg-blue-950">
                   <i className="pi pi-chart-line text-[0.55rem]" />
                 </span>
-                <span>Section 1 : Job Title Distribution</span>
+                <span>Section 1 · Occupational demand</span>
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Standardized Occupational Demands
+                Job title intensity per 1,000 jobs
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                A comparative radar chart showing the <strong>standardized distribution</strong> of top unique occupations in the labor market versus the United States.
+                Side-by-side Countries demand for the unified top job titles, expressed as standardized jobs per 1,000.
               </p>
             </div>
 
@@ -106,14 +106,14 @@ const Benchmarking = () => {
                 <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/80 dark:bg-blue-950">
                   <i className="pi pi-chart-bar text-[0.55rem]" />
                 </span>
-                <span>Section 2 : Hard Skills Categories Distribution</span>
+                <span>Section 2 · Hard skill mix</span>
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Comparative breakdown of unique hard skill demand
+                Category share of hard skills in demand
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                Distribution of Hard Skills Categories in Demand.
+                Radar view of countries standardized (per 100) demand across all hard-skill categories.
               </p>
             </div>
 
@@ -148,14 +148,14 @@ const Benchmarking = () => {
                 <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/80 dark:bg-blue-950">
                   <i className="pi pi-chart-bar text-[0.55rem]" />
                 </span>
-                <span>Section 3 : Quantifying skill similarity across markets</span>
+                <span>Section 3 · Hard skill similarity</span>
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Hard skills: shared foundations and frontier gaps
+                Hard skills: overlap and differentiation
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                Country-specific hard skills demanded among the hard skills.
+                Top hard skills compared for standardized (per 100) demand in Counties.
               </p>
             </div>
 
@@ -190,14 +190,14 @@ const Benchmarking = () => {
                 <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/80 dark:bg-blue-950">
                   <i className="pi pi-chart-bar text-[0.55rem]" />
                 </span>
-                <span>Section 4 : Soft Skills Categories Distribution</span>
+                <span>Section 4 · Soft skill mix</span>
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Comparative breakdown of unique soft skill demand
+                Category share of soft skills in demand
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                Distribution of Soft Skills Categories in Demand.
+                Radar view of countries standardized (per 100) demand across all soft-skill categories.
               </p>
             </div>
 
@@ -232,14 +232,14 @@ const Benchmarking = () => {
                 <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/80 dark:bg-blue-950">
                   <i className="pi pi-chart-bar text-[0.55rem]" />
                 </span>
-                <span>Section 5 : Quantifying skill similarity across markets</span>
+                <span>Section 5 · Soft skill similarity</span>
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Soft skills: shared foundations and frontier gaps
+                Soft skills: overlap and differentiation
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                Country-specific soft skills demanded among the soft skills.
+                Top soft skills compared for standardized (per 100) demand in countries.
               </p>
             </div>
 
@@ -275,14 +275,14 @@ const Benchmarking = () => {
                 <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/80 dark:bg-blue-950">
                   <i className="pi pi-chart-bar text-[0.55rem]" />
                 </span>
-                <span>Section 6 : Skill Distribution by Hierarchy Level</span>
+                <span>Section 6 · Seniority pattern</span>
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Skill Distribution by Hierarchy Level: UAE vs US
+                Skill demand by hierarchy level
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                Standardized count distribution of Hierarchy Level for selected skill across UAE and US markets.
+                Compare countries distribution of job hierarchy levels for the selected skill.
               </p>
             </div>
 
@@ -317,14 +317,14 @@ const Benchmarking = () => {
                 <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/80 dark:bg-blue-950">
                   <i className="pi pi-chart-bar text-[0.55rem]" />
                 </span>
-                <span>Section 7 : Top Job Titles for Shared Skills</span>
+                <span>Section 7 · Shared-skill job titles</span>
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Top Job Titles: UAE vs US
+                Top titles linked to a shared skill
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                Standardized count distribution of top job titles for selected skill across UAE and US markets.
+                Countries standardized (per 100) demand for the leading job titles associated with the chosen skill.
               </p>
             </div>
 

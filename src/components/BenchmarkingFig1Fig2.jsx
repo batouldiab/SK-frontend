@@ -20,7 +20,7 @@ const BenchmarkingFig1Fig2 = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Data for the radar chart (unified top jobs)
+  // Data for the chart (unified top jobs)
   const [rawData, setRawData] = useState(null);
   const [unifiedTopJobs, setUnifiedTopJobs] = useState([]);
 
@@ -139,15 +139,9 @@ const BenchmarkingFig1Fig2 = () => {
     if (showUAE) {
       datasets.push({
         label: "UAE",
+        backgroundColor: primaryBlue + "66",
         borderColor: primaryBlue,
-        pointBackgroundColor: primaryBlue,
-        pointBorderColor: primaryBlue,
-        pointHoverBackgroundColor: textColor,
-        pointHoverBorderColor: primaryBlue,
-        backgroundColor: primaryBlue + "20",
-        borderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
+        borderWidth: 1,
         data: rawData.uaePercentages.map((v) => v * DISPLAY_SCALE),
       });
     }
@@ -155,18 +149,18 @@ const BenchmarkingFig1Fig2 = () => {
     if (showUS) {
       datasets.push({
         label: "US",
+        backgroundColor: primaryPink + "66",
         borderColor: primaryPink,
-        pointBackgroundColor: primaryPink,
-        pointBorderColor: primaryPink,
-        pointHoverBackgroundColor: textColor,
-        pointHoverBorderColor: primaryPink,
-        backgroundColor: primaryPink + "20",
-        borderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
+        borderWidth: 1,
         data: rawData.usPercentages.map((v) => v * DISPLAY_SCALE),
       });
     }
+
+    const maxValue = Math.max(
+      ...(rawData.uaePercentages.map((v) => v * DISPLAY_SCALE)),
+      ...(rawData.usPercentages.map((v) => v * DISPLAY_SCALE))
+    );
+    const yMax = Math.ceil(maxValue * 1.1);
 
     const data = {
       labels: rawData.jobTitles,
@@ -194,27 +188,34 @@ const BenchmarkingFig1Fig2 = () => {
         tooltip: {
           callbacks: {
             label: function (context) {
-              return `${context.dataset.label}: ${context.parsed.r.toFixed(2)}`;
+              return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}`;
             },
           },
         },
       },
       scales: {
-        r: {
-          beginAtZero: true,
+        x: {
           ticks: {
             color: textColorSecondary,
-            backdropColor: "transparent",
+            maxRotation: 40,
+            minRotation: 0,
+            autoSkip: false,
+          },
+          grid: {
+            display: false,
+            drawBorder: false,
+          },
+        },
+        y: {
+          beginAtZero: true,
+          max: yMax,
+          ticks: {
+            color: textColorSecondary,
             callback: (value) => value.toFixed(1),
           },
           grid: {
             color: textColorSecondary + "40",
-          },
-          pointLabels: {
-            color: textColorSecondary,
-            font: {
-              size: 11,
-            },
+            drawBorder: false,
           },
         },
       },
@@ -346,11 +347,11 @@ const BenchmarkingFig1Fig2 = () => {
         style={{ minHeight: "400px" }}
       >
         <Chart
-          type="radar"
+          type="bar"
           data={chartData}
           options={chartOptions}
           className="w-full"
-          style={{ maxWidth: "600px", height: "400px" }}
+          style={{ maxWidth: "900px", height: "460px" }}
         />
       </div>
       <div className="flex justify-content-end mt-2">

@@ -12,6 +12,8 @@ const dropdownPerfProps = {
   scrollHeight: "260px",
 };
 
+const DISPLAY_SCALE = 10; // show values per 1000 jobs
+
 const BenchmarkingFig1Fig2 = () => {
   const [chartData, setChartData] = useState(null);
   const [chartOptions, setChartOptions] = useState({});
@@ -146,7 +148,7 @@ const BenchmarkingFig1Fig2 = () => {
         borderWidth: 2,
         pointRadius: 4,
         pointHoverRadius: 6,
-        data: rawData.uaePercentages,
+        data: rawData.uaePercentages.map((v) => v * DISPLAY_SCALE),
       });
     }
 
@@ -162,7 +164,7 @@ const BenchmarkingFig1Fig2 = () => {
         borderWidth: 2,
         pointRadius: 4,
         pointHoverRadius: 6,
-        data: rawData.usPercentages,
+        data: rawData.usPercentages.map((v) => v * DISPLAY_SCALE),
       });
     }
 
@@ -288,7 +290,7 @@ const BenchmarkingFig1Fig2 = () => {
                 Avg. UAE
               </span>
               <span className="block text-sm font-semibold">
-                {uaeAvg.toFixed(2)}
+                {(uaeAvg * DISPLAY_SCALE).toFixed(2)}
               </span>
             </div>
             <div className="surface-100 border-round-lg px-3 py-2 text-right">
@@ -296,7 +298,7 @@ const BenchmarkingFig1Fig2 = () => {
                 Avg. US
               </span>
               <span className="block text-sm font-semibold">
-                {usAvg.toFixed(2)}
+                {(usAvg * DISPLAY_SCALE).toFixed(2)}
               </span>
             </div>
           </div>
@@ -351,6 +353,20 @@ const BenchmarkingFig1Fig2 = () => {
           style={{ maxWidth: "600px", height: "400px" }}
         />
       </div>
+      <div className="flex justify-content-end mt-2">
+        <span
+          className="inline-flex items-center gap-2 px-3 py-2 border-round-lg text-xs font-semibold"
+          style={{
+            background: "var(--surface-50, rgba(255,255,255,0.08))",
+            border: "1px solid var(--surface-border, rgba(255,255,255,0.12))",
+            color: "var(--text-color-secondary)",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
+          }}
+        >
+          <i className="pi pi-info-circle text-xs" style={{ color: "var(--blue-500)" }} />
+          Values shown: jobs per 1000 in the market
+        </span>
+      </div>
 
       {/* Job selector & textual standardized percentages */}
       <div className="w-full mt-4 pt-3 border-top-1 surface-border">
@@ -378,7 +394,7 @@ const BenchmarkingFig1Fig2 = () => {
                   UAE standardized
                 </span>
                 <span className="block font-semibold">
-                  {selectedJob.uaePercent.toFixed(2)}
+                  {(selectedJob.uaePercent * DISPLAY_SCALE).toFixed(2)}
                 </span>
               </div>
               <div>
@@ -386,7 +402,7 @@ const BenchmarkingFig1Fig2 = () => {
                   US standardized
                 </span>
                 <span className="block font-semibold">
-                  {selectedJob.usPercent.toFixed(2)}
+                  {(selectedJob.usPercent * DISPLAY_SCALE).toFixed(2)}
                 </span>
               </div>
             </div>

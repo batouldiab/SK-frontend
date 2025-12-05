@@ -310,7 +310,7 @@ const BenchmarkingFig3 = () => {
       <div className="w-full mt-3 flex justify-content-center align-items-center">
         <div className="flex flex-col align-items-center w-full" style={{ maxWidth: "700px" }}>
           <h3 className="text-md font-semibold mb-2 text-color">
-            UAE vs US: Unified Top Distinct Skills Comparison
+            Top Distinct Soft Skills Comparison
           </h3>
           <div style={{ width: "100%", height: "500px" }}>
             <Chart

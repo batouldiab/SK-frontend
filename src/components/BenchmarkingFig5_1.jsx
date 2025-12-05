@@ -493,12 +493,11 @@ const BenchmarkingFig5_1 = () => {
           </div>
         </div>
       </div>
-
+      <h4 className="text-sm font-semibold mb-3">
+        Top Soft Sklills Category Distribution (%)
+      </h4>
       {/* Radar chart for all categories */}
       <div className="w-full mt-3 flex flex-col justify-content-center align-items-center">
-        <h3 className="text-md font-semibold mb-2 text-center">
-          UAE vs US: Soft Skill Categories (All)
-        </h3>
         <div style={{ width: "100%", maxWidth: "820px", height: "460px" }}>
           <Chart type="radar" data={radarChartData} options={chartOptions} className="w-full h-full" />
         </div>
@@ -573,7 +572,7 @@ const BenchmarkingFig5_1 = () => {
               {subcategoryChartData && (
                 <div className="mt-4 pt-3 border-top-1 surface-border">
                   <h4 className="text-sm font-semibold mb-3">
-                    Unified Top Subcategory Distribution: UAE vs US (%)
+                    Top Soft Skills Subcategory Distribution (%)
                   </h4>
               <div style={{ width: "100%", height: "400px" }}>
                 <Chart

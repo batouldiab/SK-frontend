@@ -372,7 +372,7 @@ const BenchmarkingFig1Fig2 = () => {
       {/* Job selector & textual standardized percentages */}
       <div className="w-full mt-4 pt-3 border-top-1 surface-border">
         <h3 className="text-sm font-semibold mb-2">
-          Inspect standardized distribution for any job title
+          Compare standardized demand for a selected job title (per 1000 job in the country market)
         </h3>
         <div className="flex flex-col md:flex-row gap-3 align-items-start md:align-items-center">
           <div className="flex-1">

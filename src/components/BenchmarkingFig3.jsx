@@ -326,7 +326,7 @@ const BenchmarkingFig3 = () => {
       {/* Skill selector & details */}
       <div className="w-full mt-4 pt-3 border-top-1 surface-border">
         <h3 className="text-sm font-semibold mb-2">
-          Inspect standardized count for any soft skill
+          Compare standardized demand for a selected soft skill (per 1000 soft skill in the country market)
         </h3>
         <div className="flex flex-col md:flex-row gap-3 align-items-start md:align-items-center">
           <div className="flex-1">

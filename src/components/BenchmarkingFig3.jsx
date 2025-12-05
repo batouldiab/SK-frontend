@@ -246,6 +246,10 @@ const BenchmarkingFig3 = () => {
   const uaeAvg = uaeTotal / unifiedTopSkills.length;
   const usAvg = usTotal / unifiedTopSkills.length;
 
+  // ✅ Count only skills where UAE / US count is non-zero
+  const totalUaeSkills = allSkillsData.filter((s) => s.uaeCount !== 0).length;
+  const totalUsSkills = allSkillsData.filter((s) => s.usCount !== 0).length;
+
   return (
     <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
       <div className="justify-content-between align-items-start mb-3 gap-3 w-full">
@@ -254,15 +258,30 @@ const BenchmarkingFig3 = () => {
           <div className="flex gap-2 flex-wrap justify-content-start align-items-center mt-3">
             <div className="surface-100 border-round-lg px-3 py-2 text-right">
               <span className="block text-xs text-color-secondary">
-                Total Skills in Dataset
+                Total Distinct Skills Count in Dataset
               </span>
               <span className="block text-sm font-semibold">
                 {allSkillsData.length}
               </span>
+
+              <span className="block text-xs text-color-secondary">
+                Total Distinct Skills Count in UAE
+              </span>
+              <span className="block text-sm font-semibold">
+                {totalUaeSkills}
+              </span>
+
+              <span className="block text-xs text-color-secondary">
+                Total Distinct Skills Count in US
+              </span>
+              <span className="block text-sm font-semibold">
+                {totalUsSkills}
+              </span>
             </div>
+
             <div className="surface-100 border-round-lg px-3 py-2 text-right">
               <span className="block text-xs text-color-secondary">
-                Unified Top Skills
+                Unified Top Distinct Skills
               </span>
               <span className="block text-sm font-semibold">
                 {unifiedTopSkills.length}
@@ -292,7 +311,7 @@ const BenchmarkingFig3 = () => {
       <div className="w-full mt-3 flex justify-content-center align-items-center">
         <div className="flex flex-col align-items-center w-full" style={{ maxWidth: "700px" }}>
           <h3 className="text-md font-semibold mb-2 text-color">
-            UAE vs US: Unified Top Skills Comparison
+            UAE vs US: Unified Top Distinct Skills Comparison
           </h3>
           <div style={{ width: "100%", height: "500px" }}>
             <Chart

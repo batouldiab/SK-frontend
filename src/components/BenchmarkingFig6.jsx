@@ -1,8 +1,16 @@
 // src/components/BenchmarkingFig6.jsx
 import React, { useState, useEffect } from "react";
-import { Chart } from "primereact/chart";
+import { AgCharts } from "ag-charts-react";
 import { Dropdown } from "primereact/dropdown";
 import Papa from "papaparse";
+
+const COLORS = {
+  uae: "#1E88E5",
+  us: "#1a1a2e",
+  background: "#ffffff",
+  grid: "#e5e7eb",
+  text: "#1f2937",
+};
 
 const dropdownPerfProps = {
   filter: true,
@@ -25,8 +33,8 @@ const BenchmarkingFig6 = () => {
   const [selectedSkill, setSelectedSkill] = useState(null);
 
   // Chart data
-  const [chartData, setChartData] = useState(null);
-  const [chartOptions, setChartOptions] = useState({});
+  const [chartData, setChartData] = useState([]);
+  const [chartOptions, setChartOptions] = useState(null);
 
   // Statistics
   const [stats, setStats] = useState({
@@ -197,7 +205,6 @@ const BenchmarkingFig6 = () => {
 
       titlesWithTotal.sort((a, b) => b.total - a.total);
 
-      const sortedTitles = titlesWithTotal.map((item) => item.title);
       const sortedUaeData = titlesWithTotal.map((item) => item.uaeCount);
       const sortedUsData = titlesWithTotal.map((item) => item.usCount);
 
@@ -212,86 +219,125 @@ const BenchmarkingFig6 = () => {
       });
 
       // Configure chart
-      const documentStyle = getComputedStyle(document.documentElement);
-      const textColor = documentStyle.getPropertyValue("--text-color");
-      const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
-      const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
+      const dataForChart = titlesWithTotal.map((item) => ({
+        title: item.title,
+        uaePercent: item.uaeCount * 100,
+        usPercent: item.usCount * 100,
+      }));
 
-      const data = {
-        labels: sortedTitles,
-        datasets: [
-          {
-            label: "UAE",
-            backgroundColor: documentStyle.getPropertyValue("--blue-500"),
-            borderColor: documentStyle.getPropertyValue("--blue-500"),
-            data: sortedUaeData,
-          },
-          {
-            label: "US",
-            backgroundColor: documentStyle.getPropertyValue("--pink-500"),
-            borderColor: documentStyle.getPropertyValue("--pink-500"),
-            data: sortedUsData,
-          },
-        ],
+      const maxValue = Math.max(
+        ...dataForChart.flatMap((d) => [d.uaePercent, d.usPercent]),
+        0
+      );
+      const paddedMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : 1;
+
+      const documentStyle = getComputedStyle(document.documentElement);
+      const getCssVar = (name, fallback) => {
+        const value = documentStyle.getPropertyValue(name);
+        return value && value.trim() ? value.trim() : fallback;
       };
+
+      const textColor = getCssVar("--text-color", COLORS.text);
+      const textColorSecondary = getCssVar("--text-color-secondary", "#6b7280");
+      const gridColor = getCssVar("--surface-border", COLORS.grid);
+      const uaeColor = getCssVar("--blue-500", COLORS.uae);
+      const usColor = getCssVar("--pink-500", COLORS.us);
 
       const options = {
-        indexAxis: "y",
-        maintainAspectRatio: false,
-        aspectRatio: 0.8,
-        plugins: {
-          legend: {
-            display: true,
+        data: dataForChart,
+        background: { fill: COLORS.background },
+        padding: { top: 10, right: 20, bottom: 40, left: 50 },
+        series: [
+          {
+            type: "bar",
+            xKey: "title",
+            yKey: "uaePercent",
+            yName: "UAE",
+            fill: uaeColor,
+            stroke: uaeColor,
+            cornerRadius: 5,
+            tooltip: {
+              renderer: ({ datum }) => ({
+                content: `UAE: ${datum.uaePercent.toFixed(2)}%`,
+              }),
+            },
+          },
+          {
+            type: "scatter",
+            xKey: "title",
+            yKey: "usPercent",
+            title: "US",
+            marker: {
+              fill: usColor,
+              stroke: "#ffffff",
+              strokeWidth: 2,
+              size: 12,
+              shape: "circle",
+            },
+            tooltip: {
+              renderer: ({ datum }) => ({
+                content: `US: ${datum.usPercent.toFixed(2)}%`,
+              }),
+            },
+          },
+        ],
+        axes: [
+          {
+            type: "category",
             position: "bottom",
-            labels: {
+            label: {
+              rotation: -35,
               color: textColor,
-              usePointStyle: true,
-              padding: 15,
+              fontSize: 11,
+              formatter: ({ value }) =>
+                value.length > 28 ? `${value.slice(0, 25)}...` : value,
+            },
+            line: {
+              stroke: gridColor,
             },
           },
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                const percentage = (context.parsed.x * 100).toFixed(2);
-                return `${context.dataset.label}: ${percentage}%`;
-              },
+          {
+            type: "number",
+            position: "left",
+            title: {
+              text: "Share of titles (%)",
+              fontSize: 12,
+              color: textColor,
             },
-          },
-        },
-        scales: {
-          x: {
-            ticks: {
+            min: 0,
+            max: paddedMax,
+            label: {
               color: textColorSecondary,
-              font: {
-                weight: 500,
-              },
-              callback: (value) => `${(value * 100).toFixed(1)}%`,
+              fontSize: 11,
+              formatter: ({ value }) => `${value.toFixed(1)}%`,
             },
-            grid: {
-              display: false,
-              drawBorder: false,
-            },
-          },
-          y: {
-            ticks: {
-              color: textColorSecondary,
-              font: {
-                size: 11,
-              },
-            },
-            grid: {
-              color: surfaceBorder,
-              drawBorder: false,
+            gridLine: {
+              style: [
+                {
+                  stroke: gridColor,
+                  lineDash: [4, 4],
+                },
+              ],
             },
           },
-        },
-        animation: {
-          duration: 800,
-          easing: "easeOutQuart",
+        ],
+        legend: {
+          position: "bottom",
+          item: {
+            marker: {
+              shape: "circle",
+              size: 10,
+            },
+            label: {
+              fontSize: 13,
+              color: textColor,
+            },
+            paddingX: 24,
+          },
         },
       };
 
-      setChartData(data);
+      setChartData(dataForChart);
       setChartOptions(options);
     } catch (err) {
       console.error("Error processing chart data:", err);
@@ -301,41 +347,33 @@ const BenchmarkingFig6 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
-        <div className="text-sm text-color-secondary mb-2">
-          Loading chart data…
+      <div className="flex items-center justify-center h-96 bg-gray-50 rounded-xl">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          <span className="text-gray-600 font-medium">Loading chart data...</span>
         </div>
-        <div
-          className="mt-2"
-          style={{
-            height: "100%",
-            borderRadius: "1rem",
-            opacity: 0.3,
-            border: "1px dashed var(--surface-border)",
-          }}
-        />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
-        <p className="m-0 text-sm text-red-500">Error loading chart data: {error}</p>
+      <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 w-full">
+        <p className="text-blue-700">Error loading chart data: {error}</p>
       </div>
     );
   }
 
-  if (!chartData || commonSkills.length === 0) {
+  if (!chartOptions || !chartData || chartData.length === 0 || commonSkills.length === 0) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
-        <p className="m-0 text-sm text-color-secondary">No common skills found between the two datasets.</p>
+      <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 w-full">
+        <p className="text-blue-700">No common skills found between the two datasets.</p>
       </div>
     );
   }
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
+    <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
       {/* Header with skill selector */}
       <div className="mb-3">
 
@@ -374,8 +412,8 @@ const BenchmarkingFig6 = () => {
       </div>
 
       {/* Chart */}
-      <div className="flex-1" style={{ minHeight: "400px" }}>
-        <Chart type="bar" data={chartData} options={chartOptions} className="w-full h-full" />
+      <div className="flex-1 min-h-[420px]">
+        {chartOptions && <AgCharts className="w-full h-full" options={chartOptions} />}
       </div>
     </div>
   );

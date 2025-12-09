@@ -400,30 +400,20 @@ const BenchmarkingFig5_1 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
-        <div className="text-sm text-color-secondary mb-2">
-          Loading chart data…
+      <div className="flex items-center justify-center h-96 bg-gray-50 rounded-xl">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          <span className="text-gray-600 font-medium">Loading chart data...</span>
         </div>
-        <div
-          className="mt-2"
-          style={{
-            height: "100%",
-            borderRadius: "1rem",
-            opacity: 0.3,
-            border: "1px dashed var(--surface-border)",
-          }}
-        />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
-        <h2 className="m-0 mb-2 text-xl">Category Distribution: UAE vs US</h2>
-        <p className="m-0 text-sm text-red-500">
-          Error loading chart data: {error}
-        </p>
+      <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 w-full">
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">Category Distribution: UAE vs US</h3>
+        <p className="text-blue-700">Error loading chart data: {error}</p>
       </div>
     );
   }
@@ -434,7 +424,7 @@ const BenchmarkingFig5_1 = () => {
   const totalUSCount = categoryData.reduce((sum, c) => sum + c.usTotal, 0);
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
+    <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
       <div className="justify-content-between align-items-start mb-3 gap-3 w-full">
         <div>
           {/* Statistics cards */}

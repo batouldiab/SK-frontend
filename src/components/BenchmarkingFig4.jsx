@@ -208,32 +208,22 @@ const BenchmarkingFig4 = () => {
 
   if (loading) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
-        <div className="text-sm text-color-secondary mb-2">
-          Loading chart data…
+      <div className="flex items-center justify-center h-96 bg-gray-50 rounded-xl">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          <span className="text-gray-600 font-medium">Loading chart data...</span>
         </div>
-        <div
-          className="mt-2"
-          style={{
-            height: "100%",
-            borderRadius: "1rem",
-            opacity: 0.3,
-            border: "1px dashed var(--surface-border)",
-          }}
-        />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px]">
-        <h2 className="m-0 mb-2 text-xl">
+      <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 w-full">
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">
           Top Hard Skills: UAE vs US
-        </h2>
-        <p className="m-0 text-sm text-red-500">
-          Error loading chart data: {error}
-        </p>
+        </h3>
+        <p className="text-blue-700">Error loading chart data: {error}</p>
       </div>
     );
   }
@@ -250,66 +240,46 @@ const BenchmarkingFig4 = () => {
   const totalUsSkills = allSkillsData.filter((s) => s.usCount !== 0).length;
 
   return (
-    <div className="card surface-card shadow-2 border-round-xl p-4 w-full min-h-[420px] flex flex-col">
-      <div className="justify-content-between align-items-start mb-3 gap-3 w-full">
-        <div>
-          {/* Statistics cards */}
-          <div className="flex gap-2 flex-wrap justify-content-start align-items-center mt-3">
-            <div className="surface-100 border-round-lg px-3 py-2 text-right">
-              <span className="block text-xs text-color-secondary">
-                Total Distinct Skills Count in Dataset
-              </span>
-              <span className="block text-sm font-semibold">
-                {allSkillsData.length}
-              </span>
-
-              <span className="block text-xs text-color-secondary">
-                Total Distinct Skills Count in UAE
-              </span>
-              <span className="block text-sm font-semibold">
-                {totalUaeSkills}
-              </span>
-
-              <span className="block text-xs text-color-secondary">
-                Total Distinct Skills Count in US
-              </span>
-              <span className="block text-sm font-semibold">
-                {totalUsSkills}
-              </span>
+    <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+            Total Distinct Skills (Dataset)
+          </p>
+          <p className="text-2xl font-bold text-slate-800">{allSkillsData.length}</p>
+          <div className="mt-3 text-xs text-slate-600 space-y-1">
+            <div>UAE: {totalUaeSkills}</div>
+            <div>US: {totalUsSkills}</div>
+          </div>
+        </div>
+        <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+          <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">
+            Unified Top Distinct Skills
+          </p>
+          <p className="text-2xl font-bold text-blue-700">{unifiedTopSkills.length}</p>
+        </div>
+        <div className="p-4 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl">
+          <p className="text-xs font-medium text-slate-300 uppercase tracking-wide mb-1">
+            Average Standardized Count
+          </p>
+          <div className="flex gap-4 text-white">
+            <div>
+              <p className="text-[10px] uppercase text-slate-200 mb-1">UAE</p>
+              <p className="text-xl font-semibold">{uaeAvg.toFixed(4)}</p>
             </div>
-            <div className="surface-100 border-round-lg px-3 py-2 text-right">
-              <span className="block text-xs text-color-secondary">
-                Unified Top Distinct Skills
-              </span>
-              <span className="block text-sm font-semibold">
-                {unifiedTopSkills.length}
-              </span>
-            </div>
-            <div className="surface-100 border-round-lg px-3 py-2 text-right">
-              <span className="block text-xs text-color-secondary">
-                Avg. UAE Standardized Count
-              </span>
-              <span className="block text-sm font-semibold">
-                {uaeAvg.toFixed(4)}
-              </span>
-            </div>
-            <div className="surface-100 border-round-lg px-3 py-2 text-right">
-              <span className="block text-xs text-color-secondary">
-                Avg. US Standardized Count
-              </span>
-              <span className="block text-sm font-semibold">
-                {usAvg.toFixed(4)}
-              </span>
+            <div>
+              <p className="text-[10px] uppercase text-slate-200 mb-1">US</p>
+              <p className="text-xl font-semibold">{usAvg.toFixed(4)}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Radar Chart - UAE vs US comparison */}
-      <div className="w-full mt-3 flex justify-content-center align-items-center">
-        <div className="flex flex-col align-items-center w-full" style={{ maxWidth: "700px" }}>
-          <h3 className="text-md font-semibold mb-2 text-color">
-            Top Distinct Hard Skills Comparison: <span className="font-light">Skills count per 100 OJAs</span>
+      <div className="w-full mt-3 flex justify-center items-center">
+        <div className="flex flex-col items-center w-full" style={{ maxWidth: "720px" }}>
+          <h3 className="text-md font-semibold mb-2 text-gray-800">
+            Top Distinct Hard Skills Comparison: <span className="font-light">Skills count per 100 OJAs</span>
           </h3>
           <div style={{ width: "100%", height: "500px" }}>
             <Chart
@@ -323,39 +293,33 @@ const BenchmarkingFig4 = () => {
       </div>
 
       {/* Skill selector & details */}
-      <div className="w-full mt-4 pt-3 border-top-1 surface-border">
-        <h3 className="text-sm font-semibold mb-2">
+      <div className="w-full mt-4 pt-4 border-t border-gray-100">
+        <h3 className="text-sm font-semibold mb-3 text-gray-700">
           Compare standardized demand for a selected hard skill (per 1000 hard skill in the country market)
         </h3>
-        <div className="flex flex-col md:flex-row gap-3 align-items-start md:align-items-center">
-          <div className="flex-1">
-            <Dropdown
-              value={selectedSkill}
-              onChange={(e) => setSelectedSkill(e.value)}
-              options={allSkillsData}
-              optionLabel="hardSkill"
-              placeholder="Select a hard skill"
-              className="w-full md:w-20rem"
-              showClear
-              {...dropdownPerfProps}
-            />
-          </div>
+        <div className="flex flex-col md:flex-row gap-3 items-start md:items-center">
+          <Dropdown
+            value={selectedSkill}
+            onChange={(e) => setSelectedSkill(e.value)}
+            options={allSkillsData}
+            optionLabel="hardSkill"
+            placeholder="Select a hard skill"
+            className="w-full md:w-80"
+            showClear
+            {...dropdownPerfProps}
+          />
 
           {selectedSkill && (
-            <div className="flex gap-4 text-sm flex-wrap">
+            <div className="flex gap-6 text-sm flex-wrap">
               <div>
-                <span className="block text-color-secondary text-xs">
-                  UAE
-                </span>
-                <span className="block font-semibold" style={{ color: "var(--blue-500)" }}>
+                <span className="block text-gray-500 text-xs uppercase">UAE</span>
+                <span className="block font-semibold text-blue-600">
                   {selectedSkill.uaeCount.toFixed(4)}
                 </span>
               </div>
               <div>
-                <span className="block text-color-secondary text-xs">
-                  US
-                </span>
-                <span className="block font-semibold" style={{ color: "var(--pink-500)" }}>
+                <span className="block text-gray-500 text-xs uppercase">US</span>
+                <span className="block font-semibold text-pink-500">
                   {selectedSkill.usCount.toFixed(4)}
                 </span>
               </div>

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { AgCharts } from "ag-charts-react";
 import { Dropdown } from "primereact/dropdown";
+import { Checkbox } from "primereact/checkbox";
 import Papa from "papaparse";
 
 const COLORS = {
@@ -35,6 +36,8 @@ const BenchmarkingFig6 = () => {
   // Chart data
   const [chartData, setChartData] = useState([]);
   const [chartOptions, setChartOptions] = useState(null);
+  const [showUAE, setShowUAE] = useState(true);
+  const [showUS, setShowUS] = useState(true);
 
   // Statistics
   const [stats, setStats] = useState({
@@ -243,44 +246,56 @@ const BenchmarkingFig6 = () => {
       const uaeColor = getCssVar("--blue-500", COLORS.uae);
       const usColor = getCssVar("--pink-500", COLORS.us);
 
+      const series = [];
+      if (showUAE) {
+        series.push({
+          type: "bar",
+          xKey: "title",
+          yKey: "uaePercent",
+          yName: "UAE",
+          fill: uaeColor,
+          stroke: uaeColor,
+          cornerRadius: 5,
+          tooltip: {
+            renderer: ({ datum }) => ({
+              content: `UAE: ${datum.uaePercent.toFixed(2)}%`,
+            }),
+          },
+        });
+      }
+
+      if (showUS) {
+        series.push({
+          type: "scatter",
+          xKey: "title",
+          yKey: "usPercent",
+          title: "US",
+          marker: {
+            fill: usColor,
+            stroke: "#ffffff",
+            strokeWidth: 2,
+            size: 12,
+            shape: "circle",
+          },
+          tooltip: {
+            renderer: ({ datum }) => ({
+              content: `US: ${datum.usPercent.toFixed(2)}%`,
+            }),
+          },
+        });
+      }
+
+      if (series.length === 0) {
+        setChartOptions(null);
+        setChartData(dataForChart);
+        return;
+      }
+
       const options = {
         data: dataForChart,
         background: { fill: COLORS.background },
         padding: { top: 10, right: 20, bottom: 40, left: 50 },
-        series: [
-          {
-            type: "bar",
-            xKey: "title",
-            yKey: "uaePercent",
-            yName: "UAE",
-            fill: uaeColor,
-            stroke: uaeColor,
-            cornerRadius: 5,
-            tooltip: {
-              renderer: ({ datum }) => ({
-                content: `UAE: ${datum.uaePercent.toFixed(2)}%`,
-              }),
-            },
-          },
-          {
-            type: "scatter",
-            xKey: "title",
-            yKey: "usPercent",
-            title: "US",
-            marker: {
-              fill: usColor,
-              stroke: "#ffffff",
-              strokeWidth: 2,
-              size: 12,
-              shape: "circle",
-            },
-            tooltip: {
-              renderer: ({ datum }) => ({
-                content: `US: ${datum.usPercent.toFixed(2)}%`,
-              }),
-            },
-          },
-        ],
+        series,
         axes: [
           {
             type: "category",
@@ -343,7 +358,7 @@ const BenchmarkingFig6 = () => {
       console.error("Error processing chart data:", err);
       setError(err.message || "Error processing chart data");
     }
-  }, [selectedSkill, uaeData, usData]);
+  }, [selectedSkill, uaeData, usData, showUAE, showUS]);
 
   if (loading) {
     return (
@@ -409,11 +424,52 @@ const BenchmarkingFig6 = () => {
             <span className="block text-sm font-semibold">{(stats.usAvg * 100).toFixed(2)}%</span>
           </div>
         </div>
+
+        {/* Chart toggles */}
+        <div className="flex gap-4 mt-4 align-items-center">
+          <span className="text-sm font-semibold text-color-secondary">
+            Show datasets:
+          </span>
+          <div className="flex align-items-center gap-2">
+            <Checkbox
+              inputId="toggle-uae"
+              checked={showUAE}
+              onChange={(e) => setShowUAE(e.checked)}
+            />
+            <label
+              htmlFor="toggle-uae"
+              className="text-sm cursor-pointer select-none"
+              style={{ color: "var(--blue-500)" }}
+            >
+              UAE
+            </label>
+          </div>
+          <div className="flex align-items-center gap-2">
+            <Checkbox
+              inputId="toggle-us"
+              checked={showUS}
+              onChange={(e) => setShowUS(e.checked)}
+            />
+            <label
+              htmlFor="toggle-us"
+              className="text-sm cursor-pointer select-none"
+              style={{ color: "var(--pink-500)" }}
+            >
+              US
+            </label>
+          </div>
+        </div>
       </div>
 
       {/* Chart */}
       <div className="flex-1 min-h-[420px]">
-        {chartOptions && <AgCharts className="w-full h-full" options={chartOptions} />}
+        {chartOptions ? (
+          <AgCharts className="w-full h-full" options={chartOptions} />
+        ) : (
+          <div className="flex items-center justify-center h-full text-sm text-color-secondary">
+            Select at least one dataset to display the chart.
+          </div>
+        )}
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Chart } from "primereact/chart";
 import { Dropdown } from "primereact/dropdown";
+import { Checkbox } from "primereact/checkbox";
 import Papa from "papaparse";
 
 const dropdownPerfProps = {
@@ -26,6 +27,8 @@ const BenchmarkingFig3 = () => {
   // All skills for dropdown
   const [allSkillsData, setAllSkillsData] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [showUAEChart, setShowUAEChart] = useState(true);
+  const [showUSChart, setShowUSChart] = useState(true);
 
   // Load CSV data
   useEffect(() => {
@@ -129,33 +132,44 @@ const BenchmarkingFig3 = () => {
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
 
+    const datasets = [];
+    if (showUAEChart) {
+      datasets.push({
+        label: "UAE Standardized Count",
+        borderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
+        pointBackgroundColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
+        pointBorderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
+        pointHoverBackgroundColor: textColor,
+        pointHoverBorderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
+        backgroundColor: (documentStyle.getPropertyValue("--blue-400") || "#3b82f6") + "33",
+        data: unifiedTopSkills.map((s) => s.uaeCount),
+        fill: true,
+      });
+    }
+
+    if (showUSChart) {
+      datasets.push({
+        label: "US Standardized Count",
+        borderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
+        pointBackgroundColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
+        pointBorderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
+        pointHoverBackgroundColor: textColor,
+        pointHoverBorderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
+        backgroundColor: (documentStyle.getPropertyValue("--pink-400") || "#ec4899") + "33",
+        data: unifiedTopSkills.map((s) => s.usCount),
+        fill: true,
+      });
+    }
+
+    if (datasets.length === 0) {
+      setRadarChartData(null);
+      return;
+    }
+
     // Radar Chart Data with UAE and US datasets
     const radarData = {
       labels: unifiedTopSkills.map((s) => s.softSkill),
-      datasets: [
-        {
-          label: "UAE Standardized Count",
-          borderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
-          pointBackgroundColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
-          pointBorderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
-          pointHoverBackgroundColor: textColor,
-          pointHoverBorderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
-          backgroundColor: (documentStyle.getPropertyValue("--blue-400") || "#3b82f6") + "33",
-          data: unifiedTopSkills.map((s) => s.uaeCount),
-          fill: true,
-        },
-        {
-          label: "US Standardized Count",
-          borderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
-          pointBackgroundColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
-          pointBorderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
-          pointHoverBackgroundColor: textColor,
-          pointHoverBorderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
-          backgroundColor: (documentStyle.getPropertyValue("--pink-400") || "#ec4899") + "33",
-          data: unifiedTopSkills.map((s) => s.usCount),
-          fill: true,
-        },
-      ],
+      datasets,
     };
 
     const options = {
@@ -204,7 +218,7 @@ const BenchmarkingFig3 = () => {
 
     setRadarChartData(radarData);
     setChartOptions(options);
-  }, [unifiedTopSkills]);
+  }, [unifiedTopSkills, showUAEChart, showUSChart]);
 
   if (loading) {
     return (
@@ -228,12 +242,11 @@ const BenchmarkingFig3 = () => {
     );
   }
 
-  if (!radarChartData) return null;
-
   const uaeTotal = unifiedTopSkills.reduce((sum, s) => sum + s.uaeCount, 0);
   const usTotal = unifiedTopSkills.reduce((sum, s) => sum + s.usCount, 0);
   const uaeAvg = uaeTotal / unifiedTopSkills.length;
   const usAvg = usTotal / unifiedTopSkills.length;
+  const hasChartData = radarChartData && radarChartData.datasets && radarChartData.datasets.length > 0;
 
   // ✅ Count only skills where UAE / US count is non-zero
   const totalUaeSkills = allSkillsData.filter((s) => s.uaeCount !== 0).length;
@@ -275,6 +288,41 @@ const BenchmarkingFig3 = () => {
         </div>
       </div>
 
+      {/* Chart toggles */}
+      <div className="flex gap-4 mt-1 mb-3 items-center">
+        <span className="text-sm font-semibold text-gray-600">
+          Show datasets:
+        </span>
+        <div className="flex items-center gap-2">
+          <Checkbox
+            inputId="toggle-uae-chart"
+            checked={showUAEChart}
+            onChange={(e) => setShowUAEChart(e.checked)}
+          />
+          <label
+            htmlFor="toggle-uae-chart"
+            className="text-sm cursor-pointer select-none"
+            style={{ color: "var(--blue-500)" }}
+          >
+            UAE
+          </label>
+        </div>
+        <div className="flex items-center gap-2">
+          <Checkbox
+            inputId="toggle-us-chart"
+            checked={showUSChart}
+            onChange={(e) => setShowUSChart(e.checked)}
+          />
+          <label
+            htmlFor="toggle-us-chart"
+            className="text-sm cursor-pointer select-none"
+            style={{ color: "var(--pink-500)" }}
+          >
+            US
+          </label>
+        </div>
+      </div>
+
       {/* Radar Chart - UAE vs US comparison */}
       <div className="w-full mt-3 flex justify-center items-center">
         <div className="flex flex-col items-center w-full" style={{ maxWidth: "720px" }}>
@@ -282,12 +330,18 @@ const BenchmarkingFig3 = () => {
             Top Distinct Soft Skills Comparison: <span className="font-light">Skills count per 100 OJAs</span>
           </h3>
           <div style={{ width: "100%", height: "500px" }}>
-            <Chart
-              type="radar"
-              data={radarChartData}
-              options={chartOptions}
-              className="w-full h-full"
-            />
+            {hasChartData ? (
+              <Chart
+                type="radar"
+                data={radarChartData}
+                options={chartOptions}
+                className="w-full h-full"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-sm text-color-secondary">
+                Select at least one dataset to display the chart.
+              </div>
+            )}
           </div>
         </div>
       </div>

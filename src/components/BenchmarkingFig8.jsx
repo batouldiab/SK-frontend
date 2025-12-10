@@ -1,6 +1,7 @@
 // src/components/BenchmarkingFig8.jsx
 import React, { useState, useEffect } from "react";
 import { MultiSelect } from "primereact/multiselect";
+import { Checkbox } from "primereact/checkbox";
 import Papa from "papaparse";
 import { AgCharts } from "ag-charts-react";
 import "ag-charts-enterprise";
@@ -23,6 +24,8 @@ const BenchmarkingFig8 = () => {
   // Skills available in the dataset
   const [skills, setSkills] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
+  const [showUAE, setShowUAE] = useState(true);
+  const [showUS, setShowUS] = useState(true);
 
   // Chart data
   const [heatmapOptions, setHeatmapOptions] = useState(null);
@@ -124,25 +127,38 @@ const BenchmarkingFig8 = () => {
           const usPercentage =
             totalSkillCountUS > 0 && match ? (match.countInUS / totalSkillCountUS) * 100 : 0;
 
-          heatmapData.push({
-            skill,
-            hierarchyLevel: level,
-            rowLabel: `${skill} - UAE`,
-            country: "UAE",
-            percentage: uaePercentage,
-            absolute: match?.countInUAE ?? 0,
-          });
+          if (showUAE) {
+            heatmapData.push({
+              skill,
+              hierarchyLevel: level,
+              rowLabel: `${skill} - UAE`,
+              country: "UAE",
+              percentage: uaePercentage,
+              absolute: match?.countInUAE ?? 0,
+            });
+          }
 
-          heatmapData.push({
-            skill,
-            hierarchyLevel: level,
-            rowLabel: `${skill} - US`,
-            country: "US",
-            percentage: usPercentage,
-            absolute: match?.countInUS ?? 0,
-          });
+          if (showUS) {
+            heatmapData.push({
+              skill,
+              hierarchyLevel: level,
+              rowLabel: `${skill} - US`,
+              country: "US",
+              percentage: usPercentage,
+              absolute: match?.countInUS ?? 0,
+            });
+          }
         });
       });
+
+      if (!showUAE && !showUS) {
+        setHeatmapOptions(null);
+        setStats({
+          totalHierarchyLevels: allHierarchyLevels.length,
+          selectedSkillCount: selectedSkills.length,
+        });
+        return;
+      }
 
       const documentStyle = getComputedStyle(document.documentElement);
       const textColor = documentStyle.getPropertyValue("--text-color") || "#111827";
@@ -210,7 +226,7 @@ const BenchmarkingFig8 = () => {
       console.error("Error processing chart data:", err);
       setError(err.message || "Error processing chart data");
     }
-  }, [selectedSkills, data]);
+  }, [selectedSkills, data, showUAE, showUS]);
 
   if (loading) {
     return (
@@ -282,6 +298,41 @@ const BenchmarkingFig8 = () => {
             </p>
           </div>
         </div>
+
+        {/* Chart toggles */}
+        <div className="flex gap-4 mt-4 align-items-center">
+          <span className="text-sm font-semibold text-color-secondary">
+            Show datasets:
+          </span>
+          <div className="flex align-items-center gap-2">
+            <Checkbox
+              inputId="toggle-uae"
+              checked={showUAE}
+              onChange={(e) => setShowUAE(e.checked)}
+            />
+            <label
+              htmlFor="toggle-uae"
+              className="text-sm cursor-pointer select-none"
+              style={{ color: "var(--blue-500)" }}
+            >
+              UAE
+            </label>
+          </div>
+          <div className="flex align-items-center gap-2">
+            <Checkbox
+              inputId="toggle-us"
+              checked={showUS}
+              onChange={(e) => setShowUS(e.checked)}
+            />
+            <label
+              htmlFor="toggle-us"
+              className="text-sm cursor-pointer select-none"
+              style={{ color: "var(--pink-500)" }}
+            >
+              US
+            </label>
+          </div>
+        </div>
       </div>
 
       {/* Chart */}
@@ -290,7 +341,7 @@ const BenchmarkingFig8 = () => {
           <AgCharts options={heatmapOptions} className="w-full h-full" />
         ) : (
           <div className="flex items-center justify-center h-full text-sm text-color-secondary">
-            Select at least one skill to view the heatmap.
+            Select at least one skill and dataset to view the heatmap.
           </div>
         )}
       </div>

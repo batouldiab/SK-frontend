@@ -318,31 +318,38 @@ const BenchmarkingFig5_1 = () => {
     const pinkColor = documentStyle.getPropertyValue('--pink-500') || '#ec4899';
 
     // Unified Subcategory Radar Chart with two datasets
-    const unifiedSubData = {
-      labels: unifiedSubcategories.map((s) => s.subcategory),
-      datasets: [
-        {
-          label: 'UAE Subcategory %',
-          backgroundColor: blueColor + '33',
-          borderColor: blueColor,
-          pointBackgroundColor: blueColor,
-          pointBorderColor: blueColor,
-          borderWidth: 2,
-          data: unifiedSubcategories.map((s) => s.uaePercentage),
-          fill: true,
-        },
-        {
-          label: 'US Subcategory %',
-          backgroundColor: pinkColor + '33',
-          borderColor: pinkColor,
-          pointBackgroundColor: pinkColor,
-          pointBorderColor: pinkColor,
-          borderWidth: 2,
-          data: unifiedSubcategories.map((s) => s.usPercentage),
-          fill: true,
-        },
-      ],
-    };
+    const subcategoryDatasets = [];
+    if (showUAEChart) {
+      subcategoryDatasets.push({
+        label: 'UAE Subcategory %',
+        backgroundColor: blueColor + '33',
+        borderColor: blueColor,
+        pointBackgroundColor: blueColor,
+        pointBorderColor: blueColor,
+        borderWidth: 2,
+        data: unifiedSubcategories.map((s) => s.uaePercentage),
+        fill: true,
+      });
+    }
+    if (showUSChart) {
+      subcategoryDatasets.push({
+        label: 'US Subcategory %',
+        backgroundColor: pinkColor + '33',
+        borderColor: pinkColor,
+        pointBackgroundColor: pinkColor,
+        pointBorderColor: pinkColor,
+        borderWidth: 2,
+        data: unifiedSubcategories.map((s) => s.usPercentage),
+        fill: true,
+      });
+    }
+
+    const unifiedSubData = subcategoryDatasets.length
+      ? {
+          labels: unifiedSubcategories.map((s) => s.subcategory),
+          datasets: subcategoryDatasets,
+        }
+      : null;
 
     const subChartOptions = {
       maintainAspectRatio: false,
@@ -396,7 +403,7 @@ const BenchmarkingFig5_1 = () => {
     setSubcategoryChartData(unifiedSubData);
     setSubcategoryChartOptions(subChartOptions);
 
-  }, [selectedCategory, allSkillsData]);
+  }, [selectedCategory, allSkillsData, showUAEChart, showUSChart]);
 
   if (loading) {
     return (

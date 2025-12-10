@@ -1,5 +1,5 @@
 // src/pages/Benchmarking.jsx
-import React from "react";
+import React, { useState } from "react";
 import BenchmarkingFig1Fig2 from "../components/BenchmarkingFig1Fig2";
 import BenchmarkingFig3 from "../components/BenchmarkingFig3";
 import BenchmarkingFig4 from "../components/BenchmarkingFig4";
@@ -8,7 +8,45 @@ import BenchmarkingFig5_2 from "../components/BenchmarkingFig5_2";
 import BenchmarkingFig6 from "../components/BenchmarkingFig6";
 import BenchmarkingFig8 from "../components/BenchmarkingFig8";
 
+const COUNTRY_OPTIONS = [
+  "Algeria",
+  "Bahrain",
+  "Djibouti",
+  "Egypt",
+  "Iraq",
+  "Jordan",
+  "Kuwait",
+  "Lebanon",
+  "Libya",
+  "Mauritania",
+  "Morocco",
+  "Oman",
+  "Palestine",
+  "Qatar",
+  "Saudi Arabia",
+  "Somalia",
+  "Sudan",
+  "Syria",
+  "Tunisia",
+  "United Arab Emirates",
+  "Yemen",
+];
+
 const Benchmarking = () => {
+  const [selectedCountries, setSelectedCountries] = useState([]);
+
+  const toggleCountry = (country) => {
+    setSelectedCountries((prev) => {
+      if (prev.includes(country)) {
+        return prev.filter((item) => item !== country);
+      }
+      if (prev.length >= 2) {
+        return prev;
+      }
+      return [...prev, country];
+    });
+  };
+
   return (
     <div className="page-grid">
       <header className="page-hero">
@@ -36,6 +74,49 @@ const Benchmarking = () => {
               <i className="pi pi-share-alt" />
               Shared skills
             </span>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-2 text-slate-500 text-xs uppercase tracking-[0.2em]">
+            <i className="pi pi-globe text-[0.8rem]" />
+            Select up to 2 countries
+          </div>
+          <div className="flex flex-col gap-2 w-full md:w-auto">
+            <div className="flex flex-wrap gap-2">
+              {COUNTRY_OPTIONS.map((country) => {
+                const isSelected = selectedCountries.includes(country);
+                const limitReached = selectedCountries.length >= 2 && !isSelected;
+                return (
+                  <button
+                    key={country}
+                    type="button"
+                    onClick={() => toggleCountry(country)}
+                    disabled={limitReached}
+                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-full border text-sm transition-all ${
+                      isSelected
+                        ? "bg-blue-600 text-white border-blue-700 shadow-sm"
+                        : "bg-white/80 dark:bg-slate-900/70 text-slate-700 dark:text-slate-200 border-slate-200/80 dark:border-slate-700 hover:border-blue-300 hover:text-blue-700"
+                    } ${limitReached ? "opacity-50 cursor-not-allowed" : ""}`}
+                  >
+                    <i className={isSelected ? "pi pi-check" : "pi pi-circle"} />
+                    {country}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedCountries.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {selectedCountries.map((country) => (
+                  <span
+                    key={country}
+                    className="inline-flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-100 px-3 py-1 text-xs font-medium border border-blue-200/70 dark:border-blue-800/80"
+                  >
+                    <i className="pi pi-map-marker text-[0.75rem]" />
+                    {country}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </header>

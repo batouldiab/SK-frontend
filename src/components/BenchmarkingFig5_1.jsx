@@ -428,22 +428,22 @@ const BenchmarkingFig5_1 = () => {
       <div className="justify-content-between align-items-start mb-3 gap-3 w-full">
         <div>
           {/* Statistics cards */}
-          <div className="flex gap-2 flex-wrap justify-content-start align-items-center mt-3">
-            <div className="surface-100 border-round-lg px-3 py-2 text-right">
-              <span className="block text-xs text-color-secondary">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 mb-2">
+            <div className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
                 Total Categories
-              </span>
-              <span className="block text-sm font-semibold">
+              </p>
+              <p className="text-2xl font-bold text-slate-800">
                 {categoryData.length}
-              </span>
+              </p>
             </div>
-            <div className="surface-100 border-round-lg px-3 py-2 text-right">
-              <span className="block text-xs text-color-secondary">
+            <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+              <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">
                 Total Skills
-              </span>
-              <span className="block text-sm font-semibold">
+              </p>
+              <p className="text-2xl font-bold text-blue-700">
                 {allSkillsData.length}
-              </span>
+              </p>
             </div>
           </div>
 

@@ -292,7 +292,7 @@ const Benchmarking = () => {
 
             <div className="flex justify-content-center">
               <div className="min-h-[420px] min-w-0 flex w-full">
-                <BenchmarkingFig5_1 />
+                <BenchmarkingFig5_1 selectedCountries={selectedCountries} />
               </div>
             </div>
           </div>

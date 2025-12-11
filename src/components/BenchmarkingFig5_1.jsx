@@ -1,11 +1,28 @@
 // src/components/BenchmarkingFig5_1.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Chart } from "primereact/chart";
 import { Checkbox } from "primereact/checkbox";
 import { Dropdown } from "primereact/dropdown";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import Papa from "papaparse";
+
+const COUNTRY_ALIASES = {
+  "United States": "US",
+  US: "US",
+  "United Arab Emirates": "United Arab Emirates",
+  UAE: "United Arab Emirates",
+};
+
+const DISPLAY_ALIASES = {
+  US: "United States",
+  UAE: "United Arab Emirates",
+};
+
+const toCsvKey = (name) => COUNTRY_ALIASES[name] || name;
+const toDisplayName = (name) => DISPLAY_ALIASES[name] || name;
+const fallbackPalette = ["#3b82f6", "#ec4899", "#22c55e", "#f97316", "#a855f7"];
+const baseColors = ["--blue-500", "--pink-500", "--green-500", "--orange-500", "--purple-500", "--cyan-500"];
 
 const dropdownPerfProps = {
   filter: true,
@@ -15,7 +32,7 @@ const dropdownPerfProps = {
   scrollHeight: "260px",
 };
 
-const BenchmarkingFig5_1 = () => {
+const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab Emirates"] }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -26,12 +43,12 @@ const BenchmarkingFig5_1 = () => {
   // Processed data
   const [categoryData, setCategoryData] = useState([]);
   const [allSkillsData, setAllSkillsData] = useState([]);
-  
+  const [availableCountries, setAvailableCountries] = useState([]);
+
   // UI state
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categorySkills, setCategorySkills] = useState([]);
-  const [showUAEChart, setShowUAEChart] = useState(true);
-  const [showUSChart, setShowUSChart] = useState(true);
+  const [datasetVisibility, setDatasetVisibility] = useState({});
 
   // Unified subcategory bar chart data
   const [subcategoryChartData, setSubcategoryChartData] = useState(null);
@@ -60,69 +77,50 @@ const BenchmarkingFig5_1 = () => {
                 throw new Error("No valid data found in CSV");
               }
 
-              const skillsData = [];
-              const categoryMap = new Map();
+              const metaFields = results.meta?.fields || [];
+              const standardizedColumns = metaFields
+                .filter((field) => /^Standardized Count /i.test(field))
+                .map((field) => ({
+                  fieldName: field,
+                  country: field.replace(/^Standardized Count\s*/i, "").trim(),
+                }));
 
-              // Parse all rows
+              if (!standardizedColumns.length) {
+                throw new Error("No standardized count columns found");
+              }
+
+              setAvailableCountries(standardizedColumns.map((c) => c.country));
+
+              const skillsData = [];
+
               results.data.forEach((row) => {
                 const softSkill = row["Soft Skill"]?.trim();
                 const category = row["Category"]?.trim();
                 const subcategory = row["Subcategory"]?.trim();
-                const uaeCount = parseFloat(row["Standardized Count UAE"]) || 0;
-                const usCount = parseFloat(row["Standardized Count US"]) || 0;
 
                 if (!softSkill || !category) return;
 
-                // Store skill data
+                const values = {};
+                standardizedColumns.forEach((col) => {
+                  const val = parseFloat(row[col.fieldName]);
+                  if (!Number.isNaN(val)) {
+                    values[col.country] = val;
+                  }
+                });
+
                 skillsData.push({
                   softSkill,
                   category,
                   subcategory: subcategory || "N/A",
-                  uaeCount,
-                  usCount,
+                  values,
                 });
-
-                // Aggregate by category
-                if (!categoryMap.has(category)) {
-                  categoryMap.set(category, {
-                    category,
-                    uaeTotal: 0,
-                    usTotal: 0,
-                    skillCount: 0,
-                  });
-                }
-
-                const catData = categoryMap.get(category);
-                catData.uaeTotal += uaeCount;
-                catData.usTotal += usCount;
-                catData.skillCount += 1;
               });
 
               if (skillsData.length === 0) {
                 throw new Error("No valid data found in CSV");
               }
 
-              // Calculate totals (excluding 'Uncategorized' for percentage calculation)
-              const filteredSkillsData = skillsData.filter(s => s.category !== "Uncategorized");
-              const uaeTotalCount = filteredSkillsData.reduce((sum, s) => sum + s.uaeCount, 0);
-              const usTotalCount = filteredSkillsData.reduce((sum, s) => sum + s.usCount, 0);
-
-              // Convert category map to array with percentages, filtering out 'Uncategorized'
-              const categoriesArray = Array.from(categoryMap.values())
-                .filter((cat) => cat.category !== "Uncategorized")
-                .map((cat) => ({
-                  ...cat,
-                  uaePercentage: (cat.uaeTotal / uaeTotalCount) * 100,
-                  usPercentage: (cat.usTotal / usTotalCount) * 100,
-                }));
-
-              // Sort by UAE percentage descending
-              categoriesArray.sort((a, b) => b.uaePercentage - a.uaePercentage);
-
-              setCategoryData(categoriesArray);
               setAllSkillsData(skillsData);
-              setSelectedCategory(categoriesArray[0]?.category || null);
-
             } catch (err) {
               console.error("Error processing CSV data:", err);
               setError(err.message || "Error processing data");
@@ -146,46 +144,117 @@ const BenchmarkingFig5_1 = () => {
     loadCsv();
   }, []);
 
+  // Determine which country datasets are available from selectedCountries
+  const selectedCountryConfigs = useMemo(
+    () =>
+      selectedCountries
+        .map((name) => ({
+          displayName: toDisplayName(name),
+          csvKey: toCsvKey(name),
+        }))
+        .filter((cfg) => availableCountries.includes(cfg.csvKey)),
+    [selectedCountries, availableCountries]
+  );
+
+  // Keep dataset visibility in sync with incoming selections
+  useEffect(() => {
+    setDatasetVisibility((prev) => {
+      const next = {};
+      selectedCountryConfigs.forEach((cfg) => {
+        next[cfg.csvKey] = prev[cfg.csvKey] ?? true;
+      });
+      return next;
+    });
+  }, [selectedCountryConfigs]);
+
+  // Aggregate data per category for selected countries
+  useEffect(() => {
+    if (!allSkillsData.length || !selectedCountryConfigs.length) {
+      setCategoryData([]);
+      setCategorySkills([]);
+      setSelectedCategory(null);
+      return;
+    }
+
+    const selectedKeys = selectedCountryConfigs.map((c) => c.csvKey);
+    const categoryMap = new Map();
+    const totalsByCountry = Object.fromEntries(selectedKeys.map((key) => [key, 0]));
+
+    allSkillsData.forEach((skill) => {
+      const category = skill.category;
+      if (!category || category === "Uncategorized") return;
+
+      if (!categoryMap.has(category)) {
+        categoryMap.set(category, { category, totals: {}, skillCount: 0 });
+      }
+
+      const catData = categoryMap.get(category);
+      catData.skillCount += 1;
+
+      selectedKeys.forEach((key) => {
+        const value = skill.values[key] || 0;
+        catData.totals[key] = (catData.totals[key] || 0) + value;
+        totalsByCountry[key] += value;
+      });
+    });
+
+    const sortKey = selectedKeys[0];
+
+    const categoriesArray = Array.from(categoryMap.values()).map((cat) => {
+      const percentages = {};
+      selectedKeys.forEach((key) => {
+        const total = totalsByCountry[key] || 0;
+        percentages[key] = total ? (cat.totals[key] / total) * 100 : 0;
+      });
+      return { ...cat, percentages };
+    });
+
+    categoriesArray.sort((a, b) => (b.percentages[sortKey] || 0) - (a.percentages[sortKey] || 0));
+
+    setCategoryData(categoriesArray);
+    setSelectedCategory((prev) => {
+      if (prev && categoriesArray.some((c) => c.category === prev)) return prev;
+      return categoriesArray[0]?.category || null;
+    });
+  }, [allSkillsData, selectedCountryConfigs]);
+
   // Update charts when category data changes
   useEffect(() => {
-    if (categoryData.length === 0) return;
+    if (categoryData.length === 0 || !selectedCountryConfigs.length) {
+      setRadarChartData(null);
+      return;
+    }
 
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
+    const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
 
-    const baseDatasets = [];
-    if (showUAEChart) {
-      baseDatasets.push({
-        label: "UAE Percentage",
-        borderColor: documentStyle.getPropertyValue("--blue-500") || "#3b82f6",
-        pointBackgroundColor: documentStyle.getPropertyValue("--blue-500") || "#3b82f6",
-        pointBorderColor: documentStyle.getPropertyValue("--blue-500") || "#3b82f6",
-        pointHoverBackgroundColor: textColor,
-        pointHoverBorderColor: documentStyle.getPropertyValue("--blue-500") || "#3b82f6",
-        backgroundColor: (documentStyle.getPropertyValue("--blue-500") || "#3b82f6") + "33",
-        data: categoryData.map((c) => c.uaePercentage),
-        fill: true,
-      });
-    }
+    const getColor = (index) => {
+      const resolved = palette[index % palette.length];
+      return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
+    };
 
-    if (showUSChart) {
-      baseDatasets.push({
-        label: "US Percentage",
-        borderColor: documentStyle.getPropertyValue("--pink-500") || "#ec4899",
-        pointBackgroundColor: documentStyle.getPropertyValue("--pink-500") || "#ec4899",
-        pointBorderColor: documentStyle.getPropertyValue("--pink-500") || "#ec4899",
+    const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
+
+    const datasets = visibleConfigs.map((cfg, index) => {
+      const color = getColor(index);
+      return {
+        label: `${cfg.displayName} Percentage`,
+        borderColor: color,
+        pointBackgroundColor: color,
+        pointBorderColor: color,
         pointHoverBackgroundColor: textColor,
-        pointHoverBorderColor: documentStyle.getPropertyValue("--pink-500") || "#ec4899",
-        backgroundColor: (documentStyle.getPropertyValue("--pink-500") || "#ec4899") + "33",
-        data: categoryData.map((c) => c.usPercentage),
+        pointHoverBorderColor: color,
+        backgroundColor: color + "33",
+        data: categoryData.map((c) => c.percentages[cfg.csvKey] || 0),
         fill: true,
-      });
-    }
+      };
+    });
 
     const radarData = {
       labels: categoryData.map((c) => c.category),
-      datasets: baseDatasets,
+      datasets,
     };
 
     const options = {
@@ -195,7 +264,9 @@ const BenchmarkingFig5_1 = () => {
         legend: {
           display: true,
           position: "bottom",
-          labels: { color: textColor },
+          labels: {
+            color: textColor,
+          },
         },
         tooltip: {
           callbacks: {
@@ -232,121 +303,122 @@ const BenchmarkingFig5_1 = () => {
 
     setRadarChartData(radarData);
     setChartOptions(options);
-  }, [categoryData, showUAEChart, showUSChart]);
+  }, [categoryData, selectedCountryConfigs, datasetVisibility]);
 
   // Update category skills when selected category changes
   useEffect(() => {
-    if (!selectedCategory || allSkillsData.length === 0) {
+    if (!selectedCategory || allSkillsData.length === 0 || !selectedCountryConfigs.length) {
       setCategorySkills([]);
       setSubcategoryChartData(null);
       return;
     }
 
+    const selectedKeys = selectedCountryConfigs.map((c) => c.csvKey);
+    const primaryKey = selectedKeys[0];
+
     const skills = allSkillsData
       .filter((s) => s.category === selectedCategory)
-      .sort((a, b) => b.uaeCount - a.uaeCount);
+      .sort((a, b) => (b.values[primaryKey] || 0) - (a.values[primaryKey] || 0));
 
     setCategorySkills(skills);
 
     // Calculate subcategory aggregates
     const subcategoryMap = new Map();
-    
+
     skills.forEach((skill) => {
       const subcategory = skill.subcategory;
       if (!subcategoryMap.has(subcategory)) {
         subcategoryMap.set(subcategory, {
           subcategory,
-          uaeTotal: 0,
-          usTotal: 0,
+          totals: {},
         });
       }
-      
+
       const subData = subcategoryMap.get(subcategory);
-      subData.uaeTotal += skill.uaeCount;
-      subData.usTotal += skill.usCount;
+      selectedKeys.forEach((key) => {
+        subData.totals[key] = (subData.totals[key] || 0) + (skill.values[key] || 0);
+      });
     });
 
     const subcategoriesArray = Array.from(subcategoryMap.values());
-    
+
     // Calculate totals for percentage
-    const uaeTotal = subcategoriesArray.reduce((sum, sub) => sum + sub.uaeTotal, 0);
-    const usTotal = subcategoriesArray.reduce((sum, sub) => sum + sub.usTotal, 0);
-    
-    // Calculate percentages
-    const subcategoriesWithPercentages = subcategoriesArray.map((sub) => ({
-      ...sub,
-      uaePercentage: uaeTotal > 0 ? (sub.uaeTotal / uaeTotal) * 100 : 0,
-      usPercentage: usTotal > 0 ? (sub.usTotal / usTotal) * 100 : 0,
-    }));
-
-    // Get top 10 for UAE
-    const sortedByUAE = [...subcategoriesWithPercentages].sort((a, b) => b.uaePercentage - a.uaePercentage);
-    const uaeTop10 = sortedByUAE.slice(0, 10);
-
-    // Get top 10 for US
-    const sortedByUS = [...subcategoriesWithPercentages].sort((a, b) => b.usPercentage - a.usPercentage);
-    const usTop10 = sortedByUS.slice(0, 10);
-
-    // Create unified top subcategories list (10-20 subcategories) - US driven first
-    const unifiedSubcategoryNames = new Set(usTop10.map(s => s.subcategory));
-    const unifiedSubcategories = [...usTop10];
-
-    uaeTop10.forEach(sub => {
-      if (!unifiedSubcategoryNames.has(sub.subcategory)) {
-        unifiedSubcategoryNames.add(sub.subcategory);
-        unifiedSubcategories.push(sub);
-      }
+    const totalByCountry = Object.fromEntries(selectedKeys.map((key) => [key, 0]));
+    subcategoriesArray.forEach((sub) => {
+      selectedKeys.forEach((key) => {
+        totalByCountry[key] += sub.totals[key] || 0;
+      });
     });
 
-    // Sort unified list by UAE percentage for consistent display
-    unifiedSubcategories.sort((a, b) => b.uaePercentage - a.uaePercentage);
+    // Calculate percentages
+    const subcategoriesWithPercentages = subcategoriesArray.map((sub) => {
+      const percentages = {};
+      selectedKeys.forEach((key) => {
+        const total = totalByCountry[key] || 0;
+        percentages[key] = total ? (sub.totals[key] / total) * 100 : 0;
+      });
+      return { ...sub, percentages };
+    });
+
+    // Build unified top subcategories (up to 10 per country)
+    const unifiedNames = new Set();
+    const unifiedSubcategories = [];
+
+    selectedKeys.forEach((key) => {
+      const topForCountry = [...subcategoriesWithPercentages]
+        .sort((a, b) => (b.percentages[key] || 0) - (a.percentages[key] || 0))
+        .slice(0, 10);
+
+      topForCountry.forEach((sub) => {
+        if (!unifiedNames.has(sub.subcategory)) {
+          unifiedNames.add(sub.subcategory);
+          unifiedSubcategories.push(sub);
+        }
+      });
+    });
+
+    unifiedSubcategories.sort((a, b) => (b.percentages[primaryKey] || 0) - (a.percentages[primaryKey] || 0));
 
     // Prepare chart data
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
     const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
+    const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
 
-    // Find the maximum percentage across both UAE and US for dynamic y-axis
-    const maxUaePercentage = Math.max(...unifiedSubcategories.map(s => s.uaePercentage), 0);
-    const maxUsPercentage = Math.max(...unifiedSubcategories.map(s => s.usPercentage), 0);
-    const maxPercentage = Math.max(maxUaePercentage, maxUsPercentage);
-    // Add 10% padding to the max for better visualization
-    const yAxisMax = Math.ceil(maxPercentage * 1.1);
+    const getColor = (index) => {
+      const resolved = palette[index % palette.length];
+      return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
+    };
 
-    const blueColor = documentStyle.getPropertyValue('--blue-500') || '#3b82f6';
-    const pinkColor = documentStyle.getPropertyValue('--pink-500') || '#ec4899';
+    const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
 
-    // Unified Subcategory Radar Chart with two datasets
-    const subcategoryDatasets = [];
-    if (showUAEChart) {
-      subcategoryDatasets.push({
-        label: 'UAE Subcategory %',
-        backgroundColor: blueColor + '33',
-        borderColor: blueColor,
-        pointBackgroundColor: blueColor,
-        pointBorderColor: blueColor,
+    // Unified Subcategory Radar Chart with datasets per visible country
+    const labels = unifiedSubcategories.map((s) => s.subcategory);
+    const subcategoryDatasets = visibleConfigs.map((cfg, index) => {
+      const color = getColor(index);
+      return {
+        label: `${cfg.displayName} Subcategory %`,
+        backgroundColor: color + "33",
+        borderColor: color,
+        pointBackgroundColor: color,
+        pointBorderColor: color,
         borderWidth: 2,
-        data: unifiedSubcategories.map((s) => s.uaePercentage),
+        data: labels.map((label) => {
+          const sub = unifiedSubcategories.find((s) => s.subcategory === label);
+          return sub?.percentages[cfg.csvKey] || 0;
+        }),
         fill: true,
-      });
-    }
-    if (showUSChart) {
-      subcategoryDatasets.push({
-        label: 'US Subcategory %',
-        backgroundColor: pinkColor + '33',
-        borderColor: pinkColor,
-        pointBackgroundColor: pinkColor,
-        pointBorderColor: pinkColor,
-        borderWidth: 2,
-        data: unifiedSubcategories.map((s) => s.usPercentage),
-        fill: true,
-      });
-    }
+      };
+    });
+
+    const allDataPoints = subcategoryDatasets.flatMap((ds) => ds.data);
+    const maxPercentage = allDataPoints.length ? Math.max(...allDataPoints) : 0;
+    const yAxisMax = Math.ceil((maxPercentage || 0) * 1.1);
 
     const unifiedSubData = subcategoryDatasets.length
       ? {
-          labels: unifiedSubcategories.map((s) => s.subcategory),
+          labels,
           datasets: subcategoryDatasets,
         }
       : null;
@@ -358,7 +430,7 @@ const BenchmarkingFig5_1 = () => {
       plugins: {
         legend: {
           display: true,
-          position: 'bottom',
+          position: "bottom",
           labels: {
             color: textColor,
           },
@@ -375,13 +447,13 @@ const BenchmarkingFig5_1 = () => {
       scales: {
         r: {
           beginAtZero: true,
-          suggestedMax: yAxisMax,
+          suggestedMax: yAxisMax || 10,
           ticks: {
             color: textColorSecondary,
-            callback: function(value) {
-              return value + '%';
+            callback: function (value) {
+              return value + "%";
             },
-            backdropColor: 'transparent',
+            backdropColor: "transparent",
           },
           grid: {
             color: surfaceBorder,
@@ -402,8 +474,7 @@ const BenchmarkingFig5_1 = () => {
 
     setSubcategoryChartData(unifiedSubData);
     setSubcategoryChartOptions(subChartOptions);
-
-  }, [selectedCategory, allSkillsData, showUAEChart, showUSChart]);
+  }, [selectedCategory, allSkillsData, selectedCountryConfigs, datasetVisibility]);
 
   if (loading) {
     return (
@@ -419,7 +490,7 @@ const BenchmarkingFig5_1 = () => {
   if (error) {
     return (
       <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 w-full">
-        <h3 className="text-lg font-semibold text-blue-800 mb-2">Category Distribution: UAE vs US</h3>
+        <h3 className="text-lg font-semibold text-blue-800 mb-2">Category Distribution</h3>
         <p className="text-blue-700">Error loading chart data: {error}</p>
       </div>
     );
@@ -427,8 +498,14 @@ const BenchmarkingFig5_1 = () => {
 
   if (!radarChartData) return null;
 
-  const totalUAECount = categoryData.reduce((sum, c) => sum + c.uaeTotal, 0);
-  const totalUSCount = categoryData.reduce((sum, c) => sum + c.usTotal, 0);
+  const documentStyle = getComputedStyle(document.documentElement);
+  const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
+  const getColor = (index) => {
+    const resolved = palette[index % palette.length];
+    return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
+  };
+
+  const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
@@ -455,43 +532,41 @@ const BenchmarkingFig5_1 = () => {
           </div>
 
           {/* Chart toggles */}
-          <div className="flex gap-4 mt-4 align-items-center">
+          <div className="flex flex-wrap gap-4 mt-4 align-items-center">
             <span className="text-sm font-semibold text-color-secondary">
               Show datasets:
             </span>
-            <div className="flex align-items-center gap-2">
-              <Checkbox
-                inputId="toggle-uae-chart"
-                checked={showUAEChart}
-                onChange={(e) => setShowUAEChart(e.checked)}
-              />
-              <label
-                htmlFor="toggle-uae-chart"
-                className="text-sm cursor-pointer select-none"
-                style={{ color: "var(--blue-500)" }}
-              >
-                UAE
-              </label>
-            </div>
-            <div className="flex align-items-center gap-2">
-              <Checkbox
-                inputId="toggle-us-chart"
-                checked={showUSChart}
-                onChange={(e) => setShowUSChart(e.checked)}
-              />
-              <label
-                htmlFor="toggle-us-chart"
-                className="text-sm cursor-pointer select-none"
-                style={{ color: "var(--pink-500)" }}
-              >
-                US
-              </label>
-            </div>
+            {selectedCountryConfigs.map((country, index) => {
+              const id = `toggle-${country.csvKey}`.replace(/\s+/g, "-").toLowerCase();
+              const color = getColor(index);
+
+              return (
+                <div className="flex align-items-center gap-2" key={country.csvKey}>
+                  <Checkbox
+                    inputId={id}
+                    checked={!!datasetVisibility[country.csvKey]}
+                    onChange={(e) =>
+                      setDatasetVisibility((prev) => ({
+                        ...prev,
+                        [country.csvKey]: e.checked,
+                      }))
+                    }
+                  />
+                  <label
+                    htmlFor={id}
+                    className="text-sm cursor-pointer select-none"
+                    style={{ color }}
+                  >
+                    {country.displayName}
+                  </label>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
       <h4 className="text-sm font-semibold mb-3">
-        Top Soft Sklills Category Distribution (%)
+        Top Soft Skills Category Distribution (%)
       </h4>
       {/* Radar chart for all categories */}
       <div className="w-full mt-3 flex flex-col justify-content-center align-items-center">
@@ -541,44 +616,42 @@ const BenchmarkingFig5_1 = () => {
                   field="softSkill"
                   header="Soft Skill"
                   sortable
+                  body={(rowData) => rowData.softSkill.toLocaleString()}
                   style={{ minWidth: "200px" }}
                 />
                 <Column
                   field="subcategory"
                   header="Subcategory"
                   sortable
+                  body={(rowData) => rowData.subcategory.toLocaleString()}
                   style={{ minWidth: "150px" }}
                 />
-                <Column
-                  field="uaeCount"
-                  header="Standardized Count UAE"
-                  sortable
-                  body={(rowData) => rowData.uaeCount.toLocaleString()}
-                  style={{ minWidth: "120px" }}
-                />
-                <Column
-                  field="usCount"
-                  header="Standardized Count US"
-                  sortable
-                  body={(rowData) => rowData.usCount.toLocaleString()}
-                  style={{ minWidth: "120px" }}
-                />
+                {selectedCountryConfigs.map((country) => (
+                  <Column
+                    key={country.csvKey}
+                    field={country.csvKey}
+                    header={`Standardized Count ${country.displayName}`}
+                    sortable
+                    body={(rowData) => (rowData.values[country.csvKey] || 0).toLocaleString()}
+                    style={{ minWidth: "140px" }}
+                  />
+                ))}
               </DataTable>
 
               {/* Unified Subcategory Bar Chart */}
-              {subcategoryChartData && (
+              {subcategoryChartData && visibleConfigs.length > 0 && (
                 <div className="mt-4 pt-3 border-top-1 surface-border">
                   <h4 className="text-sm font-semibold mb-3">
                     Top Soft Skills Subcategory Distribution (%)
                   </h4>
-              <div style={{ width: "100%", height: "400px" }}>
-                <Chart
-                  type="radar"
-                  data={subcategoryChartData}
-                  options={subcategoryChartOptions}
-                  className="w-full h-full"
-                />
-              </div>
+                  <div style={{ width: "100%", height: "400px" }}>
+                    <Chart
+                      type="radar"
+                      data={subcategoryChartData}
+                      options={subcategoryChartOptions}
+                      className="w-full h-full"
+                    />
+                  </div>
                 </div>
               )}
             </div>

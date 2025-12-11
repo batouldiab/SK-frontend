@@ -1,17 +1,27 @@
 // src/components/BenchmarkingFig6.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { AgCharts } from "ag-charts-react";
 import { Dropdown } from "primereact/dropdown";
 import { Checkbox } from "primereact/checkbox";
 import Papa from "papaparse";
 
-const COLORS = {
-  uae: "#1E88E5",
-  us: "#1a1a2e",
-  background: "#ffffff",
-  grid: "#e5e7eb",
-  text: "#1f2937",
+const COUNTRY_ALIASES = {
+  "United States": "US",
+  US: "US",
+  "United Arab Emirates": "United_Arab_Emirates",
+  UAE: "United_Arab_Emirates",
 };
+
+const DISPLAY_ALIASES = {
+  US: "United States",
+  United_Arab_Emirates: "United Arab Emirates",
+};
+
+const toCsvKey = (name) => COUNTRY_ALIASES[name] || name.replace(/\s+/g, "_");
+const toDisplayName = (name) => DISPLAY_ALIASES[name] || name.replace(/_/g, " ");
+
+const fallbackPalette = ["#3b82f6", "#ec4899", "#22c55e", "#f97316", "#a855f7"];
+const baseColors = ["--blue-500", "--pink-500", "--green-500", "--orange-500", "--purple-500", "--cyan-500"];
 
 const dropdownPerfProps = {
   filter: true,
@@ -21,279 +31,275 @@ const dropdownPerfProps = {
   scrollHeight: "260px",
 };
 
-const BenchmarkingFig6 = () => {
+const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab Emirates"] }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Raw data from both CSV files
-  const [uaeData, setUaeData] = useState([]);
-  const [usData, setUsData] = useState([]);
+  // Raw data per country
+  const [countryData, setCountryData] = useState({});
+  const [availableCountries, setAvailableCountries] = useState([]);
 
-  // Common skills across both files
+  // Common skills across selected countries
   const [commonSkills, setCommonSkills] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
 
   // Chart data
   const [chartData, setChartData] = useState([]);
   const [chartOptions, setChartOptions] = useState(null);
-  const [showUAE, setShowUAE] = useState(true);
-  const [showUS, setShowUS] = useState(true);
+
+  const [datasetVisibility, setDatasetVisibility] = useState({});
 
   // Statistics
   const [stats, setStats] = useState({
     totalTitles: 0,
-    uaeAvg: 0,
-    usAvg: 0,
+    averages: [],
   });
 
-  // Load both CSV files
+  // Determine which country datasets are available from selectedCountries
+  const selectedCountryConfigs = useMemo(
+    () =>
+      selectedCountries
+        .map((name) => ({
+          displayName: toDisplayName(name),
+          csvKey: toCsvKey(name),
+        }))
+        .filter((cfg) => cfg.csvKey),
+    [selectedCountries]
+  );
+
+  // Build file url per country
+  const buildUrl = (csvKey) => {
+    if (csvKey === "US") return "/data/benchmarking_fig7.csv";
+    return `/data/benchmarking_fig6_${csvKey}.csv`;
+  };
+
+  // Load all relevant CSV files whenever country selection changes
   useEffect(() => {
-    const loadCsvFiles = async () => {
+    const loadAll = async () => {
+      if (!selectedCountryConfigs.length) {
+        setCountryData({});
+        setAvailableCountries([]);
+        setCommonSkills([]);
+        setSelectedSkill(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
 
-        // Load UAE data
-        const uaeResponse = await fetch("/data/benchmarking_fig6.csv");
-        if (!uaeResponse.ok) {
-          throw new Error(`HTTP error loading UAE data! status: ${uaeResponse.status}`);
-        }
-        const uaeText = await uaeResponse.text();
+        const fetches = selectedCountryConfigs.map(async (cfg) => {
+          const response = await fetch(buildUrl(cfg.csvKey));
+          if (!response.ok) {
+            throw new Error(`HTTP error loading ${cfg.displayName} data (status ${response.status})`);
+          }
+          const text = await response.text();
+          return { cfg, text };
+        });
 
-        // Load US data
-        const usResponse = await fetch("/data/benchmarking_fig7.csv");
-        if (!usResponse.ok) {
-          throw new Error(`HTTP error loading US data! status: ${usResponse.status}`);
-        }
-        const usText = await usResponse.text();
+        const responses = await Promise.all(fetches);
 
-        // Parse both CSVs
-        const parsePromises = [
-          new Promise((resolve, reject) => {
-            Papa.parse(uaeText, {
-              header: true,
-              skipEmptyLines: true,
-              complete: (results) => resolve(results.data),
-              error: (err) => reject(err),
-            });
-          }),
-          new Promise((resolve, reject) => {
-            Papa.parse(usText, {
-              header: true,
-              skipEmptyLines: true,
-              complete: (results) => resolve(results.data),
-              error: (err) => reject(err),
-            });
-          }),
-        ];
+        const parsedEntries = await Promise.all(
+          responses.map(
+            (item) =>
+              new Promise((resolve, reject) => {
+                Papa.parse(item.text, {
+                  header: true,
+                  skipEmptyLines: true,
+                  complete: (results) => resolve({ cfg: item.cfg, rows: results.data }),
+                  error: (err) => reject(err),
+                });
+              })
+          )
+        );
 
-        const [uaeParsed, usParsed] = await Promise.all(parsePromises);
+        const dataMap = {};
+        parsedEntries.forEach(({ cfg, rows }) => {
+          const processed = rows
+            .map((row) => ({
+              skill: row["skill"]?.trim() || "",
+              title: row["title"]?.trim() || "",
+              count: parseFloat(row["count"]) || 0,
+              standardizedCount: parseFloat(row["standardized count"]) || 0,
+            }))
+            .filter((row) => row.skill && row.title && !Number.isNaN(row.standardizedCount));
 
-        // Process UAE data
-        const uaeProcessed = uaeParsed
-          .map((row) => ({
-            skill: row["skill"]?.trim() || "",
-            title: row["title"]?.trim() || "",
-            count: parseFloat(row["count"]) || 0,
-            standardizedCount: parseFloat(row["standardized count"]) || 0,
-          }))
-          .filter((row) => row.skill && row.title && !isNaN(row.standardizedCount));
+          dataMap[cfg.csvKey] = processed;
+        });
 
-        // Process US data
-        const usProcessed = usParsed
-          .map((row) => ({
-            skill: row["skill"]?.trim() || "",
-            title: row["title"]?.trim() || "",
-            count: parseFloat(row["count"]) || 0,
-            standardizedCount: parseFloat(row["standardized count"]) || 0,
-          }))
-          .filter((row) => row.skill && row.title && !isNaN(row.standardizedCount));
-
-        if (uaeProcessed.length === 0 || usProcessed.length === 0) {
-          throw new Error("No valid data found in CSV files");
-        }
-
-        setUaeData(uaeProcessed);
-        setUsData(usProcessed);
-
-        // Find common skills
-        const uaeSkills = new Set(uaeProcessed.map((row) => row.skill));
-        const usSkills = new Set(usProcessed.map((row) => row.skill));
-        const common = [...uaeSkills].filter((skill) => usSkills.has(skill));
-        
-        const commonSkillsOptions = common
-          .sort()
-          .map((skill) => ({ label: skill, value: skill }));
-
-        setCommonSkills(commonSkillsOptions);
-
-        if (commonSkillsOptions.length > 0) {
-          setSelectedSkill(commonSkillsOptions[0].value);
-        }
-
-        setLoading(false);
+        setCountryData(dataMap);
+        setAvailableCountries(parsedEntries.map((p) => p.cfg.csvKey));
       } catch (err) {
         console.error("Error loading CSV files:", err);
-        setError(err.message || "Unknown error loading data");
+        setError(err.message || "Error loading data");
+      } finally {
         setLoading(false);
       }
     };
 
-    loadCsvFiles();
-  }, []);
+    loadAll();
+  }, [selectedCountryConfigs]);
 
-  // Update chart when selected skill changes
+  // Keep dataset visibility in sync with incoming selections
   useEffect(() => {
-    if (!selectedSkill || uaeData.length === 0 || usData.length === 0) return;
+    setDatasetVisibility((prev) => {
+      const next = {};
+      selectedCountryConfigs.forEach((cfg) => {
+        next[cfg.csvKey] = prev[cfg.csvKey] ?? true;
+      });
+      return next;
+    });
+  }, [selectedCountryConfigs]);
+
+  // Compute common skills across loaded countries
+  useEffect(() => {
+    if (!selectedCountryConfigs.length) {
+      setCommonSkills([]);
+      setSelectedSkill(null);
+      return;
+    }
+
+    const datasets = selectedCountryConfigs
+      .map((cfg) => countryData[cfg.csvKey] || [])
+      .filter((d) => d.length > 0);
+
+    if (!datasets.length || datasets.length !== selectedCountryConfigs.length) {
+      setCommonSkills([]);
+      setSelectedSkill(null);
+      return;
+    }
+
+    const skillSets = datasets.map((data) => new Set(data.map((row) => row.skill)));
+    const intersection = [...skillSets[0]].filter((skill) => skillSets.every((set) => set.has(skill)));
+
+    const skillOptions = intersection.sort().map((skill) => ({ label: skill, value: skill }));
+    setCommonSkills(skillOptions);
+    setSelectedSkill((prev) => {
+      if (prev && skillOptions.some((s) => s.value === prev)) return prev;
+      return skillOptions[0]?.value || null;
+    });
+  }, [countryData, selectedCountryConfigs]);
+
+  // Update chart when selected skill or visibility changes
+  useEffect(() => {
+    if (!selectedSkill || !selectedCountryConfigs.length) {
+      setChartOptions(null);
+      setChartData([]);
+      return;
+    }
+
+    const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
+    if (!visibleConfigs.length) {
+      setChartOptions(null);
+      setChartData([]);
+      return;
+    }
 
     try {
-      // Filter data for selected skill
-      const uaeSkillData = uaeData.filter((row) => row.skill === selectedSkill);
-      const usSkillData = usData.filter((row) => row.skill === selectedSkill);
-
-      // Calculate total count for UAE skill titles
-      const uaeTotalCount = uaeSkillData.reduce((sum, row) => sum + row.count, 0);
-      
-      // Calculate total count for US skill titles
-      const usTotalCount = usSkillData.reduce((sum, row) => sum + row.count, 0);
-
-      // Add percentage to UAE data
-      const uaeSkillDataWithPercentage = uaeSkillData.map(row => ({
-        ...row,
-        percentage: uaeTotalCount > 0 ? row.count / uaeTotalCount : 0
-      }));
-
-      // Add percentage to US data
-      const usSkillDataWithPercentage = usSkillData.map(row => ({
-        ...row,
-        percentage: usTotalCount > 0 ? row.count / usTotalCount : 0
-      }));
-
-      // Get top 10 titles from UAE
-      const uaeTop10 = [...uaeSkillDataWithPercentage]
-        .sort((a, b) => b.percentage - a.percentage)
-        .slice(0, 10);
-
-      // Get top 10 titles from US
-      const usTop10 = [...usSkillDataWithPercentage]
-        .sort((a, b) => b.percentage - a.percentage)
-        .slice(0, 10);
-
-      // Combine and deduplicate titles
-      const allTitles = new Set([
-        ...usTop10.map((row) => row.title),
-        ...uaeTop10.map((row) => row.title),
-      ]);
-
-      const uniqueTitles = [...allTitles];
-
-      // Create datasets using percentages
-      const uaeDataset = uniqueTitles.map((title) => {
-        const match = uaeSkillDataWithPercentage.find((row) => row.title === title);
-        return match ? match.percentage : 0;
-      });
-
-      const usDataset = uniqueTitles.map((title) => {
-        const match = usSkillDataWithPercentage.find((row) => row.title === title);
-        return match ? match.percentage : 0;
-      });
-
-      // Sort titles by total percentage (UAE + US) for better visualization
-      const titlesWithTotal = uniqueTitles.map((title, idx) => ({
-        title,
-        uaeCount: uaeDataset[idx],
-        usCount: usDataset[idx],
-        total: uaeDataset[idx] + usDataset[idx],
-      }));
-
-      titlesWithTotal.sort((a, b) => b.total - a.total);
-
-      const sortedUaeData = titlesWithTotal.map((item) => item.uaeCount);
-      const sortedUsData = titlesWithTotal.map((item) => item.usCount);
-
-      // Calculate statistics
-      const uaeAvg = sortedUaeData.reduce((a, b) => a + b, 0) / sortedUaeData.filter(v => v > 0).length || 0;
-      const usAvg = sortedUsData.reduce((a, b) => a + b, 0) / sortedUsData.filter(v => v > 0).length || 0;
-
-      setStats({
-        totalTitles: uniqueTitles.length,
-        uaeAvg,
-        usAvg,
-      });
-
-      // Configure chart
-      const dataForChart = titlesWithTotal.map((item) => ({
-        title: item.title,
-        uaePercent: item.uaeCount * 100,
-        usPercent: item.usCount * 100,
-      }));
-
-      const maxValue = Math.max(
-        ...dataForChart.flatMap((d) => [d.uaePercent, d.usPercent]),
-        0
-      );
-      const paddedMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : 1;
-
       const documentStyle = getComputedStyle(document.documentElement);
       const getCssVar = (name, fallback) => {
         const value = documentStyle.getPropertyValue(name);
         return value && value.trim() ? value.trim() : fallback;
       };
-
-      const textColor = getCssVar("--text-color", COLORS.text);
+      const textColor = getCssVar("--text-color", "#1f2937");
       const textColorSecondary = getCssVar("--text-color-secondary", "#6b7280");
-      const gridColor = getCssVar("--surface-border", COLORS.grid);
-      const uaeColor = getCssVar("--blue-500", COLORS.uae);
-      const usColor = getCssVar("--pink-500", COLORS.us);
+      const gridColor = getCssVar("--surface-border", "#e5e7eb");
+      const palette = baseColors.map((cssVar) => getCssVar(cssVar, ""));
 
-      const series = [];
-      if (showUAE) {
-        series.push({
-          type: "bar",
-          xKey: "title",
-          yKey: "uaePercent",
-          yName: "UAE",
-          fill: uaeColor,
-          stroke: uaeColor,
-          cornerRadius: 5,
-          tooltip: {
-            renderer: ({ datum }) => ({
-              content: `UAE: ${datum.uaePercent.toFixed(2)}%`,
-            }),
-          },
+      const getColor = (index) => {
+        const resolved = palette[index % palette.length];
+        return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
+      };
+
+      // Build title universe across visible countries (top 10 each by percentage)
+      const titleSet = new Set();
+      const countryTitleMap = {};
+
+      visibleConfigs.forEach((cfg, index) => {
+        const rows = (countryData[cfg.csvKey] || []).filter((row) => row.skill === selectedSkill);
+        const total = rows.reduce((sum, row) => sum + row.count, 0);
+        const rowsWithPct = rows.map((row) => ({
+          ...row,
+          percentage: total > 0 ? row.count / total : 0,
+        }));
+        const topRows = rowsWithPct.sort((a, b) => b.percentage - a.percentage).slice(0, 10);
+        countryTitleMap[cfg.csvKey] = topRows;
+        topRows.forEach((row) => titleSet.add(row.title));
+      });
+
+      const titles = [...titleSet];
+
+      // Sort titles by total percentage across visible countries
+      const titlesWithTotals = titles.map((title) => {
+        const values = visibleConfigs.map((cfg) => {
+          const match = (countryTitleMap[cfg.csvKey] || []).find((row) => row.title === title);
+          return match ? match.percentage : 0;
         });
-      }
+        return {
+          title,
+          total: values.reduce((a, b) => a + b, 0),
+          values,
+        };
+      });
 
-      if (showUS) {
-        series.push({
-          type: "scatter",
-          xKey: "title",
-          yKey: "usPercent",
-          title: "US",
-          marker: {
-            fill: usColor,
-            stroke: "#ffffff",
-            strokeWidth: 2,
-            size: 12,
-            shape: "circle",
-          },
-          tooltip: {
-            renderer: ({ datum }) => ({
-              content: `US: ${datum.usPercent.toFixed(2)}%`,
-            }),
-          },
+      titlesWithTotals.sort((a, b) => b.total - a.total);
+
+      const dataForChart = titlesWithTotals.map((item) => {
+        const entry = { title: item.title };
+        visibleConfigs.forEach((cfg, idx) => {
+          entry[cfg.csvKey] = item.values[idx] * 100;
         });
-      }
+        return entry;
+      });
 
-      if (series.length === 0) {
-        setChartOptions(null);
-        setChartData(dataForChart);
-        return;
-      }
+      const series = visibleConfigs.map((cfg, index) => {
+        const color = getColor(index);
+        const isUS = cfg.csvKey === "US";
+        return isUS
+          ? {
+              type: "scatter",
+              xKey: "title",
+              yKey: cfg.csvKey,
+              title: cfg.displayName,
+              marker: {
+                fill: color,
+                stroke: "#ffffff",
+                strokeWidth: 2,
+                size: 12,
+                shape: "circle",
+              },
+              tooltip: {
+                renderer: ({ datum }) => ({
+                  content: `${cfg.displayName}: ${(datum[cfg.csvKey] || 0).toFixed(2)}%`,
+                }),
+              },
+            }
+          : {
+              type: "bar",
+              xKey: "title",
+              yKey: cfg.csvKey,
+              yName: cfg.displayName,
+              fill: color,
+              stroke: color,
+              cornerRadius: 5,
+              tooltip: {
+                renderer: ({ datum }) => ({
+                  content: `${cfg.displayName}: ${(datum[cfg.csvKey] || 0).toFixed(2)}%`,
+                }),
+              },
+            };
+      });
+
+      const maxValue = Math.max(
+        ...dataForChart.flatMap((d) => visibleConfigs.map((cfg) => d[cfg.csvKey] || 0)),
+        0
+      );
+      const paddedMax = maxValue > 0 ? Math.ceil(maxValue * 1.15) : 1;
 
       const options = {
         data: dataForChart,
-        background: { fill: COLORS.background },
+        background: { fill: "#ffffff" },
         padding: { top: 10, right: 20, bottom: 40, left: 50 },
         series,
         axes: [
@@ -304,8 +310,7 @@ const BenchmarkingFig6 = () => {
               rotation: -35,
               color: textColor,
               fontSize: 11,
-              formatter: ({ value }) =>
-                value.length > 28 ? `${value.slice(0, 25)}...` : value,
+              formatter: ({ value }) => (value.length > 28 ? `${value.slice(0, 25)}...` : value),
             },
             line: {
               stroke: gridColor,
@@ -339,26 +344,32 @@ const BenchmarkingFig6 = () => {
         legend: {
           position: "bottom",
           item: {
-            marker: {
-              shape: "circle",
-              size: 10,
-            },
-            label: {
-              fontSize: 13,
-              color: textColor,
-            },
+            marker: { shape: "circle", size: 10 },
+            label: { fontSize: 13, color: textColor },
             paddingX: 24,
           },
         },
       };
 
+      // Stats
+      const averages = visibleConfigs.map((cfg, idx) => {
+        const values = titlesWithTotals.map((t) => t.values[idx]);
+        const positive = values.filter((v) => v > 0);
+        const avg = positive.length ? positive.reduce((a, b) => a + b, 0) / positive.length : 0;
+        return { cfg, avg };
+      });
+
+      setStats({
+        totalTitles: titles.length,
+        averages,
+      });
       setChartData(dataForChart);
       setChartOptions(options);
     } catch (err) {
       console.error("Error processing chart data:", err);
       setError(err.message || "Error processing chart data");
     }
-  }, [selectedSkill, uaeData, usData, showUAE, showUS]);
+  }, [selectedSkill, countryData, selectedCountryConfigs, datasetVisibility]);
 
   if (loading) {
     return (
@@ -379,19 +390,26 @@ const BenchmarkingFig6 = () => {
     );
   }
 
-  if (!chartOptions || !chartData || chartData.length === 0 || commonSkills.length === 0) {
+  if (!chartOptions || !chartData.length || !commonSkills.length) {
     return (
       <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 w-full">
-        <p className="text-blue-700">No common skills found between the two datasets.</p>
+        <p className="text-blue-700">No common skills found between the selected datasets.</p>
       </div>
     );
   }
+
+  const documentStyle = getComputedStyle(document.documentElement);
+  const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
+  const getColor = (index) => {
+    const resolved = palette[index % palette.length];
+    return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
+  };
+  const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
       {/* Header with skill selector */}
       <div className="mb-3">
-
         {/* Skill selector */}
         <div className="mb-3">
           <label htmlFor="skill-select" className="block text-sm font-semibold mb-2 text-color-secondary">
@@ -410,54 +428,52 @@ const BenchmarkingFig6 = () => {
         </div>
 
         {/* Statistics cards */}
-        <div className="flex gap-2 flex-wrap justify-content-start align-items-center">
-          <div className="surface-100 border-round-lg px-3 py-2 text-right">
-            <span className="block text-xs text-color-secondary">Total Titles</span>
-            <span className="block text-sm font-semibold">{stats.totalTitles}</span>
-          </div>
-          <div className="surface-100 border-round-lg px-3 py-2 text-right">
-            <span className="block text-xs text-color-secondary">Avg. UAE %</span>
-            <span className="block text-sm font-semibold">{(stats.uaeAvg * 100).toFixed(2)}%</span>
-          </div>
-          <div className="surface-100 border-round-lg px-3 py-2 text-right">
-            <span className="block text-xs text-color-secondary">Avg. US %</span>
-            <span className="block text-sm font-semibold">{(stats.usAvg * 100).toFixed(2)}%</span>
+        <div
+          className="grid gap-4 mb-4"
+          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))" }}
+        >
+          <div className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+              Total Titles
+            </p>
+            <p className="text-2xl font-bold text-slate-800">{stats.totalTitles}</p>
           </div>
         </div>
 
         {/* Chart toggles */}
-        <div className="flex gap-4 mt-4 align-items-center">
+        <div className="flex gap-4 mt-4 align-items-center flex-wrap">
           <span className="text-sm font-semibold text-color-secondary">
             Show datasets:
           </span>
-          <div className="flex align-items-center gap-2">
-            <Checkbox
-              inputId="toggle-uae"
-              checked={showUAE}
-              onChange={(e) => setShowUAE(e.checked)}
-            />
-            <label
-              htmlFor="toggle-uae"
-              className="text-sm cursor-pointer select-none"
-              style={{ color: "var(--blue-500)" }}
-            >
-              UAE
-            </label>
-          </div>
-          <div className="flex align-items-center gap-2">
-            <Checkbox
-              inputId="toggle-us"
-              checked={showUS}
-              onChange={(e) => setShowUS(e.checked)}
-            />
-            <label
-              htmlFor="toggle-us"
-              className="text-sm cursor-pointer select-none"
-              style={{ color: "var(--pink-500)" }}
-            >
-              US
-            </label>
-          </div>
+          {selectedCountryConfigs.map((country, index) => {
+            const id = `toggle-${country.csvKey}`.replace(/\s+/g, "-").toLowerCase();
+            const documentStyle = getComputedStyle(document.documentElement);
+            const color =
+              (documentStyle.getPropertyValue(baseColors[index % baseColors.length]) || "").trim() ||
+              fallbackPalette[index % fallbackPalette.length];
+
+            return (
+              <div className="flex align-items-center gap-2" key={country.csvKey}>
+                <Checkbox
+                  inputId={id}
+                  checked={!!datasetVisibility[country.csvKey]}
+                  onChange={(e) =>
+                    setDatasetVisibility((prev) => ({
+                      ...prev,
+                      [country.csvKey]: e.checked,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor={id}
+                  className="text-sm cursor-pointer select-none"
+                  style={{ color }}
+                >
+                  {country.displayName}
+                </label>
+              </div>
+            );
+          })}
         </div>
       </div>
 

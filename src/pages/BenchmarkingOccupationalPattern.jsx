@@ -64,7 +64,7 @@ const BenchmarkingOccupationalPattern = () => {
           {/* Figure 6 */}
           <div className="flex justify-content-center">
             <div className="min-h-[420px] min-w-0 flex w-full">
-              <BenchmarkingFig6 />
+              <BenchmarkingFig6 selectedCountries={["United States", "United Arab Emirates"]} />
             </div>
           </div>
         </div>

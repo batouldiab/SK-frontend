@@ -9,6 +9,7 @@ import BenchmarkingFig6 from "../components/BenchmarkingFig6";
 import BenchmarkingFig8 from "../components/BenchmarkingFig8";
 
 const COUNTRY_OPTIONS = [
+  "United States",
   "Algeria",
   "Bahrain",
   "Djibouti",
@@ -32,15 +33,21 @@ const COUNTRY_OPTIONS = [
   "Yemen",
 ];
 
+const DEFAULT_COUNTRY = "United States";
+
 const Benchmarking = () => {
-  const [selectedCountries, setSelectedCountries] = useState([]);
+  const [selectedCountries, setSelectedCountries] = useState([DEFAULT_COUNTRY]);
 
   const toggleCountry = (country) => {
+    if (country === DEFAULT_COUNTRY) {
+      return;
+    }
+
     setSelectedCountries((prev) => {
       if (prev.includes(country)) {
         return prev.filter((item) => item !== country);
       }
-      if (prev.length >= 2) {
+      if (prev.length >= 3) {
         return prev;
       }
       return [...prev, country];
@@ -85,7 +92,8 @@ const Benchmarking = () => {
             <div className="flex flex-wrap gap-2">
               {COUNTRY_OPTIONS.map((country) => {
                 const isSelected = selectedCountries.includes(country);
-                const limitReached = selectedCountries.length >= 2 && !isSelected;
+                const isLocked = country === DEFAULT_COUNTRY;
+                const limitReached = selectedCountries.length >= 3 && !isSelected;
                 return (
                   <button
                     key={country}
@@ -96,7 +104,7 @@ const Benchmarking = () => {
                       isSelected
                         ? "bg-blue-600 text-white border-blue-700 shadow-sm"
                         : "bg-white/80 dark:bg-slate-900/70 text-slate-700 dark:text-slate-200 border-slate-200/80 dark:border-slate-700 hover:border-blue-300 hover:text-blue-700"
-                    } ${limitReached ? "opacity-50 cursor-not-allowed" : ""}`}
+                    } ${limitReached ? "opacity-50 cursor-not-allowed" : ""} ${isLocked ? "cursor-default" : ""}`}
                   >
                     <i className={isSelected ? "pi pi-check" : "pi pi-circle"} />
                     {country}
@@ -158,7 +166,7 @@ const Benchmarking = () => {
 
             <div className="flex justify-content-center">
               <div className="min-h-[420px] min-w-0 flex w-full">
-                <BenchmarkingFig1Fig2 />
+                <BenchmarkingFig1Fig2 selectedCountries={selectedCountries} />
               </div>
             </div>
           </div>

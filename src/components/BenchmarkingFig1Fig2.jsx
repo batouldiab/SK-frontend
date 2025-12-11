@@ -244,7 +244,7 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
   }, [unifiedTopJobs, selectedCountryConfigs]);
 
   // Calculate max value for axis scaling
-  const maxValue = useMemo(() => {
+const maxValue = useMemo(() => {
     if (!chartData.length) return 10;
 
     const allValues = [];
@@ -258,22 +258,37 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
 
     if (!allValues.length) return 10;
     return Math.ceil(Math.max(...allValues) * 1.15);
-  }, [chartData, visibleCountries]);
+}, [chartData, visibleCountries]);
+
+  const countryColorMap = useMemo(() => {
+    const map = {};
+    selectedCountryConfigs.forEach((cfg, index) => {
+      map[cfg.csvKey] =
+        COUNTRY_COLORS[cfg.csvKey] ||
+        COUNTRY_COLORS[cfg.displayName] ||
+        FALLBACK_COLORS[index % FALLBACK_COLORS.length];
+    });
+    return map;
+  }, [selectedCountryConfigs]);
 
   const getCountryColor = useCallback(
-    (country, index) =>
-      COUNTRY_COLORS[country.csvKey] ||
+    (country) =>
+      countryColorMap[country.csvKey] ||
       COUNTRY_COLORS[country.displayName] ||
-      FALLBACK_COLORS[index % FALLBACK_COLORS.length],
-    []
+      FALLBACK_COLORS[
+        (selectedCountryConfigs.findIndex((cfg) => cfg.csvKey === country.csvKey) +
+          FALLBACK_COLORS.length) %
+          FALLBACK_COLORS.length
+      ],
+    [countryColorMap, selectedCountryConfigs]
   );
 
   // Build AgCharts options
   const chartOptions = useMemo(() => {
     if (!chartData.length) return {};
 
-    const series = visibleCountries.map((country, index) => {
-      const color = getCountryColor(country, index);
+    const series = visibleCountries.map((country) => {
+      const color = getCountryColor(country);
       const isUS = country.csvKey === "US";
 
       if (isUS) {
@@ -467,8 +482,8 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
           </p>
           <p className="text-2xl font-bold text-slate-800">{stats.totalJobs}</p>
         </div>
-        {stats.averages.map((stat, index) => {
-          const color = getCountryColor(stat, index);
+        {stats.averages.map((stat) => {
+          const color = getCountryColor(stat);
           return (
             <div
               key={stat.csvKey}
@@ -503,8 +518,8 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
       {/* Dataset toggles */}
       <div className="flex flex-wrap items-center gap-4 mb-4 pb-4 border-b border-gray-100">
         <span className="text-sm font-medium text-gray-600">Show datasets:</span>
-        {selectedCountryConfigs.map((country, index) => {
-          const color = getCountryColor(country, index);
+        {selectedCountryConfigs.map((country) => {
+          const color = getCountryColor(country);
           const checked = datasetVisibility[country.csvKey] ?? true;
 
           return (
@@ -573,10 +588,10 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
             className="grid gap-4"
             style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
           >
-            {visibleCountries.map((country, index) => {
+            {visibleCountries.map((country) => {
               const value = selectedJob.values?.[country.csvKey];
               if (value === undefined) return null;
-              const color = getCountryColor(country, index);
+              const color = getCountryColor(country);
 
               return (
                 <div

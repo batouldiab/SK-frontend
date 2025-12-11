@@ -1,5 +1,5 @@
 // src/components/BenchmarkingFig5_1.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Chart } from "primereact/chart";
 import { Checkbox } from "primereact/checkbox";
 import { Dropdown } from "primereact/dropdown";
@@ -161,6 +161,30 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
     [selectedCountryConfigs, datasetVisibility]
   );
 
+  const countryColorMap = useMemo(() => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
+    const map = {};
+
+    selectedCountryConfigs.forEach((cfg, index) => {
+      const paletteColor = (palette[index % palette.length] || "").trim();
+      map[cfg.csvKey] = paletteColor || fallbackPalette[index % fallbackPalette.length];
+    });
+
+    return map;
+  }, [selectedCountryConfigs]);
+
+  const getColor = useCallback(
+    (country) =>
+      countryColorMap[country.csvKey] ||
+      fallbackPalette[
+        (selectedCountryConfigs.findIndex((cfg) => cfg.csvKey === country.csvKey) +
+          fallbackPalette.length) %
+          fallbackPalette.length
+      ],
+    [countryColorMap, selectedCountryConfigs]
+  );
+
   // Keep dataset visibility in sync with incoming selections
   useEffect(() => {
     setDatasetVisibility((prev) => {
@@ -233,15 +257,9 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
-    const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
 
-    const getColor = (index) => {
-      const resolved = palette[index % palette.length];
-      return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
-    };
-
-    const datasets = visibleCountries.map((cfg, index) => {
-      const color = getColor(index);
+    const datasets = visibleCountries.map((cfg) => {
+      const color = getColor(cfg);
       return {
         label: `${cfg.displayName} Percentage`,
         borderColor: color,
@@ -306,7 +324,7 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
 
     setRadarChartData(radarData);
     setChartOptions(options);
-  }, [categoryData, visibleCountries]);
+  }, [categoryData, visibleCountries, getColor]);
 
   // Update category skills when selected category changes
   useEffect(() => {
@@ -387,17 +405,11 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
     const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
-    const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
-
-    const getColor = (index) => {
-      const resolved = palette[index % palette.length];
-      return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
-    };
 
     // Unified Subcategory Radar Chart with datasets per visible country
     const labels = unifiedSubcategories.map((s) => s.subcategory);
-    const subcategoryDatasets = visibleCountries.map((cfg, index) => {
-      const color = getColor(index);
+    const subcategoryDatasets = visibleCountries.map((cfg) => {
+      const color = getColor(cfg);
       return {
         label: `${cfg.displayName} Subcategory %`,
         backgroundColor: color + "33",
@@ -475,7 +487,7 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
 
     setSubcategoryChartData(unifiedSubData);
     setSubcategoryChartOptions(subChartOptions);
-  }, [selectedCategory, allSkillsData, visibleCountries]);
+  }, [selectedCategory, allSkillsData, visibleCountries, getColor]);
 
   if (loading) {
     return (
@@ -496,13 +508,6 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
       </div>
     );
   }
-
-  const documentStyle = getComputedStyle(document.documentElement);
-  const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
-  const getColor = (index) => {
-    const resolved = palette[index % palette.length];
-    return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
-  };
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
@@ -533,9 +538,9 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
             <span className="text-sm font-semibold text-color-secondary">
               Show datasets:
             </span>
-            {selectedCountryConfigs.map((country, index) => {
+            {selectedCountryConfigs.map((country) => {
               const id = `toggle-${country.csvKey}`.replace(/\s+/g, "-").toLowerCase();
-              const color = getColor(index);
+              const color = getColor(country);
 
               return (
                 <div className="flex align-items-center gap-2" key={country.csvKey}>

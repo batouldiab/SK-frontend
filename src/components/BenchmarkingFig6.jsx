@@ -1,5 +1,5 @@
 // src/components/BenchmarkingFig6.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { AgCharts } from "ag-charts-react";
 import { Dropdown } from "primereact/dropdown";
 import { Checkbox } from "primereact/checkbox";
@@ -65,6 +65,33 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
         }))
         .filter((cfg) => cfg.csvKey),
     [selectedCountries]
+  );
+
+  const countryColorMap = useMemo(() => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const palette = baseColors.map((cssVar) => {
+      const value = documentStyle.getPropertyValue(cssVar);
+      return value && value.trim() ? value.trim() : "";
+    });
+    const map = {};
+
+    selectedCountryConfigs.forEach((cfg, index) => {
+      const paletteColor = palette[index % palette.length];
+      map[cfg.csvKey] = paletteColor || fallbackPalette[index % fallbackPalette.length];
+    });
+
+    return map;
+  }, [selectedCountryConfigs]);
+
+  const getColor = useCallback(
+    (country) =>
+      countryColorMap[country.csvKey] ||
+      fallbackPalette[
+        (selectedCountryConfigs.findIndex((cfg) => cfg.csvKey === country.csvKey) +
+          fallbackPalette.length) %
+          fallbackPalette.length
+      ],
+    [countryColorMap, selectedCountryConfigs]
   );
 
   // Build file url per country
@@ -207,12 +234,6 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
       const textColor = getCssVar("--text-color", "#1f2937");
       const textColorSecondary = getCssVar("--text-color-secondary", "#6b7280");
       const gridColor = getCssVar("--surface-border", "#e5e7eb");
-      const palette = baseColors.map((cssVar) => getCssVar(cssVar, ""));
-
-      const getColor = (index) => {
-        const resolved = palette[index % palette.length];
-        return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
-      };
 
       // Build title universe across visible countries (top 10 each by percentage)
       const titleSet = new Set();
@@ -262,8 +283,8 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
         return entry;
       });
 
-      const series = visibleConfigs.map((cfg, index) => {
-        const color = getColor(index);
+      const series = visibleConfigs.map((cfg) => {
+        const color = getColor(cfg);
         const isUS = cfg.csvKey === "US";
         return isUS
           ? {
@@ -378,7 +399,7 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
       console.error("Error processing chart data:", err);
       setError(err.message || "Error processing chart data");
     }
-  }, [selectedSkill, countryData, selectedCountryConfigs, datasetVisibility]);
+  }, [selectedSkill, countryData, selectedCountryConfigs, datasetVisibility, getColor]);
 
   if (loading) {
     return (
@@ -447,12 +468,9 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
           <span className="text-sm font-semibold text-color-secondary">
             Show datasets:
           </span>
-          {selectedCountryConfigs.map((country, index) => {
+          {selectedCountryConfigs.map((country) => {
             const id = `toggle-${country.csvKey}`.replace(/\s+/g, "-").toLowerCase();
-            const documentStyle = getComputedStyle(document.documentElement);
-            const color =
-              (documentStyle.getPropertyValue(baseColors[index % baseColors.length]) || "").trim() ||
-              fallbackPalette[index % fallbackPalette.length];
+            const color = getColor(country);
 
             return (
               <div className="flex align-items-center gap-2" key={country.csvKey}>

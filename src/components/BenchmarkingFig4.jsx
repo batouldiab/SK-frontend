@@ -1,5 +1,5 @@
 // src/components/BenchmarkingFig4.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Chart } from "primereact/chart";
 import { Dropdown } from "primereact/dropdown";
 import { Checkbox } from "primereact/checkbox";
@@ -151,6 +151,30 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
     [selectedCountryConfigs, datasetVisibility]
   );
 
+  const countryColorMap = useMemo(() => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
+    const map = {};
+
+    selectedCountryConfigs.forEach((cfg, index) => {
+      const paletteColor = (palette[index % palette.length] || "").trim();
+      map[cfg.csvKey] = paletteColor || fallbackPalette[index % fallbackPalette.length];
+    });
+
+    return map;
+  }, [selectedCountryConfigs]);
+
+  const getColor = useCallback(
+    (country) =>
+      countryColorMap[country.csvKey] ||
+      fallbackPalette[
+        (selectedCountryConfigs.findIndex((cfg) => cfg.csvKey === country.csvKey) +
+          fallbackPalette.length) %
+          fallbackPalette.length
+      ],
+    [countryColorMap, selectedCountryConfigs]
+  );
+
   // Keep dataset visibility in sync with incoming selections
   useEffect(() => {
     setDatasetVisibility((prev) => {
@@ -206,15 +230,9 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
-    const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
 
-    const getColor = (index) => {
-      const resolved = palette[index % palette.length];
-      return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
-    };
-
-    const datasets = visibleCountries.map((cfg, index) => {
-      const color = getColor(index);
+    const datasets = visibleCountries.map((cfg) => {
+      const color = getColor(cfg);
       return {
         label: `${cfg.displayName} Standardized Count`,
         borderColor: color,
@@ -284,7 +302,7 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
 
     setRadarChartData(radarData);
     setChartOptions(options);
-  }, [unifiedTopSkills, visibleCountries]);
+  }, [unifiedTopSkills, visibleCountries, getColor]);
 
   if (loading) {
     return (
@@ -308,13 +326,6 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
     );
   }
 
-  const documentStyle = getComputedStyle(document.documentElement);
-  const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
-  const getColor = (index) => {
-    const resolved = palette[index % palette.length];
-    return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
-  };
-
   const totalDistinctSkills = allSkillsData.length;
   const unifiedCount = unifiedTopSkills.length;
   const averages = visibleCountries.map((cfg) => {
@@ -336,8 +347,8 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
           </p>
           <p className="text-2xl font-bold text-slate-800">{totalDistinctSkills}</p>
           <div className="mt-3 text-xs text-slate-600 space-y-1">
-            {nonZeroCounts.map((c, index) => (
-              <div key={c.csvKey} style={{ color: getColor(index) }}>
+            {nonZeroCounts.map((c) => (
+              <div key={c.csvKey} style={{ color: getColor(c) }}>
                 {c.displayName}: {c.count}
               </div>
             ))}
@@ -369,12 +380,12 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
         <span className="text-sm font-semibold text-gray-600">
           Show datasets:
         </span>
-        {selectedCountryConfigs.map((country, index) => {
-          const id = `toggle-${country.csvKey}`.replace(/\s+/g, "-").toLowerCase();
-          const color = getColor(index);
-          return (
-            <div className="flex items-center gap-2" key={country.csvKey}>
-              <Checkbox
+          {selectedCountryConfigs.map((country) => {
+            const id = `toggle-${country.csvKey}`.replace(/\s+/g, "-").toLowerCase();
+            const color = getColor(country);
+            return (
+              <div className="flex items-center gap-2" key={country.csvKey}>
+                <Checkbox
                 inputId={id}
                 checked={!!datasetVisibility[country.csvKey]}
                 onChange={(e) =>
@@ -438,10 +449,10 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
 
           {selectedSkill && (
             <div className="flex gap-6 text-sm flex-wrap">
-              {selectedCountryConfigs.map((country, index) => (
+              {selectedCountryConfigs.map((country) => (
                 <div key={country.csvKey}>
                   <span className="block text-gray-500 text-xs uppercase">{country.displayName}</span>
-                  <span className="block font-semibold" style={{ color: getColor(index) }}>
+                  <span className="block font-semibold" style={{ color: getColor(country) }}>
                     {(selectedSkill.values[country.csvKey] || 0).toFixed(4)}
                   </span>
                 </div>

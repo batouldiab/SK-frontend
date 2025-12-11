@@ -200,7 +200,7 @@ const BenchmarkSkillSimilarity = () => {
           {/* Figure 4 */}
           <div className="flex justify-content-center">
             <div className="min-h-[420px] min-w-0 flex w-full">
-              <BenchmarkingFig5_2 />
+              <BenchmarkingFig5_2 selectedCountries={["United States", "United Arab Emirates"]} />
             </div>
           </div>
         </div>

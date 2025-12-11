@@ -156,6 +156,11 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
     [selectedCountries, availableCountries]
   );
 
+  const visibleCountries = useMemo(
+    () => selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]),
+    [selectedCountryConfigs, datasetVisibility]
+  );
+
   // Keep dataset visibility in sync with incoming selections
   useEffect(() => {
     setDatasetVisibility((prev) => {
@@ -169,14 +174,14 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
 
   // Aggregate data per category for selected countries
   useEffect(() => {
-    if (!allSkillsData.length || !selectedCountryConfigs.length) {
+    if (!allSkillsData.length || !visibleCountries.length) {
       setCategoryData([]);
       setCategorySkills([]);
       setSelectedCategory(null);
       return;
     }
 
-    const selectedKeys = selectedCountryConfigs.map((c) => c.csvKey);
+    const selectedKeys = visibleCountries.map((c) => c.csvKey);
     const categoryMap = new Map();
     const totalsByCountry = Object.fromEntries(selectedKeys.map((key) => [key, 0]));
 
@@ -198,7 +203,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
       });
     });
 
-    const sortKey = selectedKeys[0];
+    const sortKey = selectedKeys[0]; // preserves selectedCountries order among visible datasets
 
     const categoriesArray = Array.from(categoryMap.values()).map((cat) => {
       const percentages = {};
@@ -216,11 +221,11 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
       if (prev && categoriesArray.some((c) => c.category === prev)) return prev;
       return categoriesArray[0]?.category || null;
     });
-  }, [allSkillsData, selectedCountryConfigs]);
+  }, [allSkillsData, visibleCountries]);
 
   // Update charts when category data changes
   useEffect(() => {
-    if (categoryData.length === 0 || !selectedCountryConfigs.length) {
+    if (categoryData.length === 0 || !visibleCountries.length) {
       setRadarChartData(null);
       return;
     }
@@ -235,9 +240,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
       return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
     };
 
-    const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
-
-    const datasets = visibleConfigs.map((cfg, index) => {
+    const datasets = visibleCountries.map((cfg, index) => {
       const color = getColor(index);
       return {
         label: `${cfg.displayName} Percentage`,
@@ -303,17 +306,17 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
 
     setRadarChartData(radarData);
     setChartOptions(options);
-  }, [categoryData, selectedCountryConfigs, datasetVisibility]);
+  }, [categoryData, visibleCountries]);
 
   // Update category skills when selected category changes
   useEffect(() => {
-    if (!selectedCategory || allSkillsData.length === 0 || !selectedCountryConfigs.length) {
+    if (!selectedCategory || allSkillsData.length === 0 || !visibleCountries.length) {
       setCategorySkills([]);
       setSubcategoryChartData(null);
       return;
     }
 
-    const selectedKeys = selectedCountryConfigs.map((c) => c.csvKey);
+    const selectedKeys = visibleCountries.map((c) => c.csvKey);
     const primaryKey = selectedKeys[0];
 
     const skills = allSkillsData
@@ -391,11 +394,9 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
       return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
     };
 
-    const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
-
     // Unified Subcategory Radar Chart with datasets per visible country
     const labels = unifiedSubcategories.map((s) => s.subcategory);
-    const subcategoryDatasets = visibleConfigs.map((cfg, index) => {
+    const subcategoryDatasets = visibleCountries.map((cfg, index) => {
       const color = getColor(index);
       return {
         label: `${cfg.displayName} Subcategory %`,
@@ -474,7 +475,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
 
     setSubcategoryChartData(unifiedSubData);
     setSubcategoryChartOptions(subChartOptions);
-  }, [selectedCategory, allSkillsData, selectedCountryConfigs, datasetVisibility]);
+  }, [selectedCategory, allSkillsData, visibleCountries]);
 
   if (loading) {
     return (
@@ -504,8 +505,6 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
     const resolved = palette[index % palette.length];
     return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
   };
-
-  const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
@@ -639,7 +638,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
               </DataTable>
 
               {/* Unified Subcategory Bar Chart */}
-              {subcategoryChartData && visibleConfigs.length > 0 && (
+              {subcategoryChartData && visibleCountries.length > 0 && (
                 <div className="mt-4 pt-3 border-top-1 surface-border">
                   <h4 className="text-sm font-semibold mb-3">
                     Top Hard Skills Subcategory Distribution (%)

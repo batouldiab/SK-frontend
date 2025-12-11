@@ -146,6 +146,11 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
     [selectedCountries, availableCountries]
   );
 
+  const visibleCountries = useMemo(
+    () => selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]),
+    [selectedCountryConfigs, datasetVisibility]
+  );
+
   // Keep dataset visibility in sync with incoming selections
   useEffect(() => {
     setDatasetVisibility((prev) => {
@@ -159,12 +164,12 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
 
   // Build unified top skills across selected countries
   useEffect(() => {
-    if (!allSkillsData.length || !selectedCountryConfigs.length) {
+    if (!allSkillsData.length || !visibleCountries.length) {
       setUnifiedTopSkills([]);
       return;
     }
 
-    const selectedKeys = selectedCountryConfigs.map((c) => c.csvKey);
+    const selectedKeys = visibleCountries.map((c) => c.csvKey);
     const unifiedNames = new Set();
     const unified = [];
 
@@ -189,11 +194,11 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
       if (prev && unified.some((s) => s.hardSkill === prev.hardSkill)) return prev;
       return unified[0] || allSkillsData[0] || null;
     });
-  }, [allSkillsData, selectedCountryConfigs]);
+  }, [allSkillsData, visibleCountries]);
 
   // Update radar chart when unified data changes
   useEffect(() => {
-    if (unifiedTopSkills.length === 0 || !selectedCountryConfigs.length) {
+    if (unifiedTopSkills.length === 0 || !visibleCountries.length) {
       setRadarChartData(null);
       return;
     }
@@ -208,9 +213,7 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
       return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
     };
 
-    const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
-
-    const datasets = visibleConfigs.map((cfg, index) => {
+    const datasets = visibleCountries.map((cfg, index) => {
       const color = getColor(index);
       return {
         label: `${cfg.displayName} Standardized Count`,
@@ -281,7 +284,7 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
 
     setRadarChartData(radarData);
     setChartOptions(options);
-  }, [unifiedTopSkills, selectedCountryConfigs, datasetVisibility]);
+  }, [unifiedTopSkills, visibleCountries]);
 
   if (loading) {
     return (
@@ -314,16 +317,14 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
     return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
   };
 
-  const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
-
   const totalDistinctSkills = allSkillsData.length;
   const unifiedCount = unifiedTopSkills.length;
-  const averages = visibleConfigs.map((cfg) => {
+  const averages = visibleCountries.map((cfg) => {
     const total = unifiedTopSkills.reduce((sum, s) => sum + (s.values[cfg.csvKey] || 0), 0);
     return { ...cfg, average: unifiedCount ? total / unifiedCount : 0 };
   });
 
-  const nonZeroCounts = visibleConfigs.map((cfg) => ({
+  const nonZeroCounts = visibleCountries.map((cfg) => ({
     ...cfg,
     count: allSkillsData.filter((s) => (s.values[cfg.csvKey] || 0) !== 0).length,
   }));

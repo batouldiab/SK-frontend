@@ -67,6 +67,11 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
     [selectedCountries]
   );
 
+  const visibleConfigs = useMemo(
+    () => selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]),
+    [selectedCountryConfigs, datasetVisibility]
+  );
+
   const countryColorMap = useMemo(() => {
     const documentStyle = getComputedStyle(document.documentElement);
     const palette = baseColors.map((cssVar) => {
@@ -217,7 +222,6 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
       return;
     }
 
-    const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
     if (!visibleConfigs.length) {
       setChartOptions(null);
       setChartData([]);
@@ -399,7 +403,7 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
       console.error("Error processing chart data:", err);
       setError(err.message || "Error processing chart data");
     }
-  }, [selectedSkill, countryData, selectedCountryConfigs, datasetVisibility, getColor]);
+  }, [selectedSkill, countryData, selectedCountryConfigs, datasetVisibility, getColor, visibleConfigs]);
 
   if (loading) {
     return (
@@ -420,13 +424,6 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
     );
   }
 
-  const documentStyle = getComputedStyle(document.documentElement);
-  const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
-  const getColor = (index) => {
-    const resolved = palette[index % palette.length];
-    return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
-  };
-  const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
   const hasChartData = !!(chartOptions && chartData.length && commonSkills.length && visibleConfigs.length);
 
   return (

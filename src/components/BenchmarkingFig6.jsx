@@ -243,7 +243,14 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
         };
       });
 
-      titlesWithTotals.sort((a, b) => b.total - a.total);
+      // Sort by the order of countries in selectedCountries (first country wins ties)
+      titlesWithTotals.sort((a, b) => {
+        for (let i = 0; i < visibleConfigs.length; i++) {
+          const diff = b.values[i] - a.values[i];
+          if (Math.abs(diff) > 1e-12) return diff;
+        }
+        return a.title.localeCompare(b.title);
+      });
 
       const dataForChart = titlesWithTotals.map((item) => {
         const entry = { title: item.title };

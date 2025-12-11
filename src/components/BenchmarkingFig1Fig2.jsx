@@ -178,6 +178,11 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
     [selectedCountries, countryColumns]
   );
 
+  const visibleCountries = useMemo(
+    () => selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]),
+    [selectedCountryConfigs, datasetVisibility]
+  );
+
   // Keep dataset visibility in sync with incoming selections
   useEffect(() => {
     setDatasetVisibility((prev) => {
@@ -191,13 +196,13 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
 
   // Build the unified top jobs union across selected countries (top 10 per country)
   useEffect(() => {
-    if (!allJobsData.length || !selectedCountryConfigs.length) {
+    if (!allJobsData.length || !visibleCountries.length) {
       setUnifiedTopJobs([]);
       return;
     }
 
     const union = new Map();
-    selectedCountryConfigs.forEach(({ csvKey }) => {
+    visibleCountries.forEach(({ csvKey }) => {
       const sorted = [...allJobsData]
         .filter((job) => job.values[csvKey] !== undefined)
         .sort((a, b) => (b.values[csvKey] || 0) - (a.values[csvKey] || 0))
@@ -210,13 +215,17 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
       });
     });
 
-    setUnifiedTopJobs(Array.from(union.values()));
-  }, [allJobsData, selectedCountryConfigs]);
+    const orderedJobs = Array.from(union.values()).sort((a, b) => {
+      for (let i = 0; i < visibleCountries.length; i += 1) {
+        const key = visibleCountries[i].csvKey;
+        const diff = (b.values[key] || 0) - (a.values[key] || 0);
+        if (Math.abs(diff) > 1e-12) return diff;
+      }
+      return a.jobTitle.localeCompare(b.jobTitle);
+    });
 
-  const visibleCountries = useMemo(
-    () => selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]),
-    [selectedCountryConfigs, datasetVisibility]
-  );
+    setUnifiedTopJobs(orderedJobs);
+  }, [allJobsData, visibleCountries]);
 
   // Prepare chart data for AgCharts
   const chartData = useMemo(() => {

@@ -497,8 +497,6 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
     );
   }
 
-  if (!radarChartData) return null;
-
   const documentStyle = getComputedStyle(document.documentElement);
   const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
   const getColor = (index) => {
@@ -570,7 +568,13 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
       {/* Radar chart for all categories */}
       <div className="w-full mt-3 flex flex-col justify-content-center align-items-center">
         <div style={{ width: "100%", maxWidth: "820px", height: "460px" }}>
-          <Chart type="radar" data={radarChartData} options={chartOptions} className="w-full h-full" />
+          {radarChartData && radarChartData.datasets?.length ? (
+            <Chart type="radar" data={radarChartData} options={chartOptions} className="w-full h-full" />
+          ) : (
+            <div className="flex items-center justify-center h-full text-sm text-color-secondary">
+              Select at least one dataset to display the chart.
+            </div>
+          )}
         </div>
       </div>
 

@@ -452,13 +452,7 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
     );
   }
 
-  if (!chartData.length) {
-    return (
-      <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full text-gray-600">
-        No chart data available for the selected datasets.
-      </div>
-    );
-  }
+  const hasChartData = chartData.length > 0 && visibleCountries.length > 0;
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full">
@@ -543,7 +537,13 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
 
       {/* Chart area */}
       <div className="h-[420px] mb-2">
-        <AgCharts className="h-full" options={chartOptions} />
+        {hasChartData ? (
+          <AgCharts className="h-full" options={chartOptions} />
+        ) : (
+          <div className="flex items-center justify-center h-full text-sm text-gray-500">
+            Select at least one dataset to display the chart.
+          </div>
+        )}
       </div>
 
       <p className="text-xs text-gray-400 text-center mb-6">

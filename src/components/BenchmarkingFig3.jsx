@@ -308,8 +308,6 @@ const BenchmarkingFig3 = ({ selectedCountries = ["United States", "United Arab E
     );
   }
 
-  if (!radarChartData) return null;
-
   const documentStyle = getComputedStyle(document.documentElement);
   const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
   const getColor = (index) => {

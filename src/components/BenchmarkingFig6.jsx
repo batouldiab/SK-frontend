@@ -186,6 +186,7 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
     if (!selectedSkill || !selectedCountryConfigs.length) {
       setChartOptions(null);
       setChartData([]);
+      setStats({ totalTitles: 0, averages: [] });
       return;
     }
 
@@ -193,6 +194,7 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
     if (!visibleConfigs.length) {
       setChartOptions(null);
       setChartData([]);
+      setStats({ totalTitles: 0, averages: [] });
       return;
     }
 
@@ -397,14 +399,6 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
     );
   }
 
-  if (!chartOptions || !chartData.length || !commonSkills.length) {
-    return (
-      <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 w-full">
-        <p className="text-blue-700">No common skills found between the selected datasets.</p>
-      </div>
-    );
-  }
-
   const documentStyle = getComputedStyle(document.documentElement);
   const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
   const getColor = (index) => {
@@ -412,6 +406,7 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
     return resolved && resolved.trim() ? resolved.trim() : fallbackPalette[index % fallbackPalette.length];
   };
   const visibleConfigs = selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]);
+  const hasChartData = !!(chartOptions && chartData.length && commonSkills.length && visibleConfigs.length);
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
@@ -486,11 +481,13 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
 
       {/* Chart */}
       <div className="flex-1 min-h-[420px]">
-        {chartOptions ? (
+        {hasChartData ? (
           <AgCharts className="w-full h-full" options={chartOptions} />
         ) : (
           <div className="flex items-center justify-center h-full text-sm text-color-secondary">
-            Select at least one dataset to display the chart.
+            {commonSkills.length === 0
+              ? "No common skills found between the selected datasets."
+              : "Select at least one dataset to display the chart."}
           </div>
         )}
       </div>

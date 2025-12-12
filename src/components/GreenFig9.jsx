@@ -40,6 +40,14 @@ const GreenFig9 = () => {
         const shares = [];
 
         const THRESHOLD = 50000; // > 50,000
+        const allowedCountries = [
+          "Bahrain",
+          "Kuwait",
+          "Oman",
+          "Qatar",
+          "Saudi Arabia",
+          "United Arab Emirates",
+        ];
 
         rows.forEach((line) => {
           if (!line.trim()) return;
@@ -49,6 +57,7 @@ const GreenFig9 = () => {
           if (cols.length < 3) return;
 
           const country = cols[0].trim();
+          if (!allowedCountries.includes(country)) return; // keep only selected countries
           if (!country) return; // skip blank country rows
 
           const shareRaw = cols[1].toString().trim();

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export default function StreamlitEmbed() {
-  const [streamlitUrl, setStreamlitUrl] = useState('https://futurework2025.streamlit.app/?embed=true');
+  const [streamlitUrl, setStreamlitUrl] = useState('https://cities-skills-v2.streamlit.app/?embed=true');
   const [inputUrl, setInputUrl] = useState('');
 
   const handleUrlChange = () => {

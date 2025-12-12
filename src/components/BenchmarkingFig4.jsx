@@ -1,8 +1,26 @@
 // src/components/BenchmarkingFig4.jsx
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Chart } from "primereact/chart";
 import { Dropdown } from "primereact/dropdown";
+import { Checkbox } from "primereact/checkbox";
 import Papa from "papaparse";
+
+const COUNTRY_ALIASES = {
+  "United States": "US",
+  US: "US",
+  "United Arab Emirates": "United Arab Emirates",
+  UAE: "United Arab Emirates",
+};
+
+const DISPLAY_ALIASES = {
+  US: "United States",
+  UAE: "United Arab Emirates",
+};
+
+const toCsvKey = (name) => COUNTRY_ALIASES[name] || name;
+const toDisplayName = (name) => DISPLAY_ALIASES[name] || name;
+const fallbackPalette = ["#3b82f6", "#ec4899", "#22c55e", "#f97316", "#a855f7"];
+const baseColors = ["--blue-500", "--pink-500", "--green-500", "--orange-500", "--purple-500", "--cyan-500"];
 
 const dropdownPerfProps = {
   filter: true,
@@ -12,7 +30,7 @@ const dropdownPerfProps = {
   scrollHeight: "260px",
 };
 
-const BenchmarkingFig4 = () => {
+const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab Emirates"] }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -26,6 +44,8 @@ const BenchmarkingFig4 = () => {
   // All skills for dropdown
   const [allSkillsData, setAllSkillsData] = useState([]);
   const [selectedSkill, setSelectedSkill] = useState(null);
+  const [datasetVisibility, setDatasetVisibility] = useState({});
+  const [availableCountries, setAvailableCountries] = useState([]);
 
   // Load CSV data
   useEffect(() => {
@@ -41,7 +61,6 @@ const BenchmarkingFig4 = () => {
 
         const text = await response.text();
 
-        // Use PapaParse to properly handle CSV with commas in fields
         Papa.parse(text, {
           header: true,
           skipEmptyLines: true,
@@ -51,23 +70,38 @@ const BenchmarkingFig4 = () => {
                 throw new Error("No valid data found in CSV");
               }
 
+              const metaFields = results.meta?.fields || [];
+              const standardizedColumns = metaFields
+                .filter((field) => /^Standardized Count /i.test(field))
+                .map((field) => ({
+                  fieldName: field,
+                  country: field.replace(/^Standardized Count\s*/i, "").trim(),
+                }));
+
+              if (!standardizedColumns.length) {
+                throw new Error("No standardized count columns found");
+              }
+
+              setAvailableCountries(standardizedColumns.map((c) => c.country));
+
               const allSkills = [];
 
               // Parse all rows
               results.data.forEach((row) => {
-                // Get the first column (hard skill name) - adjust column name as needed
-                const hardSkill = row["Hard Skill"] || row[Object.keys(row)[0]];
-                
-                // Get UAE and US standardized counts - adjust column names as needed
-                const uaeCount = parseFloat(row["Standardized Count UAE"]);
-                const usCount = parseFloat(row["Standardized Count US"]);
+                const hardSkill = (row["Hard Skill"] || row[Object.keys(row)[0]] || "").trim();
+                if (!hardSkill) return;
 
-                if (!hardSkill || isNaN(uaeCount) || isNaN(usCount)) return;
+                const values = {};
+                standardizedColumns.forEach((col) => {
+                  const val = parseFloat(row[col.fieldName]);
+                  if (!Number.isNaN(val)) {
+                    values[col.country] = val;
+                  }
+                });
 
                 allSkills.push({
-                  hardSkill: hardSkill.trim(),
-                  uaeCount,
-                  usCount,
+                  hardSkill,
+                  values,
                 });
               });
 
@@ -75,26 +109,6 @@ const BenchmarkingFig4 = () => {
                 throw new Error("No valid data found in CSV");
               }
 
-              // Get top 10 for UAE
-              const sortedByUAE = [...allSkills].sort((a, b) => b.uaeCount - a.uaeCount);
-              const uaeTop10 = sortedByUAE.slice(0, 10);
-
-              // Get top 10 for US
-              const sortedByUS = [...allSkills].sort((a, b) => b.usCount - a.usCount);
-              const usTop10 = sortedByUS.slice(0, 10);
-
-              // Create unified top skills list (10-20 skills) - US driven first
-              const unifiedSkillNames = new Set(usTop10.map(s => s.hardSkill));
-              const unified = [...usTop10];
-
-              uaeTop10.forEach(skill => {
-                if (!unifiedSkillNames.has(skill.hardSkill)) {
-                  unifiedSkillNames.add(skill.hardSkill);
-                  unified.push(skill);
-                }
-              });
-
-              setUnifiedTopSkills(unified);
               setAllSkillsData(allSkills);
               setSelectedSkill(allSkills[0]);
             } catch (err) {
@@ -108,9 +122,8 @@ const BenchmarkingFig4 = () => {
             console.error("Error parsing CSV:", err);
             setError(err.message || "Error parsing CSV");
             setLoading(false);
-          }
+          },
         });
-
       } catch (err) {
         console.error("Error loading CSV:", err);
         setError(err.message || "Unknown error");
@@ -121,41 +134,126 @@ const BenchmarkingFig4 = () => {
     loadCsv();
   }, []);
 
+  // Determine which country datasets are available from selectedCountries
+  const selectedCountryConfigs = useMemo(
+    () =>
+      selectedCountries
+        .map((name) => ({
+          displayName: toDisplayName(name),
+          csvKey: toCsvKey(name),
+        }))
+        .filter((cfg) => availableCountries.includes(cfg.csvKey)),
+    [selectedCountries, availableCountries]
+  );
+
+  const visibleCountries = useMemo(
+    () => selectedCountryConfigs.filter((cfg) => datasetVisibility[cfg.csvKey]),
+    [selectedCountryConfigs, datasetVisibility]
+  );
+
+  const countryColorMap = useMemo(() => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const palette = baseColors.map((cssVar) => documentStyle.getPropertyValue(cssVar) || "");
+    const map = {};
+
+    selectedCountryConfigs.forEach((cfg, index) => {
+      const paletteColor = (palette[index % palette.length] || "").trim();
+      map[cfg.csvKey] = paletteColor || fallbackPalette[index % fallbackPalette.length];
+    });
+
+    return map;
+  }, [selectedCountryConfigs]);
+
+  const getColor = useCallback(
+    (country) =>
+      countryColorMap[country.csvKey] ||
+      fallbackPalette[
+        (selectedCountryConfigs.findIndex((cfg) => cfg.csvKey === country.csvKey) +
+          fallbackPalette.length) %
+          fallbackPalette.length
+      ],
+    [countryColorMap, selectedCountryConfigs]
+  );
+
+  // Keep dataset visibility in sync with incoming selections
+  useEffect(() => {
+    setDatasetVisibility((prev) => {
+      const next = {};
+      selectedCountryConfigs.forEach((cfg) => {
+        next[cfg.csvKey] = prev[cfg.csvKey] ?? true;
+      });
+      return next;
+    });
+  }, [selectedCountryConfigs]);
+
+  // Build unified top skills across selected countries
+  useEffect(() => {
+    if (!allSkillsData.length || !visibleCountries.length) {
+      setUnifiedTopSkills([]);
+      return;
+    }
+
+    const selectedKeys = visibleCountries.map((c) => c.csvKey);
+    const unifiedNames = new Set();
+    const unified = [];
+
+    selectedKeys.forEach((key) => {
+      const topForCountry = [...allSkillsData]
+        .sort((a, b) => (b.values[key] || 0) - (a.values[key] || 0))
+        .slice(0, 10);
+
+      topForCountry.forEach((skill) => {
+        if (!unifiedNames.has(skill.hardSkill)) {
+          unifiedNames.add(skill.hardSkill);
+          unified.push(skill);
+        }
+      });
+    });
+
+    const primaryKey = selectedKeys[0];
+    unified.sort((a, b) => (b.values[primaryKey] || 0) - (a.values[primaryKey] || 0));
+
+    setUnifiedTopSkills(unified);
+    setSelectedSkill((prev) => {
+      if (prev && unified.some((s) => s.hardSkill === prev.hardSkill)) return prev;
+      return unified[0] || allSkillsData[0] || null;
+    });
+  }, [allSkillsData, visibleCountries]);
+
   // Update radar chart when unified data changes
   useEffect(() => {
-    if (unifiedTopSkills.length === 0) return;
+    if (unifiedTopSkills.length === 0 || !visibleCountries.length) {
+      setRadarChartData(null);
+      return;
+    }
 
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue("--text-color");
     const textColorSecondary = documentStyle.getPropertyValue("--text-color-secondary");
 
-    // Radar Chart Data with UAE and US datasets
+    const datasets = visibleCountries.map((cfg) => {
+      const color = getColor(cfg);
+      return {
+        label: `${cfg.displayName} Standardized Count`,
+        borderColor: color,
+        pointBackgroundColor: color,
+        pointBorderColor: color,
+        pointHoverBackgroundColor: textColor,
+        pointHoverBorderColor: color,
+        backgroundColor: color + "33",
+        data: unifiedTopSkills.map((s) => s.values[cfg.csvKey] || 0),
+        fill: true,
+      };
+    });
+
+    if (!datasets.length) {
+      setRadarChartData(null);
+      return;
+    }
+
     const radarData = {
       labels: unifiedTopSkills.map((s) => s.hardSkill),
-      datasets: [
-        {
-          label: "UAE Standardized Count",
-          borderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
-          pointBackgroundColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
-          pointBorderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
-          pointHoverBackgroundColor: textColor,
-          pointHoverBorderColor: documentStyle.getPropertyValue("--blue-400") || "#3b82f6",
-          backgroundColor: (documentStyle.getPropertyValue("--blue-400") || "#3b82f6") + "33",
-          data: unifiedTopSkills.map((s) => s.uaeCount),
-          fill: true,
-        },
-        {
-          label: "US Standardized Count",
-          borderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
-          pointBackgroundColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
-          pointBorderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
-          pointHoverBackgroundColor: textColor,
-          pointHoverBorderColor: documentStyle.getPropertyValue("--pink-400") || "#ec4899",
-          backgroundColor: (documentStyle.getPropertyValue("--pink-400") || "#ec4899") + "33",
-          data: unifiedTopSkills.map((s) => s.usCount),
-          fill: true,
-        },
-      ],
+      datasets,
     };
 
     const options = {
@@ -204,7 +302,7 @@ const BenchmarkingFig4 = () => {
 
     setRadarChartData(radarData);
     setChartOptions(options);
-  }, [unifiedTopSkills]);
+  }, [unifiedTopSkills, visibleCountries, getColor]);
 
   if (loading) {
     return (
@@ -221,23 +319,24 @@ const BenchmarkingFig4 = () => {
     return (
       <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 w-full">
         <h3 className="text-lg font-semibold text-blue-800 mb-2">
-          Top Hard Skills: UAE vs US
+          Top Hard Skills
         </h3>
         <p className="text-blue-700">Error loading chart data: {error}</p>
       </div>
     );
   }
 
-  if (!radarChartData) return null;
+  const totalDistinctSkills = allSkillsData.length;
+  const unifiedCount = unifiedTopSkills.length;
+  const averages = visibleCountries.map((cfg) => {
+    const total = unifiedTopSkills.reduce((sum, s) => sum + (s.values[cfg.csvKey] || 0), 0);
+    return { ...cfg, average: unifiedCount ? total / unifiedCount : 0 };
+  });
 
-  const uaeTotal = unifiedTopSkills.reduce((sum, s) => sum + s.uaeCount, 0);
-  const usTotal = unifiedTopSkills.reduce((sum, s) => sum + s.usCount, 0);
-  const uaeAvg = uaeTotal / unifiedTopSkills.length;
-  const usAvg = usTotal / unifiedTopSkills.length;
-
-  // ✅ Count only skills where UAE / US count is non-zero
-  const totalUaeSkills = allSkillsData.filter((s) => s.uaeCount !== 0).length;
-  const totalUsSkills = allSkillsData.filter((s) => s.usCount !== 0).length;
+  const nonZeroCounts = visibleCountries.map((cfg) => ({
+    ...cfg,
+    count: allSkillsData.filter((s) => (s.values[cfg.csvKey] || 0) !== 0).length,
+  }));
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
@@ -246,48 +345,87 @@ const BenchmarkingFig4 = () => {
           <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
             Total Distinct Skills (Dataset)
           </p>
-          <p className="text-2xl font-bold text-slate-800">{allSkillsData.length}</p>
+          <p className="text-2xl font-bold text-slate-800">{totalDistinctSkills}</p>
           <div className="mt-3 text-xs text-slate-600 space-y-1">
-            <div>UAE: {totalUaeSkills}</div>
-            <div>US: {totalUsSkills}</div>
+            {nonZeroCounts.map((c) => (
+              <div key={c.csvKey} style={{ color: getColor(c) }}>
+                {c.displayName}: {c.count}
+              </div>
+            ))}
           </div>
         </div>
         <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
           <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">
             Unified Top Distinct Skills
           </p>
-          <p className="text-2xl font-bold text-blue-700">{unifiedTopSkills.length}</p>
+          <p className="text-2xl font-bold text-blue-700">{unifiedCount}</p>
         </div>
         <div className="p-4 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl">
           <p className="text-xs font-medium text-slate-300 uppercase tracking-wide mb-1">
-            Average Standardized Count
+            Average Standardized Count (Unified set)
           </p>
-          <div className="flex gap-4 text-white">
-            <div>
-              <p className="text-[10px] uppercase text-slate-200 mb-1">UAE</p>
-              <p className="text-xl font-semibold">{uaeAvg.toFixed(4)}</p>
-            </div>
-            <div>
-              <p className="text-[10px] uppercase text-slate-200 mb-1">US</p>
-              <p className="text-xl font-semibold">{usAvg.toFixed(4)}</p>
-            </div>
+          <div className="flex gap-4 text-white flex-wrap">
+            {averages.map((avg) => (
+              <div key={avg.csvKey}>
+                <p className="text-[10px] uppercase text-slate-200 mb-1">{avg.displayName}</p>
+                <p className="text-xl font-semibold">{avg.average.toFixed(4)}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Radar Chart - UAE vs US comparison */}
+      {/* Chart toggles */}
+      <div className="flex gap-4 mt-1 mb-3 items-center flex-wrap">
+        <span className="text-sm font-semibold text-gray-600">
+          Show datasets:
+        </span>
+          {selectedCountryConfigs.map((country) => {
+            const id = `toggle-${country.csvKey}`.replace(/\s+/g, "-").toLowerCase();
+            const color = getColor(country);
+            return (
+              <div className="flex items-center gap-2" key={country.csvKey}>
+                <Checkbox
+                inputId={id}
+                checked={!!datasetVisibility[country.csvKey]}
+                onChange={(e) =>
+                  setDatasetVisibility((prev) => ({
+                    ...prev,
+                    [country.csvKey]: e.checked,
+                  }))
+                }
+              />
+              <label
+                htmlFor={id}
+                className="text-sm cursor-pointer select-none"
+                style={{ color }}
+              >
+                {country.displayName}
+              </label>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Radar Chart - comparison */}
       <div className="w-full mt-3 flex justify-center items-center">
         <div className="flex flex-col items-center w-full" style={{ maxWidth: "720px" }}>
           <h3 className="text-md font-semibold mb-2 text-gray-800">
             Top Distinct Hard Skills Comparison: <span className="font-light">Skills count per 100 OJAs</span>
           </h3>
           <div style={{ width: "100%", height: "500px" }}>
-            <Chart
-              type="radar"
-              data={radarChartData}
-              options={chartOptions}
-              className="w-full h-full"
-            />
+            {radarChartData && radarChartData.datasets?.length ? (
+              <Chart
+                type="radar"
+                data={radarChartData}
+                options={chartOptions}
+                className="w-full h-full"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full text-sm text-color-secondary">
+                Select at least one dataset to display the chart.
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -311,18 +449,14 @@ const BenchmarkingFig4 = () => {
 
           {selectedSkill && (
             <div className="flex gap-6 text-sm flex-wrap">
-              <div>
-                <span className="block text-gray-500 text-xs uppercase">UAE</span>
-                <span className="block font-semibold text-blue-600">
-                  {selectedSkill.uaeCount.toFixed(4)}
-                </span>
-              </div>
-              <div>
-                <span className="block text-gray-500 text-xs uppercase">US</span>
-                <span className="block font-semibold text-pink-500">
-                  {selectedSkill.usCount.toFixed(4)}
-                </span>
-              </div>
+              {selectedCountryConfigs.map((country) => (
+                <div key={country.csvKey}>
+                  <span className="block text-gray-500 text-xs uppercase">{country.displayName}</span>
+                  <span className="block font-semibold" style={{ color: getColor(country) }}>
+                    {(selectedSkill.values[country.csvKey] || 0).toFixed(4)}
+                  </span>
+                </div>
+              ))}
             </div>
           )}
         </div>

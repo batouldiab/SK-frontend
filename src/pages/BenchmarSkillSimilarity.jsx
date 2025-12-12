@@ -68,7 +68,7 @@ const BenchmarkSkillSimilarity = () => {
           {/* Figure 3 */}
           <div className="flex justify-content-center">
             <div className="min-h-[420px] min-w-0 flex w-full">
-              <BenchmarkingFig3 />
+              <BenchmarkingFig3 selectedCountries={["United States", "United Arab Emirates"]} />
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@ const BenchmarkSkillSimilarity = () => {
           {/* Figure 4 */}
           <div className="flex justify-content-center">
             <div className="min-h-[420px] min-w-0 flex w-full">
-              <BenchmarkingFig4 />
+              <BenchmarkingFig4 selectedCountries={["United States", "United Arab Emirates"]} />
             </div>
           </div>
         </div>
@@ -156,7 +156,7 @@ const BenchmarkSkillSimilarity = () => {
           {/* Figure 4 */}
           <div className="flex justify-content-center">
             <div className="min-h-[420px] min-w-0 flex w-full">
-              <BenchmarkingFig5_1 />
+              <BenchmarkingFig5_1 selectedCountries={["United States", "United Arab Emirates"]} />
             </div>
           </div>
         </div>
@@ -200,7 +200,7 @@ const BenchmarkSkillSimilarity = () => {
           {/* Figure 4 */}
           <div className="flex justify-content-center">
             <div className="min-h-[420px] min-w-0 flex w-full">
-              <BenchmarkingFig5_2 />
+              <BenchmarkingFig5_2 selectedCountries={["United States", "United Arab Emirates"]} />
             </div>
           </div>
         </div>

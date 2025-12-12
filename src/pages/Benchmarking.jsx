@@ -170,7 +170,7 @@ const Benchmarking = () => {
               </p>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
-                  <strong className="text-slate-700 dark:text-slate-300">Key insight:</strong> Occupational demand patterns reveal structural differences between labour markets. Some economies show strong demand for digital and technology roles (software analysts, data scientists, cloud engineers), while others prioritize service-oriented positions (hospitality, retail, administrative roles) reflecting tourism-led growth and operational focus.
+                  <strong className="text-slate-700 dark:text-slate-300">Key insight:</strong> Occupational demand patterns reveal structural differences between labour markets. Some economies show strong demand for digital and technology roles, while others prioritize service-oriented positions.
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   Advanced economies typically exhibit higher demand for healthcare and social service professions, driven by aging populations and increased attention to mental health and community support services.
@@ -220,7 +220,7 @@ const Benchmarking = () => {
               </p>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                  <strong className="text-slate-700 dark:text-slate-300">Key insight:</strong> Hard skill profiles differ significantly across economies. Innovation-driven markets emphasize digital technologies (Python, SQL, machine learning) and healthcare competencies, while service-oriented economies concentrate on business functions, civil/mechanical engineering for infrastructure projects, and hospitality operations.
+                  <strong className="text-slate-700 dark:text-slate-300">Key insight:</strong> Hard skill profiles differ significantly across economies. The US emphasizes digital technologies (Python, SQL, machine learning) and healthcare competencies, while other economies may concentrate on business functions, civil/mechanical engineering for infrastructure projects, and hospitality operations.
                 </p>
               </div>
             </div>
@@ -267,7 +267,7 @@ const Benchmarking = () => {
               </p>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
-                  <strong className="text-slate-700 dark:text-slate-300">Understanding skill similarity:</strong> While business-related skills (marketing, finance, project management, accounting) and basic ICT competencies (data analysis, computer science) appear across markets, the degree of similarity varies. Hard skills typically show more divergence (Jaccard score ~0.63) than soft skills, reflecting differences in sectoral demands and economic structures.
+                  <strong className="text-slate-700 dark:text-slate-300">Understanding skill similarity:</strong> While business-related skills (marketing, finance, project management, accounting) and basic ICT competencies (data analysis, computer science) appear across markets, the degree of similarity varies. Hard skills typically show more divergence than soft skills, reflecting differences in sectoral demands and economic structures.
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   Job postings in advanced markets often list 2x more skills per posting (18+ vs 9+ skills), reflecting more specialized labour markets with granular skill definitions.
@@ -364,7 +364,7 @@ const Benchmarking = () => {
               </p>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
-                  <strong className="text-slate-700 dark:text-slate-300">Shared foundations with frontier gaps:</strong> Approximately 74% of top soft skills overlap between markets (Jaccard score ~0.95), showing high transferability. However, the remaining 26% reveals significant gaps.
+                  <strong className="text-slate-700 dark:text-slate-300">Shared foundations with frontier gaps:</strong> Top soft skills usually overlap more between markets than hard skills, showing higher transferability.
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   Advanced markets uniquely demand emotional intelligence skills (compassion, empathy, honesty, critical thinking) essential for leadership, teamwork, and resilience—skills that may be underrepresented in operational-focused economies.
@@ -462,7 +462,7 @@ const Benchmarking = () => {
               </p>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-2">
-                  <strong className="text-slate-700 dark:text-slate-300">How shared skills translate into jobs:</strong> Even when countries share core skills like computer science or data analysis, they embed them in different occupational roles.
+                  <strong className="text-slate-700 dark:text-slate-300">How shared skills translate into jobs:</strong> Even when countries share core skills, they embed them in different occupational roles.
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   Innovation-driven markets associate these skills with specialized technical roles (cloud engineer, software developer, ICT intelligent systems designer), while operational-focused economies tie them to managerial and support positions (audit supervisor, ICT help desk manager, financial manager), reflecting supportive rather than pioneering digital economy roles.

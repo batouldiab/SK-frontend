@@ -285,6 +285,7 @@ const BenchmarkingFig8 = ({ selectedCountries = ["United States", "United Arab E
         ],
         gradientLegend: {
           position: "right",
+          padding: { top: 120},
         },
       });
     } catch (err) {

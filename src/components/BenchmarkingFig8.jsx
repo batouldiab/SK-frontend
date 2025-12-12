@@ -227,7 +227,13 @@ const BenchmarkingFig8 = ({ selectedCountries = ["United States", "United Arab E
 
       setHeatmapOptions({
         data: heatmapData,
-        title: {
+        padding: {
+          top: 80,
+          right: 50,
+          bottom: 50,
+          left: 12,
+        },
+        footnote: {
           text: "Share of hierarchy levels by skill and country",
         },
         series: [
@@ -260,8 +266,13 @@ const BenchmarkingFig8 = ({ selectedCountries = ["United States", "United Arab E
             type: "category",
             position: "top",
             label: {
-              rotation: -60,
               color: textColorSecondary,
+              rotation: -35,
+              autoRotate: false,
+              autoWrap: true,
+              avoidCollisions: false,
+              maxWidth: 120,
+              padding: 4,
             },
           },
           {

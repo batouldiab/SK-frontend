@@ -19,6 +19,7 @@ const DISPLAY_ALIASES = {
 
 const toCsvKey = (name) => COUNTRY_ALIASES[name] || name.replace(/\s+/g, "_");
 const toDisplayName = (name) => DISPLAY_ALIASES[name] || name.replace(/_/g, " ");
+const EXCLUDED_TITLE_PATTERN = /r\u00e9p\u00e9titeur/i;
 
 const fallbackPalette = ["#3b82f6", "#ec4899", "#22c55e", "#f97316", "#a855f7"];
 const baseColors = ["--blue-500", "--pink-500", "--green-500", "--orange-500", "--purple-500", "--cyan-500"];
@@ -155,7 +156,13 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
               count: parseFloat(row["count"]) || 0,
               standardizedCount: parseFloat(row["standardized count"]) || 0,
             }))
-            .filter((row) => row.skill && row.title && !Number.isNaN(row.standardizedCount));
+            .filter(
+              (row) =>
+                row.skill &&
+                row.title &&
+                !Number.isNaN(row.standardizedCount) &&
+                !EXCLUDED_TITLE_PATTERN.test(row.title)
+            );
 
           dataMap[cfg.csvKey] = processed;
         });

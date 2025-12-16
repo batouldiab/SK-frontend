@@ -5,6 +5,7 @@ import { Dropdown } from "primereact/dropdown";
 
 const DISPLAY_SCALE = 10; // show values per 1000 jobs
 const COUNTRY_ALIASES = { "United States": "US" };
+const EXCLUDED_TITLE_PATTERN = /r\u00e9p\u00e9titeur/i;
 
 const COUNTRY_COLORS = {
   US: "#1a1a2e",
@@ -127,7 +128,7 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
           if (cols.length < 2) return;
 
           const jobTitle = cols[0].trim();
-          if (!jobTitle) return;
+          if (!jobTitle || EXCLUDED_TITLE_PATTERN.test(jobTitle)) return;
 
           const values = {};
           const counts = {};

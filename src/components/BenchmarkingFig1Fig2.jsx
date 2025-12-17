@@ -76,6 +76,7 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
   const [unifiedTopJobs, setUnifiedTopJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [datasetVisibility, setDatasetVisibility] = useState({});
+  const [countTotals, setCountTotals] = useState({ fig12: {}, fig45: {} });
 
   // Load CSV data once
   useEffect(() => {
@@ -84,78 +85,144 @@ const BenchmarkingFig1Fig2 = ({ selectedCountries = [] }) => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("/data/benchmarking_fig1_2.csv");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        const [fig12Response, fig45Response] = await Promise.all([
+          fetch("/data/benchmarking_fig1_2.csv"),
+          fetch("/data/benchmarking_fig4_5.csv"),
+        ]);
+
+        if (!fig12Response.ok) {
+          throw new Error(`HTTP error loading fig1_2! status: ${fig12Response.status}`);
         }
 
-        const text = await response.text();
-        const lines = text.trim().split(/\r?\n/);
-
-        if (lines.length < 2) {
-          throw new Error("CSV file appears to be empty");
+        if (!fig45Response.ok) {
+          throw new Error(`HTTP error loading fig4_5! status: ${fig45Response.status}`);
         }
 
-        const headerLine = lines[0];
-        const delimiter = headerLine.includes("\t") ? "\t" : ",";
-        const rows = lines.slice(1);
-        const headers = parseDelimitedLine(headerLine, delimiter).map((h) => h.trim());
+        const [fig12Text, fig45Text] = await Promise.all([
+          fig12Response.text(),
+          fig45Response.text(),
+        ]);
 
-        const countryCols = [];
-        for (let i = 1; i < headers.length; i += 2) {
-          const countHeader = headers[i];
-          const percentHeader = headers[i + 1];
-          if (!countHeader || !percentHeader) continue;
-
-          const countCountry = countHeader.replace(/ Count$/i, "").trim();
-          const percentCountry = percentHeader
-            .replace(/Standardized Percentage\s*/i, "")
+        const normalizeCountryName = (countHeader, standardizedHeader) => {
+          const countCountry = (countHeader || "").replace(/ Count$/i, "").trim();
+          const standardCountry = (standardizedHeader || "")
+            .replace(/Standardized (?:Percentage|Count)\s*/i, "")
             .trim();
-          const countryName = percentCountry || countCountry;
+          return standardCountry || countCountry;
+        };
 
-          countryCols.push({
-            countryName,
-            countIndex: i,
-            percentIndex: i + 1,
+        const parseFig12 = () => {
+          const lines = fig12Text.trim().split(/\r?\n/);
+
+          if (lines.length < 2) {
+            throw new Error("benchmarking_fig1_2.csv appears to be empty");
+          }
+
+          const headerLine = lines[0];
+          const delimiter = headerLine.includes("\t") ? "\t" : ",";
+          const rows = lines.slice(1);
+          const headers = parseDelimitedLine(headerLine, delimiter).map((h) => h.trim());
+
+          const countryCols = [];
+          for (let i = 1; i < headers.length; i += 2) {
+            const countHeader = headers[i];
+            const percentHeader = headers[i + 1];
+            if (!countHeader || !percentHeader) continue;
+
+            const countryName = normalizeCountryName(countHeader, percentHeader);
+
+            countryCols.push({
+              countryName,
+              countIndex: i,
+              percentIndex: i + 1,
+            });
+          }
+
+          const allJobData = [];
+          const fig12Totals = {};
+
+          rows.forEach((line) => {
+            if (!line.trim()) return;
+            const cols = parseDelimitedLine(line, delimiter);
+            if (cols.length < 2) return;
+
+            const jobTitle = cols[0].trim();
+            if (!jobTitle || EXCLUDED_TITLE_PATTERN.test(jobTitle)) return;
+
+            const values = {};
+            const counts = {};
+
+            countryCols.forEach((col) => {
+              const countVal = parseFloat((cols[col.countIndex] || "").trim());
+              const percentVal = parseFloat((cols[col.percentIndex] || "").trim());
+
+              if (!Number.isNaN(countVal)) {
+                counts[col.countryName] = countVal;
+                fig12Totals[col.countryName] =
+                  (fig12Totals[col.countryName] || 0) + countVal;
+              }
+              if (!Number.isNaN(percentVal)) {
+                values[col.countryName] = percentVal;
+              }
+            });
+
+            allJobData.push({ jobTitle, values, counts });
           });
-        }
 
-        const allJobData = [];
+          if (allJobData.length === 0) {
+            throw new Error("No valid data found in benchmarking_fig1_2.csv");
+          }
 
-        rows.forEach((line) => {
-          if (!line.trim()) return;
-          const cols = parseDelimitedLine(line, delimiter);
-          if (cols.length < 2) return;
+          return { countryCols, allJobData, fig12Totals };
+        };
 
-          const jobTitle = cols[0].trim();
-          if (!jobTitle || EXCLUDED_TITLE_PATTERN.test(jobTitle)) return;
+        const parseFig45 = () => {
+          const lines = fig45Text.trim().split(/\r?\n/);
+          if (lines.length < 2) {
+            throw new Error("benchmarking_fig4_5.csv appears to be empty");
+          }
 
-          const values = {};
-          const counts = {};
+          const headerLine = lines[0];
+          const delimiter = headerLine.includes("\t") ? "\t" : ",";
+          const rows = lines.slice(1);
+          const headers = parseDelimitedLine(headerLine, delimiter).map((h) => h.trim());
 
-          countryCols.forEach((col) => {
-            const countVal = parseFloat((cols[col.countIndex] || "").trim());
-            const percentVal = parseFloat((cols[col.percentIndex] || "").trim());
+          const countryCols = [];
+          for (let i = 0; i < headers.length - 1; i += 1) {
+            const countHeader = headers[i];
+            const standardizedHeader = headers[i + 1];
+            if (!/ Count$/i.test(countHeader) || !standardizedHeader) continue;
 
-            if (!Number.isNaN(countVal)) {
-              counts[col.countryName] = countVal;
-            }
-            if (!Number.isNaN(percentVal)) {
-              values[col.countryName] = percentVal;
-            }
+            const countryName = normalizeCountryName(countHeader, standardizedHeader);
+            countryCols.push({ countryName, countIndex: i });
+            i += 1; // Skip the standardized column in the loop
+          }
+
+          const fig45Totals = {};
+          rows.forEach((line) => {
+            if (!line.trim()) return;
+            const cols = parseDelimitedLine(line, delimiter);
+
+            countryCols.forEach((col) => {
+              const countVal = parseFloat((cols[col.countIndex] || "").trim());
+              if (!Number.isNaN(countVal)) {
+                fig45Totals[col.countryName] =
+                  (fig45Totals[col.countryName] || 0) + countVal;
+              }
+            });
           });
 
-          allJobData.push({ jobTitle, values, counts });
-        });
+          return fig45Totals;
+        };
 
-        if (allJobData.length === 0) {
-          throw new Error("No valid data found in CSV");
-        }
+        const { countryCols, allJobData, fig12Totals } = parseFig12();
+        const fig45Totals = parseFig45();
 
         setCountryColumns(countryCols);
         setAllJobsData(allJobData);
         setUnifiedTopJobs(allJobData.slice(0, 1)); // initialize to avoid empty state flicker
         setSelectedJob(allJobData[0] || null);
+        setCountTotals({ fig12: fig12Totals, fig45: fig45Totals });
       } catch (err) {
         console.error("Error loading CSV:", err);
         setError(err.message || "Unknown error");
@@ -369,7 +436,7 @@ const maxValue = useMemo(() => {
           type: "number",
           position: "left",
           title: {
-            text: "Jobs per 1,000 OJA",
+            text: "Count per 1,000 OJA",
             fontFamily: "'DM Sans', -apple-system, sans-serif",
             fontSize: 12,
             color: "#2d2d2d",
@@ -424,15 +491,9 @@ const maxValue = useMemo(() => {
     if (!unifiedTopJobs.length) return { averages: [], totalJobs: 0 };
 
     const averages = visibleCountries.map((country) => {
-      const values = unifiedTopJobs
-        .map((job) => job.values[country.csvKey])
-        .filter((val) => typeof val === "number" && !Number.isNaN(val));
-
-      const avg =
-        values.length === 0
-          ? 0
-          : (values.reduce((sum, val) => sum + val, 0) / values.length) *
-            DISPLAY_SCALE;
+      const totalFig12 = countTotals.fig12?.[country.csvKey] || 0;
+      const totalFig45 = countTotals.fig45?.[country.csvKey] || 0;
+      const avg = totalFig45 ? totalFig12 / totalFig45 : 0;
 
       return {
         ...country,
@@ -444,7 +505,7 @@ const maxValue = useMemo(() => {
       averages,
       totalJobs: unifiedTopJobs.length,
     };
-  }, [unifiedTopJobs, visibleCountries]);
+  }, [unifiedTopJobs, visibleCountries, countTotals]);
 
   if (loading) {
     return (
@@ -471,147 +532,181 @@ const maxValue = useMemo(() => {
   const hasChartData = chartData.length > 0 && visibleCountries.length > 0;
 
   return (
-    <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full">
-      {/* Statistics cards */}
-      <div
-        className="grid gap-4 mb-6"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))" }}
-      >
-        <div className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
-            Job titles (chart)
-          </p>
-          <p className="text-2xl font-bold text-slate-800">{stats.totalJobs}</p>
-        </div>
-        {stats.averages.map((stat) => {
-          const color = getCountryColor(stat);
-          return (
-            <div
-              key={stat.csvKey}
-              className="p-4 rounded-xl border"
-              style={{
-                borderColor: color,
-                background:
-                  stat.csvKey === "US"
-                    ? "linear-gradient(135deg, #1f2937, #111827)"
-                    : `${color}20`,
-              }}
-            >
-              <p
-                className={`text-xs font-medium uppercase tracking-wide mb-1 ${
-                  stat.csvKey === "US" ? "text-slate-200" : "text-slate-700"
-                }`}
-              >
-                Avg. {stat.displayName} per 1000 OJA
-              </p>
-              <p
-                className={`text-2xl font-bold ${
-                  stat.csvKey === "US" ? "text-white" : "text-slate-900"
-                }`}
-              >
-                {stat.avg.toFixed(2)}
-              </p>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Dataset toggles */}
-      <div className="flex flex-wrap items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-        <span className="text-sm font-medium text-gray-600">Show datasets:</span>
-        {selectedCountryConfigs.map((country) => {
-          const color = getCountryColor(country);
-          const checked = datasetVisibility[country.csvKey] ?? true;
-
-          return (
-            <label
-              key={country.csvKey}
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={(e) =>
-                  setDatasetVisibility((prev) => ({
-                    ...prev,
-                    [country.csvKey]: e.target.checked,
-                  }))
-                }
-                className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-              />
-              <span className="flex items-center gap-2">
-                <span
-                  className="w-3 h-3 rounded"
-                  style={{ backgroundColor: color }}
-                ></span>
-                <span className="text-sm text-gray-700">{country.displayName}</span>
-              </span>
-            </label>
-          );
-        })}
-      </div>
-
-      {/* Chart area */}
-      <div className="h-[420px] mb-2">
-        {hasChartData ? (
-          <AgCharts className="h-full" options={chartOptions} />
-        ) : (
-          <div className="flex items-center justify-center h-full text-sm text-gray-500">
-            Select at least one dataset to display the chart.
+    <div className="flex flex-col gap-6 w-full">
+      <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full">
+        {/* Statistics cards */}
+        <div
+          className="grid gap-4 mb-6"
+          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))" }}
+        >
+          <div className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+              Job titles (chart)
+            </p>
+            <p className="text-2xl font-bold text-slate-800">{stats.totalJobs}</p>
           </div>
-        )}
-      </div>
+          {stats.averages.map((stat) => {
+            const color = getCountryColor(stat);
+            return (
+              <div
+                key={stat.csvKey}
+                className="p-4 rounded-xl border"
+                style={{
+                  borderColor: color,
+                  background:
+                    stat.csvKey === "US"
+                      ? "linear-gradient(135deg, #1f2937, #111827)"
+                      : `${color}20`,
+                }}
+              >
+                <p
+                  className={`text-xs font-medium uppercase tracking-wide mb-1 ${
+                    stat.csvKey === "US" ? "text-slate-200" : "text-slate-700"
+                  }`}
+                >
+                  Avg. nb of required skills per Job in {stat.displayName}
+                </p>
+                <p
+                  className={`text-2xl font-bold ${
+                    stat.csvKey === "US" ? "text-white" : "text-slate-900"
+                  }`}
+                >
+                  {stat.avg.toFixed(2)}
+                </p>
+              </div>
+            );
+          })}
+        </div>
 
-      <p className="text-xs text-gray-400 text-center mb-6">
-        Values shown: jobs per 1000 in the market. Bars/dots match the legend.
-      </p>
+        {/* Dataset toggles */}
+        <div className="flex flex-wrap items-center gap-4 mb-4 pb-4 border-b border-gray-100">
+          <span className="text-sm font-medium text-gray-600">Show datasets:</span>
+          {selectedCountryConfigs.map((country) => {
+            const color = getCountryColor(country);
+            const checked = datasetVisibility[country.csvKey] ?? true;
+
+            return (
+              <label
+                key={country.csvKey}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(e) =>
+                    setDatasetVisibility((prev) => ({
+                      ...prev,
+                      [country.csvKey]: e.target.checked,
+                    }))
+                  }
+                  className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                />
+                <span className="flex items-center gap-2">
+                  <span
+                    className="w-3 h-3 rounded"
+                    style={{ backgroundColor: color }}
+                  ></span>
+                  <span className="text-sm text-gray-700">{country.displayName}</span>
+                </span>
+              </label>
+            );
+          })}
+        </div>
+
+        {/* Chart area */}
+        <div className="h-[420px] mb-2">
+          {hasChartData ? (
+            <AgCharts className="h-full" options={chartOptions} />
+          ) : (
+            <div className="flex items-center justify-center h-full text-sm text-gray-500">
+              Select at least one dataset to display the chart.
+            </div>
+          )}
+        </div>
+
+        <p className="text-xs text-gray-400 text-center mb-2">
+          Values shown: jobs per 1000 in the market. Bars/dots match the legend.
+        </p>
+      </div>
 
       {/* Job selector & comparison */}
-      <div className="mt-6 pt-6 border-t border-gray-100">
-        <h4 className="text-sm font-semibold text-gray-700 mb-4">
-          Compare standardized demand for a selected job title (per 1000 jobs in
-          the country market)
-        </h4>
-
-        <Dropdown
-          value={selectedJob}
-          onChange={(e) => setSelectedJob(e.value)}
-          options={allJobsData}
-          optionLabel="jobTitle"
-          placeholder="Select a job title"
-          className="w-full md:w-80 mb-4"
-          showClear
-          {...dropdownPerfProps}
-        />
-
-        {selectedJob && (
-          <div
-            className="grid gap-4"
-            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
-          >
-            {visibleCountries.map((country) => {
-              const value = selectedJob.values?.[country.csvKey];
-              if (value === undefined) return null;
-              const color = getCountryColor(country);
-
-              return (
-                <div
-                  key={`${country.csvKey}-${selectedJob.jobTitle}`}
-                  className="flex-1 min-w-[200px] p-4 rounded-xl border"
-                  style={{ borderColor: color, backgroundColor: `${color}10` }}
-                >
-                  <p className="text-xs font-medium text-slate-600 uppercase tracking-wide mb-1">
-                    {country.displayName} standardized
-                  </p>
-                  <p className="text-xl font-bold text-slate-800">
-                    {(value * DISPLAY_SCALE).toFixed(2)}
-                  </p>
-                </div>
-              );
-            })}
+      <section className="p-6 rounded-2xl border border-slate-800/70 bg-gradient-to-br from-slate-900 via-slate-950 to-black shadow-lg">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2 max-w-3xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-200">
+              Job title drill-down
+            </p>
+            <h4 className="text-lg md:text-xl font-semibold text-white">
+              Compare standardized demand for one job title
+            </h4>
+            <p className="text-sm text-slate-200 leading-relaxed">
+              Pick a title such as "Commercial Director" to see how many postings per 1,000 jobs
+              each selected country has for that exact role. The numbers reuse the same standardized
+              demand shown in the chart above, filtered to the countries that are currently toggled on.
+            </p>
+            <ul className="text-xs text-slate-300 list-disc pl-4 space-y-1">
+              <li>Titles come from the unified top-demand list across selected countries.</li>
+              <li>Values are per 1,000 online job ads in each country market.</li>
+              <li>Switch countries in the toggles above to control which markets are compared here.</li>
+            </ul>
           </div>
-        )}
-      </div>
+          <div className="w-full md:w-80">
+            <Dropdown
+              value={selectedJob}
+              onChange={(e) => setSelectedJob(e.value)}
+              options={allJobsData}
+              optionLabel="jobTitle"
+              placeholder="Select a job title"
+              className="w-full mb-2 md:mb-0"
+              showClear
+              {...dropdownPerfProps}
+            />
+            <p className="text-[11px] text-slate-400 mt-2">
+              Start typing to search. Selecting clears any previous title.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5">
+          {selectedJob ? (
+            visibleCountries.length ? (
+              <div
+                className="grid gap-4"
+                style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
+              >
+                {visibleCountries.map((country) => {
+                  const value = selectedJob.values?.[country.csvKey];
+                  if (value === undefined) return null;
+                  const color = getCountryColor(country);
+
+                  return (
+                    <div
+                      key={`${country.csvKey}-${selectedJob.jobTitle}`}
+                      className="flex-1 min-w-[200px] p-4 rounded-xl border bg-slate-900/60"
+                      style={{ borderColor: color, boxShadow: `0 10px 30px ${color}20` }}
+                    >
+                      <p className="text-xs font-medium text-slate-200 uppercase tracking-wide mb-1">
+                        {country.displayName}
+                      </p>
+                      <p className="text-xl font-bold text-white">
+                        {(value * DISPLAY_SCALE).toFixed(2)}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm text-slate-200">
+                Turn on at least one country dataset above to see the comparison.
+              </div>
+            )
+          ) : (
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm text-slate-200">
+              Select a job title to see the per-country standardized demand.
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 };

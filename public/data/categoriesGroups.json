@@ -1,0 +1,98 @@
+[
+  {
+    "group": "Core Human Abilities",
+    "categories": [
+      "Physical and Inherent Abilities"
+    ]
+  },
+  {
+    "group": "Business, Administration & Workplace Services",
+    "categories": [
+      "Business",
+      "Administration",
+      "Sales",
+      "Customer and Client Support",
+      "Human Resources",
+      "Property and Real Estate"
+    ]
+  },
+  {
+    "group": "Communication, Marketing & Media",
+    "categories": [
+      "Marketing and Public Relations",
+      "Media and Communications"
+    ]
+  },
+  {
+    "group": "Governance, Policy & Public Affairs",
+    "categories": [
+      "Law, Regulation, and Compliance",
+      "Economics, Policy, and Social Studies",
+      "Public Safety and National Security"
+    ]
+  },
+  {
+    "group": "Education, Research & Analytical Skills",
+    "categories": [
+      "Education and Training",
+      "Science and Research",
+      "Analysis"
+    ]
+  },
+  {
+    "group": "Digital & Information Technology",
+    "categories": [
+      "Information Technology"
+    ]
+  },
+  {
+    "group": "Finance & Accounting",
+    "categories": [
+      "Finance"
+    ]
+  },
+  {
+    "group": "Engineering, Manufacturing & Built Environment",
+    "categories": [
+      "Engineering",
+      "Architecture and Construction",
+      "Manufacturing and Production"
+    ]
+  },
+  {
+    "group": "Energy, Environment & Natural Resources",
+    "categories": [
+      "Energy and Utilities",
+      "Environment",
+      "Agriculture, Horticulture, and Landscaping"
+    ]
+  },
+  {
+    "group": "Operations, Logistics & Facilities",
+    "categories": [
+      "Transportation, Supply Chain, and Logistics",
+      "Maintenance, Repair, and Facility Services"
+    ]
+  },
+  {
+    "group": "Health, Care & Social Services",
+    "categories": [
+      "Health Care",
+      "Social and Human Services",
+      "Personal Care and Services"
+    ]
+  },
+  {
+    "group": "Design, Creative & Cultural Industries",
+    "categories": [
+      "Design",
+      "Performing Arts, Sports, and Recreation"
+    ]
+  },
+  {
+    "group": "Hospitality & Food Services",
+    "categories": [
+      "Hospitality and Food Services"
+    ]
+  }
+]

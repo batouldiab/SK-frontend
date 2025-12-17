@@ -35,6 +35,7 @@ const dropdownPerfProps = {
 const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab Emirates"] }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hardCategoryGroups, setHardCategoryGroups] = useState([]);
 
   // Chart data
   const [radarChartData, setRadarChartData] = useState(null);
@@ -144,6 +145,25 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
     loadCsv();
   }, []);
 
+  // Load hard category groupings used for radar aggregation
+  useEffect(() => {
+    const loadGroups = async () => {
+      try {
+        const response = await fetch("/data/categoriesGroups.json");
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setHardCategoryGroups(data);
+        }
+      } catch (err) {
+        console.error("Error loading hard category groups:", err);
+      }
+    };
+
+    loadGroups();
+  }, []);
+
   // Determine which country datasets are available from selectedCountries
   const selectedCountryConfigs = useMemo(
     () =>
@@ -196,6 +216,18 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
     });
   }, [selectedCountryConfigs]);
 
+  const categoryToGroupMap = useMemo(() => {
+    const map = new Map();
+    hardCategoryGroups.forEach((group) => {
+      (group.categories || []).forEach((cat) => {
+        if (cat) {
+          map.set(cat.trim(), group.group);
+        }
+      });
+    });
+    return map;
+  }, [hardCategoryGroups]);
+
   // Aggregate data per category for selected countries
   useEffect(() => {
     if (!allSkillsData.length || !visibleCountries.length) {
@@ -245,11 +277,39 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
       if (prev && categoriesArray.some((c) => c.category === prev)) return prev;
       return categoriesArray[0]?.category || null;
     });
+
   }, [allSkillsData, visibleCountries]);
+
+  const groupedCategoryData = useMemo(() => {
+    if (!categoryData.length || !visibleCountries.length) return [];
+
+    const selectedKeys = visibleCountries.map((c) => c.csvKey);
+    const groupMap = new Map();
+
+    categoryData.forEach((cat) => {
+      const groupName = categoryToGroupMap.get(cat.category) || "Other";
+
+      if (!groupMap.has(groupName)) {
+        groupMap.set(groupName, { group: groupName, percentages: {}, categories: [] });
+      }
+
+      const groupEntry = groupMap.get(groupName);
+      groupEntry.categories.push({ name: cat.category, percentages: cat.percentages });
+
+      selectedKeys.forEach((key) => {
+        groupEntry.percentages[key] = (groupEntry.percentages[key] || 0) + (cat.percentages[key] || 0);
+      });
+    });
+
+    const sortKey = selectedKeys[0];
+    return Array.from(groupMap.values()).sort(
+      (a, b) => (b.percentages[sortKey] || 0) - (a.percentages[sortKey] || 0)
+    );
+  }, [categoryData, categoryToGroupMap, visibleCountries]);
 
   // Update charts when category data changes
   useEffect(() => {
-    if (categoryData.length === 0 || !visibleCountries.length) {
+    if (groupedCategoryData.length === 0 || !visibleCountries.length) {
       setRadarChartData(null);
       return;
     }
@@ -262,19 +322,21 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
       const color = getColor(cfg);
       return {
         label: `${cfg.displayName} Percentage`,
+        countryKey: cfg.csvKey,
         borderColor: color,
         pointBackgroundColor: color,
         pointBorderColor: color,
         pointHoverBackgroundColor: textColor,
         pointHoverBorderColor: color,
         backgroundColor: color + "33",
-        data: categoryData.map((c) => c.percentages[cfg.csvKey] || 0),
+        data: groupedCategoryData.map((group) => group.percentages[cfg.csvKey] || 0),
+        originalData: groupedCategoryData.map((group) => group.percentages[cfg.csvKey] || 0),
         fill: true,
       };
     });
 
     const radarData = {
-      labels: categoryData.map((c) => c.category),
+      labels: groupedCategoryData.map((group) => group.group),
       datasets,
     };
 
@@ -292,7 +354,19 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
         tooltip: {
           callbacks: {
             label: function (context) {
-              return `${context.dataset.label}: ${context.parsed.r.toFixed(2)}%`;
+              // Use original (non-transformed) value for tooltip
+              const originalValue = context.dataset.originalData?.[context.dataIndex] ?? context.parsed.r;
+              return `${context.dataset.label}: ${originalValue.toFixed(2)}%`;
+            },
+            afterLabel: function (context) {
+              const group = groupedCategoryData[context.dataIndex];
+              if (!group) return "";
+              const countryKey = context.dataset.countryKey;
+
+              return group.categories.map((cat) => {
+                const value = cat.percentages[countryKey] || 0;
+                return `${cat.name}: ${value.toFixed(2)}%`;
+              });
             },
           },
         },
@@ -303,7 +377,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
           ticks: {
             color: textColorSecondary,
             backdropColor: "transparent",
-            callback: (value) => `${value.toFixed(1)}%`,
+            callback: (value) => `${value.toFixed(0)}%`,
           },
           grid: {
             color: textColorSecondary + "40",
@@ -324,7 +398,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
 
     setRadarChartData(radarData);
     setChartOptions(options);
-  }, [categoryData, visibleCountries, getColor]);
+  }, [groupedCategoryData, visibleCountries, getColor]);
 
   // Update category skills when selected category changes
   useEffect(() => {
@@ -410,6 +484,10 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
     const labels = unifiedSubcategories.map((s) => s.subcategory);
     const subcategoryDatasets = visibleCountries.map((cfg) => {
       const color = getColor(cfg);
+      const originalData = labels.map((label) => {
+        const sub = unifiedSubcategories.find((s) => s.subcategory === label);
+        return sub?.percentages[cfg.csvKey] || 0;
+      });
       return {
         label: `${cfg.displayName} Subcategory %`,
         backgroundColor: color + "33",
@@ -417,17 +495,15 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
         pointBackgroundColor: color,
         pointBorderColor: color,
         borderWidth: 2,
-        data: labels.map((label) => {
-          const sub = unifiedSubcategories.find((s) => s.subcategory === label);
-          return sub?.percentages[cfg.csvKey] || 0;
-        }),
+        data: originalData,
+        originalData: originalData,
         fill: true,
       };
     });
 
     const allDataPoints = subcategoryDatasets.flatMap((ds) => ds.data);
-    const maxPercentage = allDataPoints.length ? Math.max(...allDataPoints) : 0;
-    const yAxisMax = Math.ceil((maxPercentage || 0) * 1.1);
+    const maxValue = allDataPoints.length ? Math.max(...allDataPoints) : 0;
+    const yAxisMax = Math.ceil((maxValue || 0) * 1.1);
 
     const unifiedSubData = subcategoryDatasets.length
       ? {
@@ -451,8 +527,9 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
         tooltip: {
           callbacks: {
             label: function (context) {
-              const value = context.parsed.r || 0;
-              return `${context.dataset.label}: ${value.toFixed(2)}%`;
+              // Use original (non-transformed) value for tooltip
+              const originalValue = context.dataset.originalData?.[context.dataIndex] ?? context.parsed.r;
+              return `${context.dataset.label}: ${originalValue.toFixed(2)}%`;
             },
           },
         },
@@ -464,7 +541,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
           ticks: {
             color: textColorSecondary,
             callback: function (value) {
-              return value + "%";
+              return `${value}%`;
             },
             backdropColor: "transparent",
           },
@@ -510,102 +587,125 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
   }
 
   return (
-    <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
-      <div className="justify-content-between align-items-start mb-3 gap-3 w-full">
-        <div>
-          {/* Statistics cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 mb-2">
-            <div className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
-                Total Categories
-              </p>
-              <p className="text-2xl font-bold text-slate-800">
-                {categoryData.length}
-              </p>
+    <div className="flex flex-col gap-6 w-full">
+      <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
+        <div className="justify-content-between align-items-start mb-3 gap-3 w-full">
+          <div>
+            {/* Statistics cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 mb-2">
+              <div className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
+                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+                  Total Categories
+                </p>
+                <p className="text-2xl font-bold text-slate-800">
+                  {categoryData.length}
+                </p>
+              </div>
+              <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">
+                  Total Skills
+                </p>
+                <p className="text-2xl font-bold text-blue-700">
+                  {allSkillsData.length}
+                </p>
+              </div>
             </div>
-            <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-              <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">
-                Total Skills
-              </p>
-              <p className="text-2xl font-bold text-blue-700">
-                {allSkillsData.length}
-              </p>
+
+            {/* Chart toggles */}
+            <div className="flex flex-wrap gap-4 mt-4 align-items-center">
+              <span className="text-sm font-semibold text-color-secondary">
+                Show datasets:
+              </span>
+              {selectedCountryConfigs.map((country) => {
+                const id = `toggle-${country.csvKey}`.replace(/\s+/g, "-").toLowerCase();
+                const color = getColor(country);
+
+                return (
+                  <div className="flex align-items-center gap-2" key={country.csvKey}>
+                    <Checkbox
+                      inputId={id}
+                      checked={!!datasetVisibility[country.csvKey]}
+                      onChange={(e) =>
+                        setDatasetVisibility((prev) => ({
+                          ...prev,
+                          [country.csvKey]: e.checked,
+                        }))
+                      }
+                    />
+                    <label
+                      htmlFor={id}
+                      className="text-sm cursor-pointer select-none"
+                      style={{ color }}
+                    >
+                      {country.displayName}
+                    </label>
+                  </div>
+                );
+              })}
             </div>
-          </div>
-
-          {/* Chart toggles */}
-          <div className="flex flex-wrap gap-4 mt-4 align-items-center">
-            <span className="text-sm font-semibold text-color-secondary">
-              Show datasets:
-            </span>
-            {selectedCountryConfigs.map((country) => {
-              const id = `toggle-${country.csvKey}`.replace(/\s+/g, "-").toLowerCase();
-              const color = getColor(country);
-
-              return (
-                <div className="flex align-items-center gap-2" key={country.csvKey}>
-                  <Checkbox
-                    inputId={id}
-                    checked={!!datasetVisibility[country.csvKey]}
-                    onChange={(e) =>
-                      setDatasetVisibility((prev) => ({
-                        ...prev,
-                        [country.csvKey]: e.checked,
-                      }))
-                    }
-                  />
-                  <label
-                    htmlFor={id}
-                    className="text-sm cursor-pointer select-none"
-                    style={{ color }}
-                  >
-                    {country.displayName}
-                  </label>
-                </div>
-              );
-            })}
           </div>
         </div>
-      </div>
-      <h4 className="text-sm font-semibold mb-3">
-        Top Hard Skills Category Distribution (%)
-      </h4>
-      {/* Radar chart for all categories */}
-      <div className="w-full mt-3 flex flex-col justify-content-center align-items-center">
-        <div style={{ width: "100%", maxWidth: "820px", height: "460px" }}>
-          {radarChartData && radarChartData.datasets?.length ? (
-            <Chart type="radar" data={radarChartData} options={chartOptions} className="w-full h-full" />
-          ) : (
-            <div className="flex items-center justify-center h-full text-sm text-color-secondary">
-              Select at least one dataset to display the chart.
-            </div>
-          )}
+        <h4 className="text-sm font-semibold mb-3">
+          Hard Skills Group Distribution (%)
+        </h4>
+        {/* Radar chart for all categories */}
+        <div className="w-full mt-3 flex flex-col justify-content-center align-items-center">
+          <div style={{ width: "100%", maxWidth: "820px", height: "460px" }}>
+            {radarChartData && radarChartData.datasets?.length ? (
+              <Chart type="radar" data={radarChartData} options={chartOptions} className="w-full h-full" />
+            ) : (
+              <div className="flex items-center justify-center h-full text-sm text-color-secondary">
+                Select at least one dataset to display the chart.
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Category selector & skills list */}
-      <div className="w-full mt-4 pt-3 border-top-1 surface-border">
-        <h3 className="text-sm font-semibold mb-2">
-          Explore skills by category
-        </h3>
-        <div className="flex flex-col gap-3">
-          <Dropdown
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.value)}
-            options={categoryData.map((c) => c.category)}
-            placeholder="Select a category"
-            className="w-full md:w-20rem"
-            showClear
-            {...dropdownPerfProps}
-          />
+      <section className="p-6 rounded-2xl border border-slate-800/70 bg-gradient-to-br from-slate-900 via-slate-950 to-black shadow-lg">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2 max-w-3xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-200">
+              Hard-skill category drill-down
+            </p>
+            <h4 className="text-lg md:text-xl font-semibold text-white">
+              Explore skills by category
+            </h4>
+            <p className="text-sm text-slate-200 leading-relaxed">
+              Choose a hard-skill category to list its skills, subcategories, and standardized demand (per 100 OJAs) for
+              the countries you have toggled on. This uses the same datasets as the radar above but focuses on the detailed skill mix.
+            </p>
+            <ul className="text-xs text-slate-300 list-disc pl-4 space-y-1">
+              <li>Countries shown follow the toggles above; turn datasets on/off there.</li>
+              <li>Counts are standardized per 100 online job ads.</li>
+              <li>The subcategory radar below the table summarizes the chosen category's sub-skill mix.</li>
+            </ul>
+          </div>
+          <div className="w-full md:w-80">
+            <Dropdown
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.value)}
+              options={categoryData.map((c) => c.category)}
+              placeholder="Select a category"
+              className="w-full mb-2 md:mb-0"
+              showClear
+              {...dropdownPerfProps}
+            />
+            <p className="text-[11px] text-slate-400 mt-2">
+              Start typing to search. Clearing removes the current selection.
+            </p>
+          </div>
+        </div>
 
-          {selectedCategory && categorySkills.length > 0 && (
-            <div className="surface-50 border-round-lg p-3">
+        <div className="mt-5">
+          {selectedCategory && categorySkills.length > 0 ? (
+            <div className="surface-50 border-round-lg p-3 bg-slate-900/60 border border-slate-800">
               <div className="flex justify-content-between align-items-center mb-3">
-                <h4 className="text-sm font-semibold m-0">
+                <h4 className="text-sm font-semibold text-white m-0">
                   Skills in "{selectedCategory}"
                 </h4>
-                <span className="text-xs text-color-secondary">
+                <span className="text-xs text-slate-300">
                   {categorySkills.length} skills
                 </span>
               </div>
@@ -649,7 +749,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
               {/* Unified Subcategory Bar Chart */}
               {subcategoryChartData && visibleCountries.length > 0 && (
                 <div className="mt-4 pt-3 border-top-1 surface-border">
-                  <h4 className="text-sm font-semibold mb-3">
+                  <h4 className="text-sm font-semibold mb-3 text-white">
                     Top Hard Skills Subcategory Distribution (%)
                   </h4>
                   <div style={{ width: "100%", height: "400px" }}>
@@ -663,9 +763,13 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
                 </div>
               )}
             </div>
+          ) : (
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm text-slate-200">
+              Select a category to view the skills table and subcategory distribution.
+            </div>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 };

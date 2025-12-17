@@ -339,128 +339,176 @@ const BenchmarkingFig4 = ({ selectedCountries = ["United States", "United Arab E
   }));
 
   return (
-    <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <div className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
-            Total Distinct Skills (Dataset)
-          </p>
-          <p className="text-2xl font-bold text-slate-800">{totalDistinctSkills}</p>
-          <div className="mt-3 text-xs text-slate-600 space-y-1">
-            {nonZeroCounts.map((c) => (
-              <div key={c.csvKey} style={{ color: getColor(c) }}>
-                {c.displayName}: {c.count}
-              </div>
-            ))}
+    <div className="flex flex-col gap-6 w-full">
+      <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl">
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+              Total Distinct Skills (Dataset)
+            </p>
+            <p className="text-2xl font-bold text-slate-800">{totalDistinctSkills}</p>
+            <div className="mt-3 text-xs text-slate-600 space-y-1">
+              {nonZeroCounts.map((c) => (
+                <div key={c.csvKey} style={{ color: getColor(c) }}>
+                  {c.displayName}: {c.count}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-          <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">
-            Unified Top Distinct Skills
-          </p>
-          <p className="text-2xl font-bold text-blue-700">{unifiedCount}</p>
-        </div>
-        <div className="p-4 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl">
-          <p className="text-xs font-medium text-slate-300 uppercase tracking-wide mb-1">
-            Average Standardized Count (Unified set)
-          </p>
-          <div className="flex gap-4 text-white flex-wrap">
-            {averages.map((avg) => (
-              <div key={avg.csvKey}>
-                <p className="text-[10px] uppercase text-slate-200 mb-1">{avg.displayName}</p>
-                <p className="text-xl font-semibold">{avg.average.toFixed(4)}</p>
-              </div>
-            ))}
+          <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+            <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">
+              Unified Top Distinct Skills
+            </p>
+            <p className="text-2xl font-bold text-blue-700">{unifiedCount}</p>
           </div>
+          {/* <div className="p-4 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl">
+            <p className="text-xs font-medium text-slate-300 uppercase tracking-wide mb-1">
+              Average Standardized Count (Unified set)
+            </p>
+            <div className="flex gap-4 text-white flex-wrap">
+              {averages.map((avg) => (
+                <div key={avg.csvKey}>
+                  <p className="text-[10px] uppercase text-slate-200 mb-1">{avg.displayName}</p>
+                  <p className="text-xl font-semibold">{avg.average.toFixed(4)}</p>
+                </div>
+              ))}
+            </div>
+          </div> */}
         </div>
-      </div>
 
-      {/* Chart toggles */}
-      <div className="flex gap-4 mt-1 mb-3 items-center flex-wrap">
-        <span className="text-sm font-semibold text-gray-600">
-          Show datasets:
-        </span>
+        {/* Chart toggles */}
+        <div className="flex gap-4 mt-1 mb-3 items-center flex-wrap">
+          <span className="text-sm font-semibold text-gray-600">
+            Show datasets:
+          </span>
           {selectedCountryConfigs.map((country) => {
             const id = `toggle-${country.csvKey}`.replace(/\s+/g, "-").toLowerCase();
             const color = getColor(country);
             return (
               <div className="flex items-center gap-2" key={country.csvKey}>
                 <Checkbox
-                inputId={id}
-                checked={!!datasetVisibility[country.csvKey]}
-                onChange={(e) =>
-                  setDatasetVisibility((prev) => ({
-                    ...prev,
-                    [country.csvKey]: e.checked,
-                  }))
-                }
-              />
-              <label
-                htmlFor={id}
-                className="text-sm cursor-pointer select-none"
-                style={{ color }}
-              >
-                {country.displayName}
-              </label>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Radar Chart - comparison */}
-      <div className="w-full mt-3 flex justify-center items-center">
-        <div className="flex flex-col items-center w-full" style={{ maxWidth: "720px" }}>
-          <h3 className="text-md font-semibold mb-2 text-gray-800">
-            Top Distinct Hard Skills Comparison: <span className="font-light">Skills count per 100 OJAs</span>
-          </h3>
-          <div style={{ width: "100%", height: "500px" }}>
-            {radarChartData && radarChartData.datasets?.length ? (
-              <Chart
-                type="radar"
-                data={radarChartData}
-                options={chartOptions}
-                className="w-full h-full"
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full text-sm text-color-secondary">
-                Select at least one dataset to display the chart.
+                  inputId={id}
+                  checked={!!datasetVisibility[country.csvKey]}
+                  onChange={(e) =>
+                    setDatasetVisibility((prev) => ({
+                      ...prev,
+                      [country.csvKey]: e.checked,
+                    }))
+                  }
+                />
+                <label
+                  htmlFor={id}
+                  className="text-sm cursor-pointer select-none"
+                  style={{ color }}
+                >
+                  {country.displayName}
+                </label>
               </div>
-            )}
+            );
+          })}
+        </div>
+
+        {/* Radar Chart - comparison */}
+        <div className="w-full mt-3 flex justify-center items-center">
+          <div className="flex flex-col items-center w-full" style={{ maxWidth: "720px" }}>
+            <h3 className="text-md font-semibold mb-2 text-gray-800">
+              Top Distinct Hard Skills Comparison: <span className="font-light">Skills count per 100 OJAs</span>
+            </h3>
+            <div style={{ width: "100%", height: "500px" }}>
+              {radarChartData && radarChartData.datasets?.length ? (
+                <Chart
+                  type="radar"
+                  data={radarChartData}
+                  options={chartOptions}
+                  className="w-full h-full"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-sm text-color-secondary">
+                  Select at least one dataset to display the chart.
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Skill selector & details */}
-      <div className="w-full mt-4 pt-4 border-t border-gray-100">
-        <h3 className="text-sm font-semibold mb-3 text-gray-700">
-          Compare standardized demand for a selected hard skill (per 1000 hard skill in the country market)
-        </h3>
-        <div className="flex flex-col md:flex-row gap-3 items-start md:items-center">
-          <Dropdown
-            value={selectedSkill}
-            onChange={(e) => setSelectedSkill(e.value)}
-            options={allSkillsData}
-            optionLabel="hardSkill"
-            placeholder="Select a hard skill"
-            className="w-full md:w-80"
-            showClear
-            {...dropdownPerfProps}
-          />
+      <section className="p-6 rounded-2xl border border-slate-800/70 bg-gradient-to-br from-slate-900 via-slate-950 to-black shadow-lg">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2 max-w-3xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-200">
+              Hard skill drill-down
+            </p>
+            <h4 className="text-lg md:text-xl font-semibold text-white">
+              Compare standardized demand for one hard skill
+            </h4>
+            <p className="text-sm text-slate-200 leading-relaxed">
+              Choose a specific hard skill to see standardized counts (per 100 online job ads) for each country
+              currently toggled on. These values use the same standardized data shown in the radar chart above.
+            </p>
+            <ul className="text-xs text-slate-300 list-disc pl-4 space-y-1">
+              <li>Skills list is built from the unified top-demand set across selected countries.</li>
+              <li>Values are standardized counts per 100 online job advertisements.</li>
+              <li>Turn countries on/off in the toggles above to control which markets appear here.</li>
+            </ul>
+          </div>
+          <div className="w-full md:w-80">
+            <Dropdown
+              value={selectedSkill}
+              onChange={(e) => setSelectedSkill(e.value)}
+              options={allSkillsData}
+              optionLabel="hardSkill"
+              placeholder="Select a hard skill"
+              className="w-full mb-2 md:mb-0"
+              showClear
+              {...dropdownPerfProps}
+            />
+            <p className="text-[11px] text-slate-400 mt-2">
+              Start typing to search. Clearing removes the current selection.
+            </p>
+          </div>
+        </div>
 
-          {selectedSkill && (
-            <div className="flex gap-6 text-sm flex-wrap">
-              {selectedCountryConfigs.map((country) => (
-                <div key={country.csvKey}>
-                  <span className="block text-gray-500 text-xs uppercase">{country.displayName}</span>
-                  <span className="block font-semibold" style={{ color: getColor(country) }}>
-                    {(selectedSkill.values[country.csvKey] || 0).toFixed(4)}
-                  </span>
-                </div>
-              ))}
+        <div className="mt-5">
+          {selectedSkill ? (
+            visibleCountries.length ? (
+              <div
+                className="grid gap-4"
+                style={{ gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}
+              >
+                {visibleCountries.map((country) => {
+                  const value = selectedSkill.values?.[country.csvKey];
+                  if (value === undefined) return null;
+                  const color = getColor(country);
+
+                  return (
+                    <div
+                      key={`${country.csvKey}-${selectedSkill.hardSkill}`}
+                      className="flex-1 min-w-[200px] p-4 rounded-xl border bg-slate-900/60"
+                      style={{ borderColor: color, boxShadow: `0 10px 30px ${color}20` }}
+                    >
+                      <p className="text-xs font-medium text-slate-200 uppercase tracking-wide mb-1">
+                        {country.displayName}
+                      </p>
+                      <p className="text-xl font-bold text-white">
+                        {(value || 0).toFixed(4)}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm text-slate-200">
+                Turn on at least one country dataset above to see the comparison.
+              </div>
+            )
+          ) : (
+            <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 text-sm text-slate-200">
+              Select a hard skill to view standardized counts per country.
             </div>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -493,7 +493,7 @@ const maxValue = useMemo(() => {
     const averages = visibleCountries.map((country) => {
       const totalFig12 = countTotals.fig12?.[country.csvKey] || 0;
       const totalFig45 = countTotals.fig45?.[country.csvKey] || 0;
-      const avg = totalFig45 ? totalFig12 / totalFig45 : 0;
+      const avg = totalFig12 ? totalFig45 / totalFig12 : 0;
 
       return {
         ...country,

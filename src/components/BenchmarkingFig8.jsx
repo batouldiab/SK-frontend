@@ -309,8 +309,7 @@ const BenchmarkingFig8 = ({ selectedCountries = ["United States", "United Arab E
     setCategorySkillOptions(options);
     setSelectedSkills((prev) => {
       const stillValid = prev.filter((skill) => options.some((opt) => opt.value === skill));
-      if (stillValid.length) return stillValid;
-      return options.slice(0, Math.min(3, options.length)).map((opt) => opt.value);
+      return stillValid;
     });
   }, [
     selectedCategory,

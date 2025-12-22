@@ -58,7 +58,7 @@ const GreenInEnergySector = () => {
               Green Occupations in the Energy Sector
             </h2>
             <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-              How the share of <strong>green-labelled occupations</strong> in
+              How the count of <strong>green-labelled occupations</strong> in
               energy has evolved, and how green vs non-green shares compare
               across key energy occupations.
             </p>

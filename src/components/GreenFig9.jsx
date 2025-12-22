@@ -273,7 +273,7 @@ const GreenFig9 = () => {
             Green Jobs within O&amp;G Sectors by Country
           </h2>
           <p className="m-0 text-sm text-color-secondary">
-            Share of green jobs within the oil &amp; gas sector, among all
+            Count of green jobs within the oil &amp; gas sector, among all
             scraped postings per country.
           </p>
 

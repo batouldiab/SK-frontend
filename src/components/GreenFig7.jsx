@@ -229,7 +229,7 @@ const GreenFig7 = () => {
               },
               title: {
                 display: true,
-                text: "Share of job postings (%)",
+                text: "Count of job postings (%)",
                 color: textColorSecondary,
               },
             },
@@ -313,7 +313,7 @@ const GreenFig7 = () => {
             Green vs Non-Green Share by Occupation in the Energy Sector
           </h2>
           <p className="m-0 text-sm text-color-secondary">
-            Each bar shows the share of green vs non-green job postings for
+            Each bar shows the count of green vs non-green job postings for
             occupations within the <strong>energy sector</strong>. The dashed
             line indicates the average green share across all occupations in
             this sector. Hover to see the number of job postings per

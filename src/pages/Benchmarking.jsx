@@ -242,14 +242,14 @@ const Benchmarking = () => {
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Category share of hard skills in demand
+                Category count of hard skills in demand
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
                 Radar view of countries standardized (per 100) demand across all hard-skill categories.
               </p>
               <div className="mt-2 p-3 bg-slate-100/70 dark:bg-slate-800/40 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                 <p className="text-[11px] md:text-xs text-slate-700 dark:text-slate-200 leading-relaxed m-0">
-                  How to read: each axis is a hard-skill category; lines show standardized demand per 100 OJAs. Use the dataset toggles to add/remove countries; hover a vertex to see exact values.
+                  How to read: the toggle switches between Hard Skills Distribution (Top 10, ungrouped categories) and Hard Skills Group Distribution (all grouped categories). Each axis shows standardized demand per 100 OJAs; use the country toggles to add/remove lines and hover a vertex to see exact values.
                 </p>
               </div>
               <div className="mt-2 p-3 bg-amber-50/80 dark:bg-amber-900/30 rounded-lg border border-amber-200/60 dark:border-amber-800/60">
@@ -302,11 +302,11 @@ const Benchmarking = () => {
                 Hard skills: overlap and differentiation
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                Top hard skills compared for standardized (per 100) demand in countries.
+                Top hard skills compared for standardized (per 1,000) demand in countries.
               </p>
               <div className="mt-2 p-3 bg-slate-100/70 dark:bg-slate-800/40 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                 <p className="text-[11px] md:text-xs text-slate-700 dark:text-slate-200 leading-relaxed m-0">
-                  How to read: radar lines show standardized demand per 100 OJAs for the unified top hard skills. Use the toggles under the title to show/hide countries; hover points for values.
+                  How to read: radar lines show standardized demand per 1,000 OJAs for the unified top hard skills. Use the toggles under the title to show/hide countries; hover points for values.
                 </p>
               </div>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
@@ -354,14 +354,14 @@ const Benchmarking = () => {
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Category share of soft skills in demand
+                Category count of soft skills in demand
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
                 Radar view of countries standardized (per 100) demand across all soft-skill categories.
               </p>
               <div className="mt-2 p-3 bg-slate-100/70 dark:bg-slate-800/40 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                 <p className="text-[11px] md:text-xs text-slate-700 dark:text-slate-200 leading-relaxed m-0">
-                  How to read: axes are soft-skill categories; lines show standardized demand per 100 OJAs. Toggle countries below the title; hover to see values per category.
+                  How to read: use the toggle to swap between Soft Skills Distribution (Top 5, ungrouped categories) and Soft Skills Group Distribution (all grouped categories). Axes show standardized demand per 100 OJAs; country toggles control which lines appear, and hovering reveals values per category.
                 </p>
               </div>
               <div className="mt-2 p-3 bg-amber-50/80 dark:bg-amber-900/30 rounded-lg border border-amber-200/60 dark:border-amber-800/60">
@@ -414,11 +414,11 @@ const Benchmarking = () => {
                 Soft skills: overlap and differentiation
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                Top soft skills compared for standardized (per 100) demand in countries.
+                Top soft skills compared for standardized (per 1,000) demand in countries.
               </p>
               <div className="mt-2 p-3 bg-slate-100/70 dark:bg-slate-800/40 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                 <p className="text-[11px] md:text-xs text-slate-700 dark:text-slate-200 leading-relaxed m-0">
-                  How to read: radar lines show standardized demand per 100 OJAs for the unified top soft skills. Use the toggles under the title to show/hide countries; hover points for the exact standardized counts.
+                  How to read: radar lines show standardized demand per 1,000 OJAs for the unified top soft skills. Use the toggles under the title to show/hide countries; hover points for the exact standardized counts.
                 </p>
               </div>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
@@ -474,7 +474,7 @@ const Benchmarking = () => {
               </p>
               <div className="mt-2 p-3 bg-slate-100/70 dark:bg-slate-800/40 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                 <p className="text-[11px] md:text-xs text-slate-700 dark:text-slate-200 leading-relaxed m-0">
-                  How to read: bars show the share of postings by hierarchy level for the chosen skill. Use the skill selector in the shared-skills section to change the focal skill; toggles control which countries appear.
+                  How to read: bars show the count of postings by hierarchy level for the chosen skill. Use the skill selector in the shared-skills section to change the focal skill; toggles control which countries appear.
                 </p>
               </div>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">

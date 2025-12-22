@@ -205,7 +205,7 @@ const GreenFig3 = () => {
               },
               title: {
                 display: true,
-                text: "Share of job postings (%)",
+                text: "Count of job postings (%)",
                 color: textColorSecondary,
               },
             },

@@ -400,7 +400,7 @@ const BenchmarkingFig8 = ({ selectedCountries = ["United States", "United Arab E
           left: 12,
         },
         footnote: {
-          text: "Share of hierarchy levels by skill and country",
+          text: "Count of hierarchy levels by skill and country",
         },
         series: [
           {
@@ -503,7 +503,7 @@ const BenchmarkingFig8 = ({ selectedCountries = ["United States", "United Arab E
             Pick a <strong>category</strong> to load its top skills; choose <strong>ALL</strong> to use the unified top distinct skills across all categories (section 2 logic). The skill list shows the deduplicated top skills ranked by the first visible country; toggling country visibility reshapes this list.
           </p>
           <p className="mt-2 mb-0">
-            Select one or more skills to see a heatmap of their share across hierarchy levels and countries you have toggled on. Darker cells indicate a higher share of postings for that hierarchy level within the skill/country.
+            Select one or more skills to see a heatmap of their share across hierarchy levels and countries you have toggled on. Darker cells indicate a higher count of postings for that hierarchy level within the skill/country.
           </p>
         </div>
 

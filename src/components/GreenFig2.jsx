@@ -274,7 +274,7 @@ const GreenFig2 = () => {
             Green Jobs Distribution by Country
           </h2>
           <p className="m-0 text-sm text-color-secondary">
-            Share of green jobs among all scraped postings, per country.
+            Count of green jobs among all scraped postings, per country.
           </p>
           {/* Modern, minimal sidenote */}
       <div className="mt-3 text-xs text-color-secondary  max-w-[100%]">

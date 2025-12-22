@@ -130,7 +130,7 @@ const GreenFig6 = () => {
               },
               title: {
                 display: true,
-                text: "Share of Green Jobs in the Energy Sector (%)",
+                text: "Count of Green Jobs in the Energy Sector (%)",
                 color: textColorSecondary,
               },
             },
@@ -190,7 +190,7 @@ const GreenFig6 = () => {
             Green Jobs in the Energy Sector (2021–2024)
           </h2>
           <p className="m-0 text-sm text-color-secondary">
-            Share of green jobs among all energy-related job postings in recent
+            Count of green jobs among all energy-related job postings in recent
             years.
           </p>
         </div>

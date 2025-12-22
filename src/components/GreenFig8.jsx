@@ -113,7 +113,7 @@ const GreenFig8 = () => {
           datasets: [
             {
               type: "line",
-              label: "Share of Green Jobs that are O&G",
+              label: "Count of Green Jobs that are O&G",
               borderColor: lineColor,
               borderWidth: 2,
               pointRadius: 3,
@@ -124,7 +124,7 @@ const GreenFig8 = () => {
             },
             {
               type: "bar",
-              label: "Share of Green Jobs (non-O&G)",
+              label: "Count of Green Jobs (non-O&G)",
               backgroundColor: primaryGreen,
               data: greenNonOG,
               stack: "shares",
@@ -136,7 +136,7 @@ const GreenFig8 = () => {
             },
             {
               type: "bar",
-              label: "Share of O&G Jobs (Green and non-Green)",
+              label: "Count of O&G Jobs (Green and non-Green)",
               backgroundColor: ogColor,
               data: ogTotal,
               stack: "shares",
@@ -148,7 +148,7 @@ const GreenFig8 = () => {
             },
             {
               type: "bar",
-              label: "share of Green O&G jobs",
+              label: "Count of Green O&G jobs",
               backgroundColor: greenOgColor,
               data: greenOG,
               stack: "shares",
@@ -216,7 +216,7 @@ const GreenFig8 = () => {
               },
               title: {
                 display: true,
-                text: "Share of job postings (%)",
+                text: "Count of job postings (%)",
                 color: textColorSecondary,
               },
             },
@@ -282,11 +282,11 @@ const GreenFig8 = () => {
             Green and O&G Jobs Shares over Time
           </h2>
           <p className="m-0 text-sm text-color-secondary">
-            Stacked bars show the share of{" "}
+            Stacked bars show the count of{" "}
             <strong>green jobs outside O&amp;G</strong>,{" "}
             <strong>all O&amp;G jobs</strong>, and{" "}
             <strong>green jobs within O&amp;G</strong>. The line shows, for each
-            year, what share of all green jobs are in the O&amp;G sector.
+            year, what count of all green jobs are in the O&amp;G sector.
           </p>
         </div>
       </div>

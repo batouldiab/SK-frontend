@@ -242,7 +242,7 @@ const Benchmarking = () => {
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Category share of hard skills in demand
+                Category count of hard skills in demand
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
                 Radar view of countries standardized (per 100) demand across all hard-skill categories.
@@ -354,7 +354,7 @@ const Benchmarking = () => {
               </div>
 
               <h2 className="text-lg md:text-xl font-semibold text-slate-900 dark:text-slate-50 text-center">
-                Category share of soft skills in demand
+                Category count of soft skills in demand
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
                 Radar view of countries standardized (per 100) demand across all soft-skill categories.
@@ -474,7 +474,7 @@ const Benchmarking = () => {
               </p>
               <div className="mt-2 p-3 bg-slate-100/70 dark:bg-slate-800/40 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                 <p className="text-[11px] md:text-xs text-slate-700 dark:text-slate-200 leading-relaxed m-0">
-                  How to read: bars show the share of postings by hierarchy level for the chosen skill. Use the skill selector in the shared-skills section to change the focal skill; toggles control which countries appear.
+                  How to read: bars show the count of postings by hierarchy level for the chosen skill. Use the skill selector in the shared-skills section to change the focal skill; toggles control which countries appear.
                 </p>
               </div>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">

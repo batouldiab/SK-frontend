@@ -291,7 +291,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
       const groupName = categoryToGroupMap.get(cat.category) || "Other";
 
       if (!groupMap.has(groupName)) {
-        groupMap.set(groupName, { group: groupName, percentages: {}, categories: [] });
+        groupMap.set(groupName, { group: groupName, label: groupName, percentages: {}, categories: [] });
       }
 
       const groupEntry = groupMap.get(groupName);
@@ -303,15 +303,30 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
     });
 
     const sortKey = selectedKeys[0];
-    const sortedGroups = Array.from(groupMap.values()).sort(
+    return Array.from(groupMap.values()).sort(
       (a, b) => (b.percentages[sortKey] || 0) - (a.percentages[sortKey] || 0)
     );
-    return showTopCategories ? sortedGroups.slice(0, 10) : sortedGroups;
-  }, [categoryData, categoryToGroupMap, visibleCountries, showTopCategories]);
+  }, [categoryData, categoryToGroupMap, visibleCountries]);
+
+  const topCategoryData = useMemo(() => {
+    if (!categoryData.length || !visibleCountries.length) return [];
+
+    const sortKey = visibleCountries[0].csvKey;
+    return [...categoryData]
+      .sort((a, b) => (b.percentages[sortKey] || 0) - (a.percentages[sortKey] || 0))
+      .slice(0, 10)
+      .map((cat) => ({
+        label: cat.category,
+        category: cat.category,
+        percentages: cat.percentages,
+      }));
+  }, [categoryData, visibleCountries]);
 
   // Update charts when category data changes
   useEffect(() => {
-    if (groupedCategoryData.length === 0 || !visibleCountries.length) {
+    const chartSource = showTopCategories ? topCategoryData : groupedCategoryData;
+
+    if (chartSource.length === 0 || !visibleCountries.length) {
       setRadarChartData(null);
       return;
     }
@@ -331,14 +346,14 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
         pointHoverBackgroundColor: textColor,
         pointHoverBorderColor: color,
         backgroundColor: color + "33",
-        data: groupedCategoryData.map((group) => group.percentages[cfg.csvKey] || 0),
-        originalData: groupedCategoryData.map((group) => group.percentages[cfg.csvKey] || 0),
+        data: chartSource.map((group) => group.percentages[cfg.csvKey] || 0),
+        originalData: chartSource.map((group) => group.percentages[cfg.csvKey] || 0),
         fill: true,
       };
     });
 
     const radarData = {
-      labels: groupedCategoryData.map((group) => group.group),
+      labels: chartSource.map((group) => group.label || group.group),
       datasets,
     };
 
@@ -361,7 +376,8 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
               return `${context.dataset.label}: ${originalValue.toFixed(2)}%`;
             },
             afterLabel: function (context) {
-              const group = groupedCategoryData[context.dataIndex];
+              if (showTopCategories) return "";
+              const group = chartSource[context.dataIndex];
               if (!group) return "";
               const countryKey = context.dataset.countryKey;
 
@@ -400,7 +416,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
 
     setRadarChartData(radarData);
     setChartOptions(options);
-  }, [groupedCategoryData, visibleCountries, getColor]);
+  }, [groupedCategoryData, topCategoryData, visibleCountries, getColor, showTopCategories]);
 
   // Update category skills when selected category changes
   useEffect(() => {
@@ -652,7 +668,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all shadow-sm border
                   ${showTopCategories ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-700 border-slate-200 hover:border-slate-300"}`}
               >
-                {showTopCategories ? "Top 10 categories" : "All categories"}
+                {showTopCategories ? "Top 10 categories (ungrouped)" : "All categories (grouped)"}
                 <span
                   className={`w-2.5 h-2.5 rounded-full ${showTopCategories ? "bg-emerald-400" : "bg-slate-300"}`}
                   aria-hidden="true"
@@ -665,7 +681,7 @@ const BenchmarkingFig5_2 = ({ selectedCountries = ["United States", "United Arab
           </div>
         </div>
         <h4 className="text-sm font-semibold mb-3">
-          Hard Skills Group Distribution (%)
+          {showTopCategories ? "Hard Skills Distribution (%)" : "Hard Skills Group Distribution (%)"}
         </h4>
         {/* Radar chart for all categories */}
         <div className="w-full mt-3 flex flex-col justify-content-center align-items-center">

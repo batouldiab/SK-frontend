@@ -303,15 +303,34 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
     });
 
     const sortKey = selectedKeys[0];
-    const sortedGroups = Array.from(groupMap.values()).sort(
+    const sortedGroups = Array.from(groupMap.values()).map((group) => ({
+      label: group.group,
+      percentages: group.percentages,
+      categories: group.categories,
+    })).sort(
       (a, b) => (b.percentages[sortKey] || 0) - (a.percentages[sortKey] || 0)
     );
-    return showTopCategories ? sortedGroups.slice(0, 10) : sortedGroups;
-  }, [categoryData, categoryToGroupMap, visibleCountries, showTopCategories]);
+    return sortedGroups;
+  }, [categoryData, categoryToGroupMap, visibleCountries]);
+
+  const topCategoryChartData = useMemo(() => {
+    if (!categoryData.length || !visibleCountries.length) return [];
+
+    return categoryData.slice(0, 5).map((cat) => ({
+      label: cat.category,
+      percentages: cat.percentages,
+      categories: [{ name: cat.category, percentages: cat.percentages }],
+    }));
+  }, [categoryData, visibleCountries]);
+
+  const activeRadarItems = useMemo(
+    () => (showTopCategories ? topCategoryChartData : groupedCategoryData),
+    [showTopCategories, topCategoryChartData, groupedCategoryData]
+  );
 
   // Update charts when category data changes
   useEffect(() => {
-    if (groupedCategoryData.length === 0 || !visibleCountries.length) {
+    if (activeRadarItems.length === 0 || !visibleCountries.length) {
       setRadarChartData(null);
       return;
     }
@@ -331,13 +350,13 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
         pointHoverBackgroundColor: textColor,
         pointHoverBorderColor: color,
         backgroundColor: color + "33",
-        data: groupedCategoryData.map((group) => group.percentages[cfg.csvKey] || 0),
+        data: activeRadarItems.map((group) => group.percentages[cfg.csvKey] || 0),
         fill: true,
       };
     });
 
     const radarData = {
-      labels: groupedCategoryData.map((group) => group.group),
+      labels: activeRadarItems.map((group) => group.label),
       datasets,
     };
 
@@ -358,8 +377,9 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
               return `${context.dataset.label}: ${context.parsed.r.toFixed(2)}%`;
             },
             afterLabel: function (context) {
-              const group = groupedCategoryData[context.dataIndex];
-              if (!group) return "";
+              if (showTopCategories) return "";
+              const group = activeRadarItems[context.dataIndex];
+              if (!group?.categories) return "";
               const countryKey = context.dataset.countryKey;
 
               return group.categories.map((cat) => {
@@ -397,7 +417,7 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
 
     setRadarChartData(radarData);
     setChartOptions(options);
-  }, [groupedCategoryData, visibleCountries, getColor]);
+  }, [activeRadarItems, visibleCountries, getColor, showTopCategories]);
 
   // Update category skills when selected category changes
   useEffect(() => {
@@ -454,14 +474,14 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
       return { ...sub, percentages };
     });
 
-    // Build unified top subcategories (up to 10 per country)
+    // Build unified top subcategories (up to 5 per country)
     const unifiedNames = new Set();
     const unifiedSubcategories = [];
 
     selectedKeys.forEach((key) => {
       const topForCountry = [...subcategoriesWithPercentages]
         .sort((a, b) => (b.percentages[key] || 0) - (a.percentages[key] || 0))
-        .slice(0, 10);
+        .slice(0, 5);
 
       topForCountry.forEach((sub) => {
         if (!unifiedNames.has(sub.subcategory)) {
@@ -533,7 +553,7 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
       scales: {
         r: {
           beginAtZero: true,
-          suggestedMax: yAxisMax || 10,
+          suggestedMax: yAxisMax || 5,
           ticks: {
             color: textColorSecondary,
             callback: function (value) {
@@ -646,7 +666,7 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all shadow-sm border
                   ${showTopCategories ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-700 border-slate-200 hover:border-slate-300"}`}
               >
-                {showTopCategories ? "Top 10 categories" : "All categories"}
+                {showTopCategories ? "Top 5 categories (ungrouped)" : "All categories (grouped)"}
                 <span
                   className={`w-2.5 h-2.5 rounded-full ${showTopCategories ? "bg-emerald-400" : "bg-slate-300"}`}
                   aria-hidden="true"
@@ -659,7 +679,7 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
           </div>
         </div>
         <h4 className="text-sm font-semibold mb-3">
-          Soft Skills Group Distribution (%)
+          {showTopCategories ? "Soft Skills Distribution (%)" : "Soft Skills Group Distribution (%)"}
         </h4>
         {/* Radar chart for all categories */}
         <div className="w-full mt-3 flex flex-col justify-content-center align-items-center">
@@ -726,7 +746,7 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
               <DataTable
                 value={categorySkills}
                 paginator
-                rows={10}
+                rows={5}
                 rowsPerPageOptions={[5, 10, 25, 50]}
                 className="text-sm"
                 emptyMessage="No skills found"

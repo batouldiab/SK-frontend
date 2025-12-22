@@ -249,7 +249,7 @@ const Benchmarking = () => {
               </p>
               <div className="mt-2 p-3 bg-slate-100/70 dark:bg-slate-800/40 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                 <p className="text-[11px] md:text-xs text-slate-700 dark:text-slate-200 leading-relaxed m-0">
-                  How to read: each axis is a hard-skill category; lines show standardized demand per 100 OJAs. Use the dataset toggles to add/remove countries; hover a vertex to see exact values.
+                  How to read: the toggle switches between Hard Skills Distribution (Top 10, ungrouped categories) and Hard Skills Group Distribution (all grouped categories). Each axis shows standardized demand per 100 OJAs; use the country toggles to add/remove lines and hover a vertex to see exact values.
                 </p>
               </div>
               <div className="mt-2 p-3 bg-amber-50/80 dark:bg-amber-900/30 rounded-lg border border-amber-200/60 dark:border-amber-800/60">
@@ -361,7 +361,7 @@ const Benchmarking = () => {
               </p>
               <div className="mt-2 p-3 bg-slate-100/70 dark:bg-slate-800/40 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                 <p className="text-[11px] md:text-xs text-slate-700 dark:text-slate-200 leading-relaxed m-0">
-                  How to read: axes are soft-skill categories; lines show standardized demand per 100 OJAs. Toggle countries below the title; hover to see values per category.
+                  How to read: use the toggle to swap between Soft Skills Distribution (Top 5, ungrouped categories) and Soft Skills Group Distribution (all grouped categories). Axes show standardized demand per 100 OJAs; country toggles control which lines appear, and hovering reveals values per category.
                 </p>
               </div>
               <div className="mt-2 p-3 bg-amber-50/80 dark:bg-amber-900/30 rounded-lg border border-amber-200/60 dark:border-amber-800/60">

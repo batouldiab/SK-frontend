@@ -302,11 +302,11 @@ const Benchmarking = () => {
                 Hard skills: overlap and differentiation
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                Top hard skills compared for standardized (per 100) demand in countries.
+                Top hard skills compared for standardized (per 1,000) demand in countries.
               </p>
               <div className="mt-2 p-3 bg-slate-100/70 dark:bg-slate-800/40 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                 <p className="text-[11px] md:text-xs text-slate-700 dark:text-slate-200 leading-relaxed m-0">
-                  How to read: radar lines show standardized demand per 100 OJAs for the unified top hard skills. Use the toggles under the title to show/hide countries; hover points for values.
+                  How to read: radar lines show standardized demand per 1,000 OJAs for the unified top hard skills. Use the toggles under the title to show/hide countries; hover points for values.
                 </p>
               </div>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">
@@ -414,11 +414,11 @@ const Benchmarking = () => {
                 Soft skills: overlap and differentiation
               </h2>
               <p className="text-xs md:text-sm text-slate-600/90 dark:text-slate-300/90 m-0 text-center">
-                Top soft skills compared for standardized (per 100) demand in countries.
+                Top soft skills compared for standardized (per 1,000) demand in countries.
               </p>
               <div className="mt-2 p-3 bg-slate-100/70 dark:bg-slate-800/40 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                 <p className="text-[11px] md:text-xs text-slate-700 dark:text-slate-200 leading-relaxed m-0">
-                  How to read: radar lines show standardized demand per 100 OJAs for the unified top soft skills. Use the toggles under the title to show/hide countries; hover points for the exact standardized counts.
+                  How to read: radar lines show standardized demand per 1,000 OJAs for the unified top soft skills. Use the toggles under the title to show/hide countries; hover points for the exact standardized counts.
                 </p>
               </div>
               <div className="mt-3 p-3 bg-slate-50/60 dark:bg-slate-800/30 rounded-lg border border-slate-200/50 dark:border-slate-700/50">

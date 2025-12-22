@@ -30,6 +30,9 @@ const dropdownPerfProps = {
   scrollHeight: "260px",
 };
 
+// CSV values are per 100 OJAs; we scale to per 1,000 for display
+const STANDARDIZATION_MULTIPLIER = 10;
+
 const BenchmarkingFig3 = ({ selectedCountries = ["United States", "United Arab Emirates"] }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -95,7 +98,7 @@ const BenchmarkingFig3 = ({ selectedCountries = ["United States", "United Arab E
                 standardizedColumns.forEach((col) => {
                   const val = parseFloat(row[col.fieldName]);
                   if (!Number.isNaN(val)) {
-                    values[col.country] = val;
+                    values[col.country] = val * STANDARDIZATION_MULTIPLIER;
                   }
                 });
 
@@ -412,7 +415,7 @@ const BenchmarkingFig3 = ({ selectedCountries = ["United States", "United Arab E
         <div className="w-full mt-3 flex justify-center items-center">
           <div className="flex flex-col items-center w-full" style={{ maxWidth: "720px" }}>
             <h3 className="text-md font-semibold mb-2 text-gray-800">
-              Top Distinct Soft Skills Comparison: <span className="font-light">Skills count per 100 OJAs</span>
+              Top Distinct Soft Skills Comparison: <span className="font-light">Skills count per 1,000 OJAs</span>
             </h3>
             <div style={{ width: "100%", height: "500px" }}>
               {radarChartData && radarChartData.datasets?.length ? (
@@ -443,12 +446,12 @@ const BenchmarkingFig3 = ({ selectedCountries = ["United States", "United Arab E
               Compare standardized demand for one soft skill
             </h4>
             <p className="text-sm text-slate-200 leading-relaxed">
-              Choose a specific soft skill to see standardized counts (per 100 online job ads) for each country
+              Choose a specific soft skill to see standardized counts (per 1,000 online job ads) for each country
               currently toggled on. These values use the same standardized data shown in the radar chart above.
             </p>
             <ul className="text-xs text-slate-300 list-disc pl-4 space-y-1">
               <li>Skills list comes from the unified top-demand set across selected countries.</li>
-              <li>Values are standardized counts per 100 online job advertisements.</li>
+              <li>Values are standardized counts per 1,000 online job advertisements.</li>
               <li>Toggle countries above to control which markets show up in this comparison.</li>
             </ul>
           </div>

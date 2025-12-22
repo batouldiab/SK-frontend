@@ -50,6 +50,7 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categorySkills, setCategorySkills] = useState([]);
   const [datasetVisibility, setDatasetVisibility] = useState({});
+  const [showTopCategories, setShowTopCategories] = useState(true);
 
   // Unified subcategory bar chart data
   const [subcategoryChartData, setSubcategoryChartData] = useState(null);
@@ -302,10 +303,11 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
     });
 
     const sortKey = selectedKeys[0];
-    return Array.from(groupMap.values()).sort(
+    const sortedGroups = Array.from(groupMap.values()).sort(
       (a, b) => (b.percentages[sortKey] || 0) - (a.percentages[sortKey] || 0)
     );
-  }, [categoryData, categoryToGroupMap, visibleCountries]);
+    return showTopCategories ? sortedGroups.slice(0, 10) : sortedGroups;
+  }, [categoryData, categoryToGroupMap, visibleCountries, showTopCategories]);
 
   // Update charts when category data changes
   useEffect(() => {
@@ -636,6 +638,23 @@ const BenchmarkingFig5_1 = ({ selectedCountries = ["United States", "United Arab
                   </div>
                 );
               })}
+            </div>
+            <div className="flex flex-wrap items-center gap-3 mt-4">
+              <button
+                type="button"
+                onClick={() => setShowTopCategories((prev) => !prev)}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all shadow-sm border
+                  ${showTopCategories ? "bg-slate-900 text-white border-slate-900" : "bg-white text-slate-700 border-slate-200 hover:border-slate-300"}`}
+              >
+                {showTopCategories ? "Top 10 categories" : "All categories"}
+                <span
+                  className={`w-2.5 h-2.5 rounded-full ${showTopCategories ? "bg-emerald-400" : "bg-slate-300"}`}
+                  aria-hidden="true"
+                />
+              </button>
+              <span className="text-xs text-color-secondary">
+                Sorted by the first visible country selection. Click to change.
+              </span>
             </div>
           </div>
         </div>

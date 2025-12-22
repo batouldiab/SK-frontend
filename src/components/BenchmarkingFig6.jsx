@@ -42,6 +42,12 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
 
   // Common skills across selected countries
   const [commonSkills, setCommonSkills] = useState([]);
+
+  // Category + top-skill mapping (from Fig 4/5 dataset)
+  const [categorySkillData, setCategorySkillData] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [categorySkillOptions, setCategorySkillOptions] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSkill, setSelectedSkill] = useState(null);
 
   // Chart data
@@ -180,6 +186,74 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
     loadAll();
   }, [selectedCountryConfigs]);
 
+  // Load hard-skill categories & standardized counts (Fig 4/5) to build top-skill lists
+  useEffect(() => {
+    const loadCategorySkills = async () => {
+      try {
+        const response = await fetch("/data/benchmarking_fig4_5.csv");
+        if (!response.ok) return;
+
+        const text = await response.text();
+
+        Papa.parse(text, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            try {
+              const metaFields = results.meta?.fields || [];
+              const standardizedColumns = metaFields
+                .filter((field) => /^Standardized Count /i.test(field))
+                .map((field) => {
+                  const countryName = field.replace(/^Standardized Count\s*/i, "").trim();
+                  return {
+                    fieldName: field,
+                    country: toCsvKey(countryName),
+                  };
+                });
+
+              if (!standardizedColumns.length) return;
+
+              const processed = [];
+              const categoriesSet = new Set();
+
+              results.data.forEach((row) => {
+                const skill = row["Hard Skill"]?.trim();
+                const category = row["Category"]?.trim();
+                if (!skill || !category || category === "Uncategorized") return;
+
+                const values = {};
+                standardizedColumns.forEach((col) => {
+                  const val = parseFloat(row[col.fieldName]);
+                  if (!Number.isNaN(val)) {
+                    values[col.country] = val;
+                  }
+                });
+
+                processed.push({ skill, category, values });
+                categoriesSet.add(category);
+              });
+
+              if (!processed.length) return;
+
+              setCategorySkillData(processed);
+              const sortedCategories = [...categoriesSet].sort().map((cat) => ({ label: cat, value: cat }));
+              setCategoryOptions([{ label: "ALL", value: "ALL" }, ...sortedCategories]);
+            } catch (err) {
+              console.error("Error processing category skill data:", err);
+            }
+          },
+          error: (err) => {
+            console.error("Error parsing category skill CSV:", err);
+          },
+        });
+      } catch (err) {
+        console.error("Error loading category skill CSV:", err);
+      }
+    };
+
+    loadCategorySkills();
+  }, []);
+
   // Keep dataset visibility in sync with incoming selections
   useEffect(() => {
     setDatasetVisibility((prev) => {
@@ -214,11 +288,92 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
 
     const skillOptions = intersection.sort().map((skill) => ({ label: skill, value: skill }));
     setCommonSkills(skillOptions);
-    setSelectedSkill((prev) => {
-      if (prev && skillOptions.some((s) => s.value === prev)) return prev;
-      return skillOptions[0]?.value || null;
-    });
   }, [countryData, selectedCountryConfigs]);
+
+  // Build available categories based on common skills
+  useEffect(() => {
+    if (!categorySkillData.length || !commonSkills.length) {
+      setSelectedCategory(null);
+      setCategorySkillOptions([]);
+      setCategoryOptions([]);
+      setSelectedSkill(null);
+      return;
+    }
+
+    const commonSet = new Set(commonSkills.map((s) => s.value));
+    const categorySet = new Set();
+
+    categorySkillData.forEach((item) => {
+      if (commonSet.has(item.skill)) {
+        categorySet.add(item.category);
+      }
+    });
+
+    const filteredCategories = [...categorySet].sort().map((cat) => ({ label: cat, value: cat }));
+    const withAll = [{ label: "ALL", value: "ALL" }, ...filteredCategories];
+    setCategoryOptions(withAll);
+
+    setSelectedCategory((prev) => {
+      if (prev && (prev === "ALL" || categorySet.has(prev))) return prev;
+      return withAll[0]?.value || null;
+    });
+  }, [categorySkillData, commonSkills]);
+
+  // Build top-skill options for the selected category (mirrors Fig 8 logic)
+  useEffect(() => {
+    if (!selectedCategory || !categorySkillData.length || !commonSkills.length) {
+      setCategorySkillOptions([]);
+      setSelectedSkill(null);
+      return;
+    }
+
+    const commonSet = new Set(commonSkills.map((s) => s.value));
+    const pool =
+      selectedCategory === "ALL"
+        ? categorySkillData.filter((item) => commonSet.has(item.skill))
+        : categorySkillData.filter((item) => item.category === selectedCategory && commonSet.has(item.skill));
+
+    if (!pool.length) {
+      setCategorySkillOptions([]);
+      setSelectedSkill(null);
+      return;
+    }
+
+    const countryOrder = (visibleConfigs.length ? visibleConfigs : selectedCountryConfigs).slice(0, 3);
+    if (!countryOrder.length) {
+      setCategorySkillOptions([]);
+      setSelectedSkill(null);
+      return;
+    }
+
+    const seen = new Set();
+    const unified = [];
+
+    countryOrder.forEach((cfg) => {
+      const sorted = [...pool].sort(
+        (a, b) => (b.values[cfg.csvKey] || 0) - (a.values[cfg.csvKey] || 0)
+      );
+
+      sorted.slice(0, 10).forEach((skillEntry) => {
+        if (!seen.has(skillEntry.skill)) {
+          seen.add(skillEntry.skill);
+          unified.push(skillEntry);
+        }
+      });
+    });
+
+    const primaryKey = countryOrder[0]?.csvKey;
+    if (primaryKey) {
+      unified.sort((a, b) => (b.values[primaryKey] || 0) - (a.values[primaryKey] || 0));
+    }
+
+    const options = unified.map((entry) => ({ label: entry.skill, value: entry.skill }));
+    setCategorySkillOptions(options);
+    setSelectedSkill((prev) => {
+      if (prev && options.some((opt) => opt.value === prev)) return prev;
+      return options[0]?.value || null;
+    });
+  }, [selectedCategory, categorySkillData, commonSkills, visibleConfigs, selectedCountryConfigs]);
 
   // Update chart when selected skill or visibility changes
   useEffect(() => {
@@ -361,7 +516,7 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
             type: "number",
             position: "left",
             title: {
-              text: "Share of titles (%)",
+              text: "Count of titles (%)",
               fontSize: 12,
               color: textColor,
             },
@@ -431,27 +586,61 @@ const BenchmarkingFig6 = ({ selectedCountries = ["United States", "United Arab E
     );
   }
 
-  const hasChartData = !!(chartOptions && chartData.length && commonSkills.length && visibleConfigs.length);
+  const hasChartData = !!(chartOptions && chartData.length && selectedSkill && visibleConfigs.length);
 
   return (
     <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 w-full min-h-[420px] flex flex-col">
-      {/* Header with skill selector */}
+      {/* Header with category + skill selectors */}
       <div className="mb-3">
+        <div className="mb-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          <p className="m-0">
+            Choose a <strong>category</strong> to load its top distinct skills (based on standardized counts from Fig 4/5).
+            The skill list is re-ranked by the first visible country and limited to skills common to the selected datasets.
+          </p>
+        </div>
+
+        {/* Category selector */}
+        <div className="mb-3">
+          <label htmlFor="category-select" className="block text-sm font-semibold mb-2 text-color-secondary">
+            Select Category
+          </label>
+          <Dropdown
+            inputId="category-select"
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategory(e.value);
+              setSelectedSkill(null);
+            }}
+            options={categoryOptions}
+            placeholder={commonSkills.length ? "Choose a category" : "Waiting for shared skills..."}
+            className="w-full md:w-20rem"
+            showClear={false}
+            disabled={!categoryOptions.length}
+            {...dropdownPerfProps}
+          />
+        </div>
+
         {/* Skill selector */}
         <div className="mb-3">
           <label htmlFor="skill-select" className="block text-sm font-semibold mb-2 text-color-secondary">
-            Select a Skill
+            Select Skills {selectedCategory === "ALL" ? "(unified top skills)" : "(top skills for chosen category)"}
           </label>
           <Dropdown
             inputId="skill-select"
             value={selectedSkill}
             onChange={(e) => setSelectedSkill(e.value)}
-            options={commonSkills}
-            placeholder="Choose a skill"
+            options={categorySkillOptions}
+            placeholder={selectedCategory ? "Choose a skill" : "Pick a category first"}
             className="w-full md:w-20rem"
             showClear={false}
+            disabled={!selectedCategory || !categorySkillOptions.length}
             {...dropdownPerfProps}
           />
+          {!selectedCategory && (
+            <p className="text-xs text-color-secondary mt-1">
+              Select a category to load the filtered skill list.
+            </p>
+          )}
         </div>
 
         {/* Statistics cards */}
